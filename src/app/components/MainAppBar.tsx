@@ -17,7 +17,11 @@ import UserIcon from "@/app/assets/icon-user-profile.svg";
 import BusinessIcon from "@/app/assets/icon-business.svg";
 import { indigo } from "@mui/material/colors";
 
-export const MainAppBar = () => (
+type MainAppBarProps = {
+  onMenuClick?: () => void;
+};
+
+export const MainAppBar = ({ onMenuClick }: MainAppBarProps) => (
   <AppBar sx={{ backgroundColor: indigo[900] }} position="static">
     <Box
       display="flex"
@@ -26,7 +30,7 @@ export const MainAppBar = () => (
       height={48}
       px={1}
     >
-      <IconButton>
+      <IconButton onClick={onMenuClick}>
         <Menu sx={{ color: "white" }} />
       </IconButton>
       <NXLogo />

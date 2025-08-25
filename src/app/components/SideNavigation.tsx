@@ -10,8 +10,6 @@ import {
 } from "@mui/material";
 import { MenuOpen } from "@mui/icons-material";
 import { useEffect, useMemo, useState } from "react";
-import CircularProgress from "@mui/material/CircularProgress";
-import Typography from "@mui/material/Typography";
 import type { NavigationItem } from "../types/navigation";
 import AssistantOutlinedIcon from "@mui/icons-material/AssistantOutlined";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -21,17 +19,19 @@ import { indigo } from "@mui/material/colors";
 
 type MenuItem = NavigationItem;
 
-export default function SideNavigation() {
+type SideNavigationProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
+
+export default function SideNavigation({
+  open,
+  onOpenChange,
+}: SideNavigationProps) {
   const navItems = useMemo(() => {
     return NAV_ITEMS;
   }, []);
-
-  const [open, setOpen] = useState(false);
   const router = useRouter();
-
-  const toggleSidebar = () => {
-    setOpen(!open);
-  };
 
   const [expanded, setExpanded] = useState<Record<string, boolean>>(() => ({}));
 
@@ -168,7 +168,7 @@ export default function SideNavigation() {
                 ? () => handleToggleAtDepth(item.id, items)
                 : () => {
                     router.push(currentPath);
-                    toggleSidebar();
+                    onOpenChange(false);
                   }
             }
             sx={{
@@ -216,8 +216,8 @@ export default function SideNavigation() {
   };
 
   return (
-    <Drawer open={open} onClose={toggleSidebar}>
-      <Box minWidth={368} bgcolor={"#2C2A56"} height={"100%"}>
+    <Drawer open={open} onClose={() => onOpenChange(false)}>
+      <Box minWidth={368} bgcolor={indigo[900]} height={"100%"}>
         <Box
           bgcolor={indigo[900]}
           height={54}
@@ -225,26 +225,12 @@ export default function SideNavigation() {
           display="flex"
           alignItems="center"
         >
-          <IconButton onClick={toggleSidebar}>
+          <IconButton onClick={() => onOpenChange(false)}>
             <MenuOpen sx={{ color: "white", fontSize: 24 }} />
           </IconButton>
         </Box>
         <Box>
-          {navItems.length > 0 ? (
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              height={200}
-              flexDirection="column"
-              sx={{ color: "#ffffff" }}
-            >
-              <CircularProgress size={28} sx={{ color: "#ffffff", mb: 1 }} />
-              <Typography variant="body2">메뉴 불러오는 중…</Typography>
-            </Box>
-          ) : (
-            <List disablePadding>{renderItems(navItems ?? [])}</List>
-          )}
+          <List disablePadding>{renderItems(navItems ?? [])}</List>
         </Box>
       </Box>
     </Drawer>

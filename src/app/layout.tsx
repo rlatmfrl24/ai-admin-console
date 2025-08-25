@@ -4,8 +4,7 @@ import { Roboto } from "next/font/google";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "@/theme";
 import "./globals.css";
-import { MainAppBar } from "./components/MainAppBar";
-import { Box } from "@mui/material";
+import AppShell from "./components/AppShell";
 
 const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
@@ -29,12 +28,7 @@ export default function RootLayout({
       <body className={roboto.className}>
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
-            <Box display="flex" flexDirection="column" height="100vh">
-              <MainAppBar />
-              <Box flexGrow={1} overflow="auto">
-                {children}
-              </Box>
-            </Box>
+            <AppShell>{children}</AppShell>
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>
