@@ -1,15 +1,17 @@
-import { Box, Select, SelectProps } from "@mui/material";
+import { Box, MenuItem, Select, SelectProps } from "@mui/material";
 import { Typography } from "@mui/material";
 import { SxProps } from "@mui/system";
+import { COLORS } from "@/constants/color";
 
 const SelectWithLabel = ({
   label,
-  children,
   size = "medium",
+  options,
   ...props
 }: {
   label: string;
   size?: "small" | "medium";
+  options: { label: string; value: string }[];
 } & SelectProps) => {
   return (
     <Box display={"flex"} flexDirection={"column"}>
@@ -36,7 +38,26 @@ const SelectWithLabel = ({
           ...(props.sx as SxProps),
         }}
       >
-        {children}
+        {options.map((option) => (
+          <MenuItem
+            key={option.value}
+            value={option.value}
+            sx={{
+              fontSize: 13,
+              lineHeight: 1.3,
+              fontWeight: 400,
+              p: 1,
+              "&.Mui-selected": {
+                backgroundColor: COLORS.text.states.selected,
+              },
+              "&.Mui-hover": {
+                backgroundColor: COLORS.text.states.hover,
+              },
+            }}
+          >
+            {option.label}
+          </MenuItem>
+        ))}
       </Select>
     </Box>
   );

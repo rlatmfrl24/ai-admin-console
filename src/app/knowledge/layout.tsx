@@ -51,7 +51,7 @@ export default function KnowledgeLayout({
           px={2}
           py={1}
         >
-          <Breadcrumbs separator="›" aria-label="breadcrumb">
+          <Breadcrumbs separator="/" aria-label="breadcrumb">
             {breadcrumbs.map((breadcrumb, index) => (
               <Box
                 key={index}
