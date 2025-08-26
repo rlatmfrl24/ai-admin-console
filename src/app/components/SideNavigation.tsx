@@ -15,7 +15,7 @@ import AssistantOutlinedIcon from "@mui/icons-material/AssistantOutlined";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { NAV_ITEMS } from "../constants/navigation";
 import { useRouter } from "next/navigation";
-import { indigo } from "@mui/material/colors";
+import { blueGrey, indigo } from "@mui/material/colors";
 
 type MenuItem = NavigationItem;
 
@@ -103,12 +103,13 @@ export default function SideNavigation({
             textColor: "#ffffff",
             paddingLeft: 2,
             fontSize: 16,
+            fontWeight: 600,
             height: 44,
           } as const;
           if (isExpanded) {
             return {
               ...style,
-              containerBg: "#4C4A76",
+              containerBg: indigo[800],
               fontSize: 16,
             } as const;
           }
@@ -119,13 +120,14 @@ export default function SideNavigation({
             containerBg: indigo[900],
             textColor: "#ffffff",
             fontSize: 14,
+            fontWeight: 600,
             paddingLeft: 7,
             height: 36,
           } as const;
           if (hasChildren && isExpanded) {
             return {
               ...style,
-              containerBg: "#4C4A76",
+              containerBg: indigo[800],
               fontSize: 14,
             } as const;
           }
@@ -136,29 +138,28 @@ export default function SideNavigation({
             containerBg: indigo[900],
             textColor: "#ffffff",
             fontSize: 12,
+            fontWeight: 500,
             paddingLeft: 7,
             height: 36,
           } as const;
           if (hasChildren && isExpanded) {
             return {
               ...style,
-              containerBg: "#4C4A76",
+              containerBg: indigo[800],
               fontSize: 12,
             } as const;
           }
           return style;
         }
         return {
-          containerBg: "#ffffff",
-          textColor: indigo[900],
+          containerBg: blueGrey[50],
+          textColor: "rgba(0, 0, 0, 0.87)",
           fontSize: 12,
+          fontWeight: 500,
           paddingLeft: 8,
           height: 32,
         } as const;
       })();
-
-      const fontWeight = depth === 0 ? (isExpanded ? 600 : 400) : 600;
-      const lineHeight = depth === 0 ? "24px" : depth === 1 ? "20px" : "16px";
 
       return (
         <Box key={item.id} sx={{ backgroundColor: stylesByDepth.containerBg }}>
@@ -178,8 +179,7 @@ export default function SideNavigation({
               "& .MuiListItemText-primary": {
                 color: stylesByDepth.textColor,
                 fontSize: stylesByDepth.fontSize,
-                fontWeight,
-                lineHeight,
+                fontWeight: stylesByDepth.fontWeight,
               },
               borderBottom: "1px solid #ADB3B9",
             }}

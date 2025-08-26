@@ -7,7 +7,7 @@ import "./globals.css";
 import AppShell from "./components/AppShell";
 
 const roboto = Roboto({
-  weight: ["300", "400", "500", "700"],
+  weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
   display: "swap",
   variable: "--font-roboto",
