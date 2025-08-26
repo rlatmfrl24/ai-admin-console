@@ -10,9 +10,9 @@ import {
 import AssistantOutlinedIcon from "@mui/icons-material/AssistantOutlined";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { forwardRef, useEffect, useState } from "react";
-import { blueGrey, grey, indigo } from "@mui/material/colors";
 import { NavigationItem } from "../types/navigation";
 import { useRouter } from "next/navigation";
+import { COLORS } from "@/constants/color";
 
 export const MainCard = forwardRef<
   HTMLDivElement,
@@ -95,12 +95,14 @@ export const MainCard = forwardRef<
       const stylesByDepth = (() => {
         if (depth === 0) {
           return {
-            textColor: "white",
+            textColor: isItemExpanded ? "white" : COLORS.indigo[900],
             fontSize: 16,
             fontWeight: 600,
             paddingLeft: "12px",
             height: 44,
-            bgColor: indigo[900],
+            bgColor: isItemExpanded ? COLORS.indigo[900] : COLORS.common.white,
+            borderBottom: "1px solid ",
+            borderColor: COLORS.blueGrey[100],
           } as const;
         }
         if (depth === 1) {
@@ -108,9 +110,11 @@ export const MainCard = forwardRef<
             textColor: "black",
             fontSize: 14,
             paddingLeft: "24px",
-            fontWeight: 500,
+            fontWeight: isItemExpanded ? 500 : 400,
             height: 36,
-            bgColor: grey[200],
+            bgColor: COLORS.grey[200],
+            borderBottom: "1px solid ",
+            borderColor: COLORS.blueGrey[100],
           } as const;
         }
         if (depth === 2) {
@@ -120,7 +124,9 @@ export const MainCard = forwardRef<
             paddingLeft: "32px",
             fontWeight: 400,
             height: 32,
-            bgColor: blueGrey[100],
+            bgColor: COLORS.blueGrey[100],
+            borderBottom: "1px solid ",
+            borderColor: COLORS.blueGrey[50],
           } as const;
         }
       })();
@@ -146,6 +152,8 @@ export const MainCard = forwardRef<
                 fontSize: stylesByDepth?.fontSize,
                 fontWeight: stylesByDepth?.fontWeight,
               },
+              borderBottom: stylesByDepth?.borderBottom,
+              borderColor: stylesByDepth?.borderColor,
             }}
           >
             <ListItemText primary={item.label} />
@@ -191,8 +199,8 @@ export const MainCard = forwardRef<
         onClick={onClick}
       >
         <Box
-          color="#5E5ADB"
-          bgcolor="#EAE9FF"
+          color="primary"
+          bgcolor={COLORS.primary.states.focus}
           width={48}
           height={48}
           borderRadius={99}
@@ -201,7 +209,7 @@ export const MainCard = forwardRef<
           justifyContent="center"
           sx={{ cursor: "pointer" }}
         >
-          <AssistantOutlinedIcon sx={{ fontSize: 36 }} />
+          <AssistantOutlinedIcon sx={{ fontSize: 36, color: "primary.main" }} />
         </Box>
         <Typography
           fontSize={28}
@@ -215,7 +223,7 @@ export const MainCard = forwardRef<
         <Typography
           fontSize={16}
           fontWeight={400}
-          color="#858E96"
+          color={COLORS.common.textDisabled}
           whiteSpace={isExpanded ? "normal" : "nowrap"}
           overflow="hidden"
           sx={{ textOverflow: "ellipsis" }}
