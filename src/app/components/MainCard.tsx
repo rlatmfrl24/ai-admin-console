@@ -177,6 +177,7 @@ export const MainCard = forwardRef<
   return (
     <Box flex={1} minWidth={0} height="fit-content">
       <Card
+        elevation={3}
         sx={{
           p: 3,
           borderRadius: 2,

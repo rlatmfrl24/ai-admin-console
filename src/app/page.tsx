@@ -59,7 +59,7 @@ export default function Main() {
       </Box>
       <Typography
         fontSize={45}
-        fontWeight={600}
+        fontWeight={500}
         lineHeight={"52px"}
         position="absolute"
         top={247}
