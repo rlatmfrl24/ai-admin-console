@@ -1,95 +1,99 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
+import { Box, Typography } from "@mui/material";
+import MainLayer1 from "@/assets/main-layer-1.svg";
+import MainLayer2 from "@/assets/main-layer-2.svg";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { NavigationItem } from "../types/navigation";
+import { MainCard } from "../components/MainCard";
+import { NAV_ITEMS } from "../constants/navigation";
+
+const TARGET_NAV_ID = [
+  "knowledge",
+  "chatbot-settings",
+  "settings",
+  "customer-support",
+];
+
+export default function Main() {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  const navItems = useMemo(() => {
+    return NAV_ITEMS;
+  }, []);
+
+  const handleCardClick = (id: string) => {
+    setExpandedId((prev) => (prev === id ? null : id));
+  };
+
+  useEffect(() => {
+    const handleDocumentClick = (event: MouseEvent) => {
+      if (!expandedId) return;
+      const currentRef = cardRefs.current[expandedId];
+      if (!currentRef) return;
+      const target = event.target as Node;
+      if (!currentRef.contains(target)) {
+        setExpandedId(null);
+      }
+    };
+    document.addEventListener("mousedown", handleDocumentClick);
+    return () => {
+      document.removeEventListener("mousedown", handleDocumentClick);
+    };
+  }, [expandedId]);
+
+  const targetNavItems = navItems
+    ? TARGET_NAV_ID.map((id) => navItems.find((item) => item.id === id))
+        .filter((item): item is NavigationItem => !!item)
+        .sort((a, b) => (a.index ?? 0) - (b.index ?? 0))
+    : [];
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <Box position="relative" height="100%" bgcolor="white">
+      <Box position="absolute" top={0} right={0} zIndex={1}>
+        <MainLayer1 />
+      </Box>
+      <Box position="absolute" top={0} right={493} zIndex={1}>
+        <MainLayer2 />
+      </Box>
+      <Typography
+        fontSize={45}
+        fontWeight={500}
+        lineHeight={"52px"}
+        position="absolute"
+        top={247}
+        left={40}
+      >
+        ALLEGRO NX System Admin
+        <br /> super easy and quick for everyone.
+      </Typography>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+      {targetNavItems?.length > 0 && (
+        <Box
+          zIndex={3}
+          p={5}
+          gap={3}
+          display="flex"
+          alignItems="flex-end"
+          position="absolute"
+          bottom={0}
+          left={0}
+          width="100%"
+        >
+          {targetNavItems.map((child) => (
+            <MainCard
+              key={child.id}
+              isExpanded={expandedId === child.id}
+              onClick={() => handleCardClick(child.id)}
+              data={child}
+              ref={(el) => {
+                cardRefs.current[child.id] = el;
+              }}
             />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          ))}
+        </Box>
+      )}
+    </Box>
   );
 }
