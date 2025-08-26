@@ -1,7 +1,6 @@
 export const COLORS = {
   common: {
     white: "#ffffff",
-    textDisabled: "#00000038",
   },
   primary: {
     main: "#5e5adb",
@@ -49,9 +48,9 @@ export const COLORS = {
     },
   },
   text: {
-    primary: "#000000de",
-    secondary: "#00000099",
-    disabled: "#00000061",
+    primary: "rgb(0, 0, 0, 0.87)",
+    secondary: "rgb(0, 0, 0, 0.6)",
+    disabled: "rgb(0, 0, 0, 0.38)",
     states: {
       hover: "#0000000a",
       selected: "#00000014",

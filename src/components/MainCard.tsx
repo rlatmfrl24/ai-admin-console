@@ -97,7 +97,7 @@ export const MainCard = forwardRef<
           return {
             textColor: isItemExpanded ? "white" : COLORS.indigo[900],
             fontSize: 16,
-            fontWeight: 600,
+            fontWeight: 700,
             paddingLeft: "12px",
             height: 44,
             bgColor: isItemExpanded ? COLORS.indigo[900] : COLORS.common.white,
@@ -188,7 +188,7 @@ export const MainCard = forwardRef<
         elevation={3}
         sx={{
           p: 3,
-          borderRadius: 2,
+          borderRadius: 4,
           height: "100%",
           overflow: "hidden",
           display: "flex",
@@ -201,8 +201,8 @@ export const MainCard = forwardRef<
         <Box
           color="primary"
           bgcolor={COLORS.primary.states.focus}
-          width={48}
-          height={48}
+          width={56}
+          height={56}
           borderRadius={99}
           display="flex"
           alignItems="center"
@@ -213,7 +213,7 @@ export const MainCard = forwardRef<
         </Box>
         <Typography
           fontSize={28}
-          fontWeight={600}
+          fontWeight={700}
           mt={2}
           mb={1}
           sx={{ cursor: "pointer" }}
@@ -223,7 +223,7 @@ export const MainCard = forwardRef<
         <Typography
           fontSize={16}
           fontWeight={400}
-          color={COLORS.common.textDisabled}
+          color={COLORS.text.disabled}
           whiteSpace={isExpanded ? "normal" : "nowrap"}
           overflow="hidden"
           sx={{ textOverflow: "ellipsis" }}

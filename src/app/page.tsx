@@ -50,7 +50,13 @@ export default function Main() {
     : [];
 
   return (
-    <Box position="relative" height="100%" bgcolor="white">
+    <Box
+      position="relative"
+      height="100%"
+      sx={{
+        background: "linear-gradient(180deg, #FFF 0%, #F7F6FF 100%)",
+      }}
+    >
       <Box position="absolute" top={0} right={0} zIndex={1}>
         <MainLayer1 />
       </Box>
