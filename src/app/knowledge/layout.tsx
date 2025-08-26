@@ -60,8 +60,16 @@ export default function KnowledgeLayout({
                 p={0.5}
                 gap={0.5}
               >
-                <Typography>{breadcrumb.label}</Typography>
-                {index < breadcrumbs.length - 1 && <ArrowDropDown />}
+                <Typography lineHeight={1} fontSize={12} color="text.primary">
+                  {breadcrumb.label}
+                </Typography>
+                {index < breadcrumbs.length - 1 && (
+                  <ArrowDropDown
+                    sx={{
+                      fontSize: 16,
+                    }}
+                  />
+                )}
               </Box>
             ))}
           </Breadcrumbs>
