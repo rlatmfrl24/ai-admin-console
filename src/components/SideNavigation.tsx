@@ -15,7 +15,7 @@ import AssistantOutlinedIcon from "@mui/icons-material/AssistantOutlined";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { NAV_ITEMS } from "../constants/navigation";
 import { useRouter } from "next/navigation";
-import { blueGrey, indigo } from "@mui/material/colors";
+import { COLORS } from "@/constants/color";
 
 type MenuItem = NavigationItem;
 
@@ -99,65 +99,79 @@ export default function SideNavigation({
       const stylesByDepth = (() => {
         if (depth === 0) {
           const style = {
-            containerBg: indigo[900],
+            containerBg: COLORS.indigo[900],
             textColor: "#ffffff",
             paddingLeft: 2,
             fontSize: 16,
             fontWeight: 600,
             height: 44,
+            borderBottom: "1px solid ",
+            borderColor: COLORS.blueGrey[700],
           } as const;
           if (isExpanded) {
             return {
               ...style,
-              containerBg: indigo[800],
+              containerBg: COLORS.indigo[800],
               fontSize: 16,
+              borderBottom: "1px solid ",
+              borderColor: COLORS.indigo[900],
             } as const;
           }
           return style;
         }
         if (depth === 1) {
           const style = {
-            containerBg: indigo[900],
+            containerBg: COLORS.indigo[900],
             textColor: "#ffffff",
             fontSize: 14,
             fontWeight: 600,
             paddingLeft: 7,
             height: 36,
+            borderBottom: "1px solid ",
+            borderColor: COLORS.blueGrey[700],
           } as const;
           if (hasChildren && isExpanded) {
             return {
               ...style,
-              containerBg: indigo[800],
+              containerBg: COLORS.indigo[800],
               fontSize: 14,
+              borderBottom: "1px solid ",
+              borderColor: COLORS.indigo[900],
             } as const;
           }
           return style;
         }
         if (depth === 2) {
           const style = {
-            containerBg: indigo[900],
+            containerBg: COLORS.indigo[900],
             textColor: "#ffffff",
             fontSize: 12,
             fontWeight: 500,
             paddingLeft: 7,
             height: 36,
+            borderBottom: "1px solid ",
+            borderColor: COLORS.blueGrey[700],
           } as const;
           if (hasChildren && isExpanded) {
             return {
               ...style,
-              containerBg: indigo[800],
+              containerBg: COLORS.indigo[800],
               fontSize: 12,
+              borderBottom: "1px solid ",
+              borderColor: COLORS.indigo[900],
             } as const;
           }
           return style;
         }
         return {
-          containerBg: blueGrey[50],
+          containerBg: COLORS.blueGrey[50],
           textColor: "rgba(0, 0, 0, 0.87)",
           fontSize: 12,
           fontWeight: 500,
           paddingLeft: 8,
           height: 32,
+          borderBottom: "1px solid ",
+          borderColor: COLORS.blueGrey[50],
         } as const;
       })();
 
@@ -181,7 +195,8 @@ export default function SideNavigation({
                 fontSize: stylesByDepth.fontSize,
                 fontWeight: stylesByDepth.fontWeight,
               },
-              borderBottom: "1px solid #ADB3B9",
+              borderBottom: stylesByDepth.borderBottom,
+              borderColor: stylesByDepth.borderColor,
             }}
           >
             {depth === 0 && (
@@ -217,9 +232,9 @@ export default function SideNavigation({
 
   return (
     <Drawer open={open} onClose={() => onOpenChange(false)}>
-      <Box minWidth={368} bgcolor={indigo[900]} height={"100%"}>
+      <Box minWidth={368} bgcolor={COLORS.indigo[900]} height={"100%"}>
         <Box
-          bgcolor={indigo[900]}
+          bgcolor={COLORS.indigo[900]}
           height={54}
           px={1.5}
           display="flex"

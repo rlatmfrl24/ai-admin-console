@@ -15,14 +15,14 @@ import FlowIcon from "@/assets/icon-flow.svg";
 import NotificationIcon from "@/assets/icon-notification.svg";
 import UserIcon from "@/assets/icon-user-profile.svg";
 import BusinessIcon from "@/assets/icon-business.svg";
-import { indigo } from "@mui/material/colors";
+import { COLORS } from "@/constants/color";
 
 type MainAppBarProps = {
   onMenuClick?: () => void;
 };
 
 export const MainAppBar = ({ onMenuClick }: MainAppBarProps) => (
-  <AppBar sx={{ backgroundColor: indigo[900] }} position="static">
+  <AppBar sx={{ backgroundColor: COLORS.indigo[900] }} position="static">
     <Box
       display="flex"
       alignItems="center"
@@ -37,11 +37,11 @@ export const MainAppBar = ({ onMenuClick }: MainAppBarProps) => (
       <Box flexGrow={1}>
         <InputBase
           startAdornment={
-            <Search sx={{ fontSize: 16, m: 1, color: indigo[200] }} />
+            <Search sx={{ fontSize: 16, m: 1, color: COLORS.indigo[200] }} />
           }
           placeholder="Search"
           sx={{
-            backgroundColor: indigo[800],
+            backgroundColor: COLORS.indigo[800],
             borderRadius: "28px",
             mx: 1.5,
             px: 0.5,
@@ -72,7 +72,7 @@ const ButtonSet = () => (
       sx={{
         mx: 1.5,
         height: 28,
-        backgroundColor: indigo[800],
+        backgroundColor: COLORS.indigo[800],
       }}
     />
     <Box width={16} height={16} display="flex" alignItems="center">
@@ -83,7 +83,7 @@ const ButtonSet = () => (
     </Typography>
     <Divider
       orientation="vertical"
-      sx={{ mx: 1, height: 12, backgroundColor: indigo[200] }}
+      sx={{ mx: 1, height: 12, backgroundColor: COLORS.indigo[200] }}
     />
     <Typography fontSize={12} fontWeight={500}>
       SELHO
