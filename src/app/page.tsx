@@ -1,12 +1,12 @@
 "use client";
 
 import { Box, Typography } from "@mui/material";
-import MainLayer1 from "@/app/assets/main-layer-1.svg";
-import MainLayer2 from "@/app/assets/main-layer-2.svg";
+import MainLayer1 from "@/assets/main-layer-1.svg";
+import MainLayer2 from "@/assets/main-layer-2.svg";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { NavigationItem } from "./types/navigation";
-import { MainCard } from "./components/MainCard";
-import { NAV_ITEMS } from "./constants/navigation";
+import { NavigationItem } from "../types/navigation";
+import { MainCard } from "../components/MainCard";
+import { NAV_ITEMS } from "../constants/navigation";
 
 const TARGET_NAV_ID = [
   "knowledge",

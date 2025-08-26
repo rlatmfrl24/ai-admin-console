@@ -9,12 +9,12 @@ import {
   Typography,
 } from "@mui/material";
 import { Menu, Search } from "@mui/icons-material";
-import NXLogo from "@/app/assets/logo-nx.svg";
-import SolutionIcon from "@/app/assets/icon-solution.svg";
-import FlowIcon from "@/app/assets/icon-flow.svg";
-import NotificationIcon from "@/app/assets/icon-notification.svg";
-import UserIcon from "@/app/assets/icon-user-profile.svg";
-import BusinessIcon from "@/app/assets/icon-business.svg";
+import NXLogo from "@/assets/logo-nx.svg";
+import SolutionIcon from "@/assets/icon-solution.svg";
+import FlowIcon from "@/assets/icon-flow.svg";
+import NotificationIcon from "@/assets/icon-notification.svg";
+import UserIcon from "@/assets/icon-user-profile.svg";
+import BusinessIcon from "@/assets/icon-business.svg";
 import { indigo } from "@mui/material/colors";
 
 type MainAppBarProps = {

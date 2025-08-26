@@ -4,7 +4,7 @@ import { Roboto } from "next/font/google";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "@/theme";
 import "./globals.css";
-import AppShell from "./components/AppShell";
+import AppShell from "../components/AppShell";
 
 const roboto = Roboto({
   weight: ["300", "400", "500", "600", "700"],
