@@ -103,7 +103,7 @@ export default function SideNavigation({
             textColor: "#ffffff",
             paddingLeft: 2,
             fontSize: 16,
-            fontWeight: 600,
+            fontWeight: 700,
             height: 44,
             borderBottom: "1px solid ",
             borderColor: COLORS.blueGrey[700],
@@ -164,7 +164,7 @@ export default function SideNavigation({
           return style;
         }
         return {
-          containerBg: COLORS.blueGrey[50],
+          containerBg: COLORS.common.white,
           textColor: "rgba(0, 0, 0, 0.87)",
           fontSize: 12,
           fontWeight: 500,
