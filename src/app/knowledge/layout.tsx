@@ -43,6 +43,8 @@ export default function KnowledgeLayout({
         borderColor={COLORS.blueGrey[100]}
         height={"100%"}
         borderRadius={2}
+        display={"flex"}
+        flexDirection={"column"}
       >
         <Box
           aria-label="BreadCrumbs"
@@ -74,7 +76,9 @@ export default function KnowledgeLayout({
             ))}
           </Breadcrumbs>
         </Box>
-        <Box p={1.5}>{children}</Box>
+        <Box p={1.5} flex={1} minHeight={0}>
+          {children}
+        </Box>
       </Box>
     </Box>
   );
