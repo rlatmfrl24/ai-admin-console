@@ -8,6 +8,9 @@ import { useForm } from "react-hook-form";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import { BSAFilter, BSATableProps } from "@/types/bsa";
+import { faker } from "@faker-js/faker";
+import { useRouter } from "next/navigation";
+import { dataGridTheme } from "@/theme";
 
 const STREAM_OPTIONS = [
   { label: "All", value: "all" },
@@ -30,7 +33,7 @@ const STATUS_OPTIONS = [
 
 export default function BSA() {
   const { register, handleSubmit } = useForm<BSAFilter>();
-
+  const router = useRouter();
   const onSubmit = (data: BSAFilter) => {
     console.log(data);
   };
@@ -41,7 +44,7 @@ export default function BSA() {
       id: index + 1,
       stream: "Commercial",
       module: "Basic Slot Allocation",
-      fileName: "bsa.pdf",
+      fileName: faker.helpers.arrayElement(["UI.png", "Manual.pdf"]),
       pageName: "BSA",
       category: "BSA",
       chunk: "BSA",
@@ -60,14 +63,14 @@ export default function BSA() {
     { field: "module", headerName: "Module", width: 150 },
     { field: "fileName", headerName: "File Name", width: 150 },
     { field: "pageName", headerName: "Page Name", width: 150 },
-    { field: "category", headerName: "Category", width: 150 },
-    { field: "chunk", headerName: "Chunk", width: 150 },
+    { field: "category", headerName: "Category", width: 120 },
+    { field: "chunk", headerName: "Chunk", width: 120 },
     { field: "semanticTitle", headerName: "Semantic Title", width: 150 },
     { field: "semanticSummary", headerName: "Semantic Summary", width: 150 },
     { field: "semanticChunk", headerName: "Semantic Chunk", width: 150 },
-    { field: "language", headerName: "Language", width: 150 },
+    { field: "language", headerName: "Language", width: 100 },
     { field: "date", headerName: "Date", width: 150 },
-    { field: "version", headerName: "Version", width: 150 },
+    { field: "version", headerName: "Version", width: 100 },
     { field: "filePath", headerName: "File Path", width: 150 },
   ];
 
@@ -144,23 +147,17 @@ export default function BSA() {
         rows={rows}
         columns={columns}
         hideFooter
-        rowHeight={30}
-        columnHeaderHeight={32}
-        sx={{
-          flexGrow: 1,
-          height: 0,
-          mt: 1.5,
-          border: 1,
-          px: 1,
-          py: 0.5,
-          borderColor: COLORS.blueGrey[100],
-          "& .MuiDataGrid-columnHeader": {
-            fontSize: 13,
-            fontWeight: 600,
-          },
-          "& .MuiDataGrid-cell": {
-            fontSize: 13,
-          },
+        sx={{ ...dataGridTheme.sx, flexGrow: 1, mt: 1.5, height: 0 }}
+        rowHeight={dataGridTheme.rowHeight}
+        columnHeaderHeight={dataGridTheme.columnHeaderHeight}
+        onRowClick={(params) => {
+          if (params.row.fileName.includes(".png")) {
+            router.push(`/knowledge/chunks/commercial/bsa/ui`);
+          } else if (params.row.fileName.includes(".pdf")) {
+            router.push(`/knowledge/chunks/commercial/bsa/manual`);
+          } else {
+            //do nothing
+          }
         }}
       />
     </Box>

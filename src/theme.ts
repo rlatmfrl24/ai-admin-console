@@ -52,6 +52,32 @@ const theme = createTheme({
   typography: {
     fontFamily: "var(--font-roboto)",
   },
+  components: {},
 });
+
+export const dataGridTheme = {
+  rowHeight: 30,
+  columnHeaderHeight: 32,
+  sx: {
+    border: 1,
+    px: 1,
+    py: 0.5,
+    borderRadius: 2,
+    borderColor: COLORS.blueGrey[100],
+    "& .MuiDataGrid-columnHeader": {
+      fontSize: 13,
+      fontWeight: 600,
+    },
+    "& .MuiDataGrid-cell": {
+      fontSize: 13,
+    },
+    "& .MuiDataGrid-row.Mui-hover": {
+      backgroundColor: COLORS.text.states.hover,
+    },
+    "& .MuiDataGrid-row.Mui-selected": {
+      backgroundColor: COLORS.blueGrey[100],
+    },
+  },
+};
 
 export default theme;

@@ -5,7 +5,7 @@ type BSAFilter = {
   search?: string;
 };
 
-type BSATableProps = {
+interface BSATableProps {
   id: number;
   stream: string;
   module: string;
@@ -20,6 +20,6 @@ type BSATableProps = {
   date: Date;
   version: string;
   filePath: string;
-};
+}
 
 export type { BSAFilter, BSATableProps };
