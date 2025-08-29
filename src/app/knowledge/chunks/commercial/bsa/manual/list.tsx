@@ -27,10 +27,27 @@ function findIndexPath(
   return null;
 }
 
+function getInitialSelection(items: BSAMenuTreeItemProps[]): {
+  selected: BSAMenuTreeItemProps | null;
+  expandedIds: string[];
+} {
+  if (!items || items.length === 0) {
+    return { selected: null, expandedIds: [] };
+  }
+  const first = [...items].sort((a, b) => a.index - b.index)[0];
+  if (first.children && first.children.length > 0) {
+    const firstChild = [...first.children].sort((a, b) => a.index - b.index)[0];
+    return { selected: firstChild, expandedIds: [first.id] };
+  }
+  return { selected: first, expandedIds: [] };
+}
+
 export default function BSAManualList() {
   const apiRef = useGridApiRef();
   const setHeaderNode = useHeaderStore((s) => s.setHeaderNode);
   const [chunks, setChunks] = useState<ChunkProps[]>([]);
+  const { selected: initialSelectedItem, expandedIds: initialExpandedIds } =
+    useMemo(() => getInitialSelection(BSA_MENU_TREE), []);
   const columns: GridColDef<BSATableProps>[] = [
     { field: "stream", headerName: "Stream", width: 150 },
     { field: "module", headerName: "Module", width: 150 },
@@ -48,7 +65,7 @@ export default function BSAManualList() {
   ];
 
   const [selectedTreeItem, setSelectedTreeItem] =
-    useState<BSAMenuTreeItemProps | null>(null);
+    useState<BSAMenuTreeItemProps | null>(initialSelectedItem);
 
   const selectedData = useMemo(
     () => ({
@@ -143,7 +160,7 @@ export default function BSAManualList() {
           <MenuTree
             items={BSA_MENU_TREE}
             ariaLabel="BSA Menu Tree"
-            defaultExpandedIds={[]}
+            defaultExpandedIds={initialExpandedIds}
             selectedId={selectedTreeItem?.id}
             onSelect={(_, item) => setSelectedTreeItem(item)}
           />
