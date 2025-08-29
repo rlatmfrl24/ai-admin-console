@@ -16,7 +16,7 @@ export default function AppShell({ children }: AppShellProps) {
     <Box display="flex" flexDirection="column" height="100vh">
       <MainAppBar onMenuClick={() => setIsDrawerOpen(true)} />
       <SideNavigation open={isDrawerOpen} onOpenChange={setIsDrawerOpen} />
-      <Box flexGrow={1} overflow="auto">
+      <Box flexGrow={1} overflow="hidden">
         {children}
       </Box>
     </Box>
