@@ -22,4 +22,11 @@ interface BSATableProps {
   filePath: string;
 }
 
-export type { BSAFilter, BSATableProps };
+type BSAMenuTreeItemProps = {
+  id: string;
+  index: number;
+  label: string;
+  children: BSAMenuTreeItemProps[];
+};
+
+export type { BSAFilter, BSATableProps, BSAMenuTreeItemProps };
