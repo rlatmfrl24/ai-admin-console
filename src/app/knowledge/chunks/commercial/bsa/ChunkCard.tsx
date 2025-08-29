@@ -48,7 +48,12 @@ export default function ChunkCard({
           <Typography fontSize={12} fontWeight={500} color="text.primary">
             {getStatusChip(chunk.status)}
           </Typography>
-          <IconButton sx={{ p: 0.5 }}>
+          <IconButton
+            sx={{ p: 0.5 }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
             {checkable ? (
               <CheckCircle sx={{ fontSize: "16px" }} />
             ) : (
