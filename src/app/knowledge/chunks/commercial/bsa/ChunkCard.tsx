@@ -9,11 +9,13 @@ export default function ChunkCard({
   selected = false,
   checkable = false,
   onSelect,
+  onMore,
 }: {
   chunk: ChunkProps;
   selected?: boolean;
   checkable?: boolean;
   onSelect?: (chunk: ChunkProps) => void;
+  onMore?: (chunk: ChunkProps) => void;
 }) {
   const getStatusChip = (status: string) => {
     switch (status) {
@@ -52,6 +54,11 @@ export default function ChunkCard({
             sx={{ p: 0.5 }}
             onClick={(e) => {
               e.stopPropagation();
+              if (checkable) {
+                onSelect?.(chunk);
+              } else {
+                onMore?.(chunk);
+              }
             }}
           >
             {checkable ? (
