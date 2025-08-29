@@ -6,6 +6,50 @@ import { ArrowDropDown } from "@mui/icons-material";
 import { Box, Breadcrumbs, Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
+import { useHeaderStore } from "@/app/knowledge/store/headerStore";
+
+const KnowledgeBreadcrumbs = ({
+  breadcrumbs,
+  headerNode,
+}: {
+  breadcrumbs: { label: string; href: string }[];
+  headerNode?: React.ReactNode;
+}) => {
+  return (
+    <Box
+      aria-label="BreadCrumbs"
+      borderBottom={1}
+      borderColor={COLORS.blueGrey[100]}
+      px={2}
+      py={1}
+      display={"flex"}
+      alignItems={"center"}
+      justifyContent={"space-between"}
+    >
+      <Breadcrumbs separator="/" aria-label="breadcrumb">
+        {breadcrumbs.map((breadcrumb, index) => (
+          <Box
+            key={index}
+            display={"flex"}
+            alignItems={"center"}
+            p={0.5}
+            gap={0.5}
+          >
+            <Typography lineHeight={1} fontSize={12} color="text.primary">
+              {breadcrumb.label}
+            </Typography>
+            <ArrowDropDown
+              sx={{
+                fontSize: 16,
+              }}
+            />
+          </Box>
+        ))}
+      </Breadcrumbs>
+      {headerNode}
+    </Box>
+  );
+};
 
 export default function KnowledgeLayout({
   children,
@@ -13,26 +57,31 @@ export default function KnowledgeLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const segments = pathname.split("/").filter(Boolean);
-  const breadcrumbs = useMemo(() => {
+  const segments = useMemo(
+    () => pathname.split("/").filter(Boolean),
+    [pathname]
+  );
+  const headerNode = useHeaderStore((s) => s.headerNode);
+  const initialBreadcrumbs = useMemo(() => {
     let currentItems = NAV_ITEMS;
     const accumulated: string[] = [];
-    return segments.map((segment) => {
-      accumulated.push(segment);
-      const matched = currentItems.find((item) => item.id === segment);
-      if (matched) {
+    return segments.reduce<{ label: string; href: string }[]>(
+      (acc, segment) => {
+        const matched = currentItems.find((item) => item.id === segment);
+        if (!matched) {
+          currentItems = [];
+          return acc;
+        }
+        accumulated.push(segment);
         currentItems = matched.children ?? [];
-        return {
+        acc.push({
           label: matched.label,
           href: `/${accumulated.join("/")}`,
-        };
-      }
-      currentItems = [];
-      return {
-        label: segment,
-        href: `/${accumulated.join("/")}`,
-      };
-    });
+        });
+        return acc;
+      },
+      []
+    );
   }, [segments]);
 
   return (
@@ -43,30 +92,16 @@ export default function KnowledgeLayout({
         borderColor={COLORS.blueGrey[100]}
         height={"100%"}
         borderRadius={2}
+        display={"flex"}
+        flexDirection={"column"}
       >
-        <Box
-          aria-label="BreadCrumbs"
-          borderBottom={1}
-          borderColor={COLORS.blueGrey[100]}
-          px={2}
-          py={1}
-        >
-          <Breadcrumbs separator="›" aria-label="breadcrumb">
-            {breadcrumbs.map((breadcrumb, index) => (
-              <Box
-                key={index}
-                display={"flex"}
-                alignItems={"center"}
-                p={0.5}
-                gap={0.5}
-              >
-                <Typography>{breadcrumb.label}</Typography>
-                {index < breadcrumbs.length - 1 && <ArrowDropDown />}
-              </Box>
-            ))}
-          </Breadcrumbs>
+        <KnowledgeBreadcrumbs
+          breadcrumbs={initialBreadcrumbs}
+          headerNode={headerNode}
+        />
+        <Box p={1.5} flex={1} minHeight={0}>
+          {children}
         </Box>
-        <Box p={1.5}>{children}</Box>
       </Box>
     </Box>
   );
