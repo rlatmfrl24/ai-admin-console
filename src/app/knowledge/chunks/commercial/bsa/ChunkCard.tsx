@@ -1,6 +1,6 @@
 import { COLORS } from "@/constants/color";
 import { ChunkProps } from "@/types/bsa";
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, Card, CardContent, IconButton, Typography } from "@mui/material";
 import Chip from "@/components/common/Chip";
 import { CheckCircle, MoreVert } from "@mui/icons-material";
 
@@ -31,37 +31,36 @@ export default function ChunkCard({
   };
 
   return (
-    <Box
-      border={1}
-      borderColor={selected ? COLORS.blueGrey[300] : COLORS.blueGrey[100]}
-      borderRadius={2}
-      p={1.5}
-      minWidth={252}
-      width={"100%"}
+    <Card
       sx={{
+        border: 1,
+        borderColor: selected ? COLORS.primary.main : COLORS.blueGrey[100],
+        borderRadius: 2,
+        minWidth: 252,
+        width: "100%",
         cursor: "pointer",
       }}
+      elevation={selected ? 2 : 0}
       onClick={() => onSelect?.(chunk)}
-      position={"relative"}
-      display={"flex"}
-      flexDirection={"column"}
     >
-      <Box display={"flex"} justifyContent={"space-between"}>
-        <Typography fontSize={12} fontWeight={500} color="text.primary">
-          {getStatusChip(chunk.status)}
+      <CardContent sx={{ "&.MuiCardContent-root": { p: 1.5 } }}>
+        <Box display={"flex"} justifyContent={"space-between"}>
+          <Typography fontSize={12} fontWeight={500} color="text.primary">
+            {getStatusChip(chunk.status)}
+          </Typography>
+          <IconButton sx={{ p: 0.5 }}>
+            {checkable ? (
+              <CheckCircle sx={{ fontSize: "16px" }} />
+            ) : (
+              <MoreVert sx={{ fontSize: "16px" }} />
+            )}
+          </IconButton>
+        </Box>
+        <Typography mt="10px">{chunk.title}</Typography>
+        <Typography color={COLORS.blueGrey[300]} fontSize={12} fontWeight={500}>
+          {chunk.progressId}
         </Typography>
-        <IconButton sx={{ p: 0.5 }}>
-          {checkable ? (
-            <CheckCircle sx={{ fontSize: "16px" }} />
-          ) : (
-            <MoreVert sx={{ fontSize: "16px" }} />
-          )}
-        </IconButton>
-      </Box>
-      <Typography mt="10px">{chunk.title}</Typography>
-      <Typography color={COLORS.blueGrey[300]} fontSize={12} fontWeight={500}>
-        {chunk.progressId}
-      </Typography>
-    </Box>
+      </CardContent>
+    </Card>
   );
 }

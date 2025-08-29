@@ -46,6 +46,7 @@ export default function BSAManualList() {
   const apiRef = useGridApiRef();
   const setHeaderNode = useHeaderStore((s) => s.setHeaderNode);
   const [chunks, setChunks] = useState<ChunkProps[]>([]);
+  const [selectedChunk, setSelectedChunk] = useState<ChunkProps | null>(null);
   const { selected: initialSelectedItem, expandedIds: initialExpandedIds } =
     useMemo(() => getInitialSelection(BSA_MENU_TREE), []);
   const columns: GridColDef<BSATableProps>[] = [
@@ -180,7 +181,12 @@ export default function BSAManualList() {
             gap={1.5}
           >
             {chunks.map((chunk) => (
-              <ChunkCard key={chunk.title} chunk={chunk} />
+              <ChunkCard
+                key={chunk.title}
+                chunk={chunk}
+                selected={selectedChunk?.title === chunk.title}
+                onSelect={setSelectedChunk}
+              />
             ))}
           </Box>
         </Box>
