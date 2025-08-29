@@ -29,4 +29,16 @@ type BSAMenuTreeItemProps = {
   children: BSAMenuTreeItemProps[];
 };
 
-export type { BSAFilter, BSATableProps, BSAMenuTreeItemProps };
+interface ChunkProps {
+  title: string;
+  status: "done" | "in-progress" | "completed" | "draft";
+  progressId: string;
+  attachedFile: {
+    file: File;
+    description: string;
+  };
+  updatedAt: Date;
+  createdAt: Date;
+}
+
+export type { BSAFilter, BSATableProps, BSAMenuTreeItemProps, ChunkProps };

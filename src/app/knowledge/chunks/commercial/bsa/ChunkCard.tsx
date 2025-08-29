@@ -1,0 +1,67 @@
+import { COLORS } from "@/constants/color";
+import { ChunkProps } from "@/types/bsa";
+import { Box, IconButton, Typography } from "@mui/material";
+import Chip from "@/components/common/Chip";
+import { CheckCircle, MoreVert } from "@mui/icons-material";
+
+export default function ChunkCard({
+  chunk,
+  selected = false,
+  checkable = false,
+  onSelect,
+}: {
+  chunk: ChunkProps;
+  selected?: boolean;
+  checkable?: boolean;
+  onSelect?: (chunk: ChunkProps) => void;
+}) {
+  const getStatusChip = (status: string) => {
+    switch (status) {
+      case "done":
+        return <Chip label="Done" backgroundColor={COLORS.grey[200]} />;
+      case "in-progress":
+        return <Chip label="In-Progress" backgroundColor={COLORS.cyan[100]} />;
+      case "completed":
+        return <Chip label="Completed" backgroundColor={COLORS.green.A100} />;
+      case "draft":
+        return <Chip label="Draft" backgroundColor={COLORS.grey[300]} />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <Box
+      border={1}
+      borderColor={selected ? COLORS.blueGrey[300] : COLORS.blueGrey[100]}
+      borderRadius={2}
+      p={1.5}
+      minWidth={252}
+      width={"100%"}
+      sx={{
+        cursor: "pointer",
+      }}
+      onClick={() => onSelect?.(chunk)}
+      position={"relative"}
+      display={"flex"}
+      flexDirection={"column"}
+    >
+      <Box display={"flex"} justifyContent={"space-between"}>
+        <Typography fontSize={12} fontWeight={500} color="text.primary">
+          {getStatusChip(chunk.status)}
+        </Typography>
+        <IconButton sx={{ p: 0.5 }}>
+          {checkable ? (
+            <CheckCircle sx={{ fontSize: "16px" }} />
+          ) : (
+            <MoreVert sx={{ fontSize: "16px" }} />
+          )}
+        </IconButton>
+      </Box>
+      <Typography mt="10px">{chunk.title}</Typography>
+      <Typography color={COLORS.blueGrey[300]} fontSize={12} fontWeight={500}>
+        {chunk.progressId}
+      </Typography>
+    </Box>
+  );
+}

@@ -150,6 +150,8 @@ function MenuTree({
               gap: 0.5,
               minHeight: 32,
               alignItems: "center",
+              borderBottom: 1,
+              borderColor: COLORS.blueGrey[100],
               ...getDepthStyles(level, isExpanded, isSelected),
             }}
           >

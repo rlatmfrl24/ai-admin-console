@@ -1,4 +1,5 @@
-import { BSAMenuTreeItemProps } from "@/types/bsa";
+import { BSAMenuTreeItemProps, ChunkProps } from "@/types/bsa";
+import { faker } from "@faker-js/faker";
 
 export const BSA_MENU_TREE: BSAMenuTreeItemProps[] = [
   {
@@ -14,6 +15,7 @@ export const BSA_MENU_TREE: BSAMenuTreeItemProps[] = [
     children: [
       {
         id: "agreement",
+
         index: 1,
         label: "Basic Slot Allocation Agreement",
         children: [],
@@ -101,3 +103,26 @@ export const BSA_MENU_TREE: BSAMenuTreeItemProps[] = [
     ],
   },
 ];
+
+export function makeRandomChunk(): ChunkProps {
+  return {
+    title: faker.lorem
+      .words(3)
+      .split(" ")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" "),
+    status: faker.helpers.arrayElement([
+      "done",
+      "in-progress",
+      "completed",
+      "draft",
+    ]),
+    progressId: faker.string.numeric(4),
+    attachedFile: {
+      file: new File([], "test.pdf"),
+      description: faker.lorem.sentence(),
+    },
+    updatedAt: faker.date.recent(),
+    createdAt: faker.date.past(),
+  };
+}
