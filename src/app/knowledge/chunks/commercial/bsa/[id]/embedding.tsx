@@ -2,13 +2,11 @@ import { Box, Button, Portal, Typography } from "@mui/material";
 import { COLORS } from "@/constants/color";
 import { useMemo, useState } from "react";
 import { ChunkProps } from "@/types/bsa";
-import ChunkCard from "../ChunkCard";
+import { CheckableChunkCard } from "../ChunkCard";
+import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
 
-type BSAEmbeddingProps = {
-  chunks: ChunkProps[];
-};
-
-export default function BSAChunkEmbedding({ chunks }: BSAEmbeddingProps) {
+export default function BSAChunkEmbedding() {
+  const chunks = useBSAChunksStore((s) => s.chunks);
   const embeddingRequiredChunks = useMemo<ChunkProps[]>(
     () =>
       chunks.filter((chunk: ChunkProps) => {
@@ -31,13 +29,20 @@ export default function BSAChunkEmbedding({ chunks }: BSAEmbeddingProps) {
           gap={1.5}
         >
           {embeddingRequiredChunks.map((chunk: ChunkProps) => (
-            <ChunkCard
+            <CheckableChunkCard
               key={chunk.progressId}
               chunk={chunk}
-              checkable
               selected={selectedChunks.includes(chunk)}
               onSelect={(chunk: ChunkProps) => {
-                setSelectedChunks([...selectedChunks, chunk]);
+                if (selectedChunks.includes(chunk)) {
+                  setSelectedChunks(
+                    selectedChunks.filter(
+                      (c) => c.progressId !== chunk.progressId
+                    )
+                  );
+                } else {
+                  setSelectedChunks([...selectedChunks, chunk]);
+                }
               }}
             />
           ))}
@@ -54,7 +59,14 @@ export default function BSAChunkEmbedding({ chunks }: BSAEmbeddingProps) {
           borderTop={1}
           borderColor={COLORS.blueGrey[100]}
         >
-          <Button size="small" variant="contained">
+          <Button
+            size="small"
+            variant="contained"
+            disabled={selectedChunks.length === 0}
+            onClick={() => {
+              setSelectedChunks([]);
+            }}
+          >
             Embedding
           </Button>
         </Box>

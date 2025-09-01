@@ -4,7 +4,7 @@ import { Box, Button, TextField, Typography, Portal } from "@mui/material";
 import { Cached, FileUploadOutlined } from "@mui/icons-material";
 import MenuTree from "@/app/knowledge/chunks/commercial/bsa/MenuTree";
 import { BSA_MENU_TREE } from "@/constants/bsa";
-import ChunkCard from "../ChunkCard";
+import { ChunkCard } from "../ChunkCard";
 import InputWithLabel from "@/components/common/Input";
 import { COLORS } from "@/constants/color";
 import { format } from "date-fns";
@@ -14,6 +14,7 @@ import type {
   BSATableProps,
   ChunkProps,
 } from "@/types/bsa";
+import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
 
 function findIndexPath(
   nodes: BSAMenuTreeItemProps[],
@@ -43,10 +44,6 @@ function isChunkChanged(chunk: ChunkProps, chunks: ChunkProps[]): boolean {
 }
 
 type BSAEditProps = {
-  chunks: ChunkProps[];
-  setChunks: Dispatch<SetStateAction<ChunkProps[]>>;
-  selectedChunk: ChunkProps | null;
-  setSelectedChunk: Dispatch<SetStateAction<ChunkProps | null>>;
   selectedData: BSATableProps | null;
   selectedTreeItem: BSAMenuTreeItemProps | null;
   setSelectedTreeItem: Dispatch<SetStateAction<BSAMenuTreeItemProps | null>>;
@@ -55,16 +52,16 @@ type BSAEditProps = {
 };
 
 export default function BSAChunkEdit({
-  chunks,
-  setChunks,
-  selectedChunk,
-  setSelectedChunk,
   selectedData,
   selectedTreeItem,
   setSelectedTreeItem,
   initialExpandedIds,
   onNext,
 }: BSAEditProps) {
+  const chunks = useBSAChunksStore((s) => s.chunks);
+  const setSelectedChunk = useBSAChunksStore((s) => s.setSelectedChunk);
+  const selectedChunk = useBSAChunksStore((s) => s.selectedChunk);
+  const updateChunk = useBSAChunksStore((s) => s.updateChunk);
   return (
     <>
       <Box
@@ -224,20 +221,12 @@ export default function BSAChunkEdit({
                   variant="contained"
                   disabled={!isChunkChanged(selectedChunk, chunks)}
                   onClick={() => {
-                    setChunks(
-                      chunks.map((c) =>
-                        c.progressId === selectedChunk.progressId
-                          ? {
-                              ...selectedChunk,
-                              updatedAt: new Date(),
-                            }
-                          : c
-                      )
-                    );
-                    setSelectedChunk({
+                    const updated = {
                       ...selectedChunk,
                       updatedAt: new Date(),
-                    });
+                    } as ChunkProps;
+                    updateChunk(updated);
+                    setSelectedChunk(updated);
                   }}
                 >
                   Save

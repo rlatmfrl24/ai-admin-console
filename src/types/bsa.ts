@@ -43,4 +43,19 @@ interface ChunkProps {
   createdAt: Date;
 }
 
-export type { BSAFilter, BSATableProps, BSAMenuTreeItemProps, ChunkProps };
+type BSAChunksState = {
+  chunks: ChunkProps[];
+  selectedChunk: ChunkProps | null;
+  setChunks: (chunks: ChunkProps[]) => void;
+  updateChunk: (updated: ChunkProps) => void;
+  setSelectedChunk: (chunk: ChunkProps | null) => void;
+  reset: () => void;
+};
+
+export type {
+  BSAFilter,
+  BSATableProps,
+  BSAMenuTreeItemProps,
+  ChunkProps,
+  BSAChunksState,
+};

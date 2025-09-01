@@ -9,7 +9,7 @@ import {
 } from "@/app/knowledge/store/headerStore";
 import { InsertDriveFileOutlined } from "@mui/icons-material";
 import { GridColDef, useGridApiRef } from "@mui/x-data-grid";
-import { BSATableProps, BSAMenuTreeItemProps, ChunkProps } from "@/types/bsa";
+import { BSATableProps, BSAMenuTreeItemProps } from "@/types/bsa";
 import { DataGrid } from "@mui/x-data-grid";
 import { dataGridTheme } from "@/theme";
 import { COLORS } from "@/constants/color";
@@ -17,6 +17,7 @@ import { BSA_MENU_TREE, makeRandomChunk } from "@/constants/bsa";
 import SegmentedTabs from "@/components/common/SegmentedTabs";
 import BSAChunkEdit from "./edit";
 import BSAChunkEmbedding from "./embedding";
+import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
 
 function getInitialSelection(items: BSAMenuTreeItemProps[]): {
   selected: BSAMenuTreeItemProps | null;
@@ -38,8 +39,9 @@ export default function BSAChunkList() {
   const setHeaderNode = useHeaderStore((s) => s.setHeaderNode);
   const selectedRow = useBSASelectionStore((s) => s.selectedRow);
   const router = useRouter();
-  const [chunks, setChunks] = useState<ChunkProps[]>([]);
-  const [selectedChunk, setSelectedChunk] = useState<ChunkProps | null>(null);
+  const chunks = useBSAChunksStore((s) => s.chunks);
+  const setChunks = useBSAChunksStore((s) => s.setChunks);
+  const selectedChunk = useBSAChunksStore((s) => s.selectedChunk);
   const { selected: initialSelectedItem, expandedIds: initialExpandedIds } =
     useMemo(() => getInitialSelection(BSA_MENU_TREE), []);
   const columns: GridColDef<BSATableProps>[] = [
@@ -123,7 +125,7 @@ export default function BSAChunkList() {
 
   useEffect(() => {
     setChunks(Array.from({ length: 10 }, () => makeRandomChunk()));
-  }, [selectedTreeItem]);
+  }, [selectedTreeItem, setChunks]);
 
   return (
     <Box
@@ -169,10 +171,6 @@ export default function BSAChunkList() {
       >
         {activeTab === "edit" ? (
           <BSAChunkEdit
-            chunks={chunks}
-            setChunks={setChunks}
-            selectedChunk={selectedChunk}
-            setSelectedChunk={setSelectedChunk}
             selectedData={selectedData}
             selectedTreeItem={selectedTreeItem}
             setSelectedTreeItem={setSelectedTreeItem}
@@ -180,7 +178,7 @@ export default function BSAChunkList() {
             onNext={() => setActiveTab("embedding")}
           />
         ) : (
-          <BSAChunkEmbedding chunks={chunks} />
+          <BSAChunkEmbedding />
         )}
       </Box>
     </Box>
