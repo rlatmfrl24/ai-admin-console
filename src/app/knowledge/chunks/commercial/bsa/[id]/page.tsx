@@ -42,6 +42,7 @@ export default function BSAChunkList() {
   const chunks = useBSAChunksStore((s) => s.chunks);
   const setChunks = useBSAChunksStore((s) => s.setChunks);
   const selectedChunk = useBSAChunksStore((s) => s.selectedChunk);
+  const setSelectedChunk = useBSAChunksStore((s) => s.setSelectedChunk);
   const { selected: initialSelectedItem, expandedIds: initialExpandedIds } =
     useMemo(() => getInitialSelection(BSA_MENU_TREE), []);
   const columns: GridColDef<BSATableProps>[] = [
@@ -72,6 +73,11 @@ export default function BSAChunkList() {
       router.replace("/knowledge/chunks/commercial/bsa");
     }
   }, [selectedRow, router]);
+
+  // Reset selectedChunk only when selectedTreeItem or selectedRow changes
+  useEffect(() => {
+    setSelectedChunk(null);
+  }, [selectedTreeItem, selectedRow, setSelectedChunk]);
 
   useEffect(() => {
     const header = (
@@ -126,6 +132,21 @@ export default function BSAChunkList() {
   useEffect(() => {
     setChunks(Array.from({ length: 10 }, () => makeRandomChunk()));
   }, [selectedTreeItem, setChunks]);
+
+  // Guard: Keep selectedChunk in sync with chunks; reset only if missing
+  useEffect(() => {
+    if (!selectedChunk) return;
+    const latest = chunks.find(
+      (c) => c.progressId === selectedChunk.progressId
+    );
+    if (!latest) {
+      setSelectedChunk(null);
+      return;
+    }
+    if (latest !== selectedChunk) {
+      setSelectedChunk(latest);
+    }
+  }, [chunks, selectedChunk, setSelectedChunk]);
 
   return (
     <Box
