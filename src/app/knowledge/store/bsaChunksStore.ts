@@ -12,5 +12,5 @@ export const useBSAChunksStore = create<BSAChunksState>((set, get) => ({
       ),
     }),
   setSelectedChunk: (chunk) => set({ selectedChunk: chunk }),
-  reset: () => set({ chunks: [], selectedChunk: null }),
+  reset: () => set({ chunks: [] }),
 }));

@@ -8,7 +8,7 @@ import { ChunkCard } from "../ChunkCard";
 import InputWithLabel from "@/components/common/Input";
 import { COLORS } from "@/constants/color";
 import { format } from "date-fns";
-import type { Dispatch, SetStateAction } from "react";
+import { useEffect, type Dispatch, type SetStateAction } from "react";
 import type {
   BSAMenuTreeItemProps,
   BSATableProps,
@@ -62,6 +62,9 @@ export default function BSAChunkEdit({
   const setSelectedChunk = useBSAChunksStore((s) => s.setSelectedChunk);
   const selectedChunk = useBSAChunksStore((s) => s.selectedChunk);
   const updateChunk = useBSAChunksStore((s) => s.updateChunk);
+  useEffect(() => {
+    setSelectedChunk(null);
+  }, [setSelectedChunk]);
   return (
     <>
       <Box

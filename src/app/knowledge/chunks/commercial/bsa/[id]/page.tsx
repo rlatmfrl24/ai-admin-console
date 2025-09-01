@@ -136,7 +136,7 @@ export default function BSAChunkList() {
       flexDirection={"column"}
       gap={1.5}
     >
-      {!selectedChunk ? (
+      {!selectedChunk && activeTab === "edit" ? (
         <Box>
           <DataGrid
             apiRef={apiRef}

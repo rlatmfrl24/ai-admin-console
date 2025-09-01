@@ -7,10 +7,12 @@ import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
 
 export default function BSAChunkEmbedding() {
   const chunks = useBSAChunksStore((s) => s.chunks);
+  const updateChunk = useBSAChunksStore((s) => s.updateChunk);
+  const setSelectedChunk = useBSAChunksStore((s) => s.setSelectedChunk);
   const embeddingRequiredChunks = useMemo<ChunkProps[]>(
     () =>
       chunks.filter((chunk: ChunkProps) => {
-        return chunk.embeddingAt !== chunk.updatedAt;
+        return chunk.embeddingAt && chunk.embeddingAt <= chunk.updatedAt;
       }),
     [chunks]
   );
@@ -64,7 +66,12 @@ export default function BSAChunkEmbedding() {
             variant="contained"
             disabled={selectedChunks.length === 0}
             onClick={() => {
+              const now = new Date();
+              selectedChunks.forEach((chunk) => {
+                updateChunk({ ...chunk, embeddingAt: now });
+              });
               setSelectedChunks([]);
+              setSelectedChunk(null);
             }}
           >
             Embedding
