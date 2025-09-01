@@ -67,9 +67,15 @@ export default function ChunkCard({
           </IconButton>
         </Box>
         <Typography mt="10px">{chunk.title}</Typography>
-        <Typography color={COLORS.blueGrey[300]} fontSize={12} fontWeight={500}>
-          {chunk.progressId}
-        </Typography>
+        {!checkable && (
+          <Typography
+            color={COLORS.blueGrey[300]}
+            fontSize={12}
+            fontWeight={500}
+          >
+            {chunk.progressId}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   );
