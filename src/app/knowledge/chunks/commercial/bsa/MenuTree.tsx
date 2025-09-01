@@ -30,10 +30,6 @@ function getDepthStyles(
         "&.Mui-selected": {
           bgcolor: COLORS.indigo[900],
         },
-        "&:hover": {
-          bgcolor:
-            isExpanded || isSelected ? COLORS.indigo[800] : COLORS.grey[100],
-        },
         "&.Mui-selected:hover": {
           bgcolor: COLORS.indigo[800],
         },

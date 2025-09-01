@@ -11,6 +11,7 @@ import { BSAFilter, BSATableProps } from "@/types/bsa";
 import { faker } from "@faker-js/faker";
 import { useRouter } from "next/navigation";
 import { dataGridTheme } from "@/theme";
+import { useBSASelectionStore } from "@/app/knowledge/store/headerStore";
 
 const STREAM_OPTIONS = [
   { label: "All", value: "all" },
@@ -34,6 +35,7 @@ const STATUS_OPTIONS = [
 export default function BSA() {
   const { register, handleSubmit } = useForm<BSAFilter>();
   const router = useRouter();
+  const setSelectedRow = useBSASelectionStore((s) => s.setSelectedRow);
   const onSubmit = (data: BSAFilter) => {
     console.log(data);
   };
@@ -44,17 +46,18 @@ export default function BSA() {
       id: index + 1,
       stream: "Commercial",
       module: "Basic Slot Allocation",
-      fileName: faker.helpers.arrayElement(["UI.png", "Manual.pdf"]),
-      pageName: "BSA",
-      category: "BSA",
+      fileName:
+        faker.lorem.word() + faker.helpers.arrayElement([".png", ".pdf"]),
+      pageName: faker.lorem.word(),
+      category: faker.lorem.word(),
       chunk: "BSA",
-      semanticTitle: "BSA",
-      semanticSummary: "BSA",
-      semanticChunk: "BSA",
-      language: "English",
-      date: new Date(),
-      version: "1.0.0",
-      filePath: "bsa.pdf",
+      semanticTitle: faker.lorem.word(),
+      semanticSummary: faker.lorem.word(),
+      semanticChunk: faker.lorem.word(),
+      language: faker.location.language().name,
+      date: faker.date.past(),
+      version: faker.string.numeric(3),
+      filePath: faker.system.filePath(),
     })
   );
 
@@ -151,13 +154,9 @@ export default function BSA() {
         rowHeight={dataGridTheme.rowHeight}
         columnHeaderHeight={dataGridTheme.columnHeaderHeight}
         onRowClick={(params) => {
-          if (params.row.fileName.includes(".png")) {
-            router.push(`/knowledge/chunks/commercial/bsa/ui`);
-          } else if (params.row.fileName.includes(".pdf")) {
-            router.push(`/knowledge/chunks/commercial/bsa/manual`);
-          } else {
-            //do nothing
-          }
+          console.log(params.row);
+          setSelectedRow(params.row);
+          router.push(`/knowledge/chunks/commercial/bsa/${params.row.id}`);
         }}
       />
     </Box>

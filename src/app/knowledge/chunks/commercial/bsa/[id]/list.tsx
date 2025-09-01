@@ -1,6 +1,9 @@
 import { Box, Breadcrumbs, Typography } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { useHeaderStore } from "@/app/knowledge/store/headerStore";
+import {
+  useBSASelectionStore,
+  useHeaderStore,
+} from "@/app/knowledge/store/headerStore";
 import { InsertDriveFileOutlined } from "@mui/icons-material";
 import { GridColDef, useGridApiRef } from "@mui/x-data-grid";
 import { BSATableProps, BSAMenuTreeItemProps, ChunkProps } from "@/types/bsa";
@@ -42,9 +45,10 @@ function getInitialSelection(items: BSAMenuTreeItemProps[]): {
   return { selected: first, expandedIds: [] };
 }
 
-export default function BSAManualList() {
+export default function BSAChunkList() {
   const apiRef = useGridApiRef();
   const setHeaderNode = useHeaderStore((s) => s.setHeaderNode);
+  const selectedRow = useBSASelectionStore((s) => s.selectedRow);
   const [chunks, setChunks] = useState<ChunkProps[]>([]);
   const [selectedChunk, setSelectedChunk] = useState<ChunkProps | null>(null);
   const { selected: initialSelectedItem, expandedIds: initialExpandedIds } =
@@ -68,25 +72,25 @@ export default function BSAManualList() {
   const [selectedTreeItem, setSelectedTreeItem] =
     useState<BSAMenuTreeItemProps | null>(initialSelectedItem);
 
-  const selectedData = useMemo(
-    () => ({
-      id: 1,
-      stream: "stream",
-      module: "module",
-      fileName: "fileName",
-      pageName: "pageName",
-      category: "category",
-      chunk: "chunk",
-      semanticTitle: "semanticTitle",
-      semanticSummary: "semanticSummary",
-      semanticChunk: "semanticChunk",
-      language: "language",
+  const selectedData = useMemo(() => {
+    if (selectedRow) return selectedRow;
+    return {
+      id: 0,
+      stream: "-",
+      module: "-",
+      fileName: "-",
+      pageName: "-",
+      category: "-",
+      chunk: "-",
+      semanticTitle: "-",
+      semanticSummary: "-",
+      semanticChunk: "-",
+      language: "-",
       date: new Date(),
-      version: "version",
-      filePath: "filePath",
-    }),
-    []
-  );
+      version: "-",
+      filePath: "-",
+    } as BSATableProps;
+  }, [selectedRow]);
 
   useEffect(() => {
     const header = (
@@ -95,9 +99,16 @@ export default function BSAManualList() {
           <Box />
           <Box display={"flex"} alignItems={"center"} p={0.5} gap={0.5}>
             <Typography lineHeight={1} fontSize={12} color="text.primary">
-              Basic Slot Allocation (Manual.PDF)
+              Basic Slot Allocation ({selectedData.fileName})
             </Typography>
           </Box>
+          {selectedChunk && (
+            <Box display={"flex"} alignItems={"center"} p={0.5} gap={0.5}>
+              <Typography lineHeight={1} fontSize={12} color="text.primary">
+                {selectedChunk.title}
+              </Typography>
+            </Box>
+          )}
         </Breadcrumbs>
         <Box display={"flex"} alignItems={"center"} gap={0.5}>
           <InsertDriveFileOutlined sx={{ fontSize: 16 }} />
@@ -117,7 +128,7 @@ export default function BSAManualList() {
     setHeaderNode(header);
     apiRef.current?.selectRow(selectedData.id, true, true);
     return () => setHeaderNode(null);
-  }, [setHeaderNode, apiRef, selectedData]);
+  }, [setHeaderNode, apiRef, selectedData, selectedChunk]);
 
   useEffect(() => {
     setChunks(Array.from({ length: 10 }, () => makeRandomChunk()));
@@ -131,17 +142,19 @@ export default function BSAManualList() {
       flexDirection={"column"}
       gap={1.5}
     >
-      <Box>
-        <DataGrid
-          apiRef={apiRef}
-          rows={[selectedData]}
-          columns={columns}
-          hideFooter
-          sx={{ ...dataGridTheme.sx, height: "114px" }}
-          rowHeight={dataGridTheme.rowHeight}
-          columnHeaderHeight={dataGridTheme.columnHeaderHeight}
-        />
-      </Box>
+      {!selectedChunk && (
+        <Box>
+          <DataGrid
+            apiRef={apiRef}
+            rows={[selectedData]}
+            columns={columns}
+            hideFooter
+            sx={{ ...dataGridTheme.sx, height: "114px" }}
+            rowHeight={dataGridTheme.rowHeight}
+            columnHeaderHeight={dataGridTheme.columnHeaderHeight}
+          />
+        </Box>
+      )}
       <Box
         border={1}
         flexGrow={1}
@@ -166,7 +179,13 @@ export default function BSAManualList() {
             onSelect={(_, item) => setSelectedTreeItem(item)}
           />
         </Box>
-        <Box flex={1} p={2}>
+        <Box
+          flex={selectedChunk ? 0 : 1}
+          flexBasis={"560px"}
+          p={2}
+          borderRight={selectedChunk ? 1 : 0}
+          borderColor={COLORS.blueGrey[100]}
+        >
           <Typography fontSize={14} fontWeight={500} color="text.primary">
             {findIndexPath(BSA_MENU_TREE, selectedTreeItem?.id ?? "")?.join(
               "."
@@ -190,6 +209,27 @@ export default function BSAManualList() {
             ))}
           </Box>
         </Box>
+        {selectedChunk && (
+          <Box flex={1} display={"flex"} p={2} gap={2}>
+            <Box flex={1} display={"flex"} flexDirection={"column"} gap={1}>
+              <Typography fontSize={14} fontWeight={500} color="text.primary">
+                Edit Data
+              </Typography>
+              <Box
+                flex={1}
+                border={2}
+                borderColor={"primary.main"}
+                borderRadius={2}
+              ></Box>
+            </Box>
+            <Box flex={1} display={"flex"} flexDirection={"column"} gap={1}>
+              <Typography fontSize={14} fontWeight={500} color="text.primary">
+                Embedding Data
+              </Typography>
+              <Box flex={1} bgcolor={COLORS.grey[100]} borderRadius={2}></Box>
+            </Box>
+          </Box>
+        )}
       </Box>
     </Box>
   );

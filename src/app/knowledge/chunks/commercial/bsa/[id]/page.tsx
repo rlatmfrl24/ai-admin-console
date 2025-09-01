@@ -1,9 +1,9 @@
 "use client";
 
 import { Box } from "@mui/material";
-import BSAManualList from "./list";
-import BSAManualEdit from "./edit";
-import BSAManualEmbedding from "./embedding";
+import BSAChunkList from "./list";
+import BSAChunkEdit from "./edit";
+import BSAChunkEmbedding from "./embedding";
 import { useState } from "react";
 
 export default function BSAManual() {
@@ -12,11 +12,11 @@ export default function BSAManual() {
   const renderContent = () => {
     switch (currentPhase) {
       case "list":
-        return <BSAManualList />;
+        return <BSAChunkList />;
       case "edit":
-        return <BSAManualEdit />;
+        return <BSAChunkEdit />;
       case "embedding":
-        return <BSAManualEmbedding />;
+        return <BSAChunkEmbedding />;
     }
   };
 

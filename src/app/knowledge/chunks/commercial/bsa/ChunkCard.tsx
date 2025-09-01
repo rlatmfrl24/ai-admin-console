@@ -47,9 +47,7 @@ export default function ChunkCard({
     >
       <CardContent sx={{ "&.MuiCardContent-root": { p: 1.5 } }}>
         <Box display={"flex"} justifyContent={"space-between"}>
-          <Typography fontSize={12} fontWeight={500} color="text.primary">
-            {getStatusChip(chunk.status)}
-          </Typography>
+          {getStatusChip(chunk.status)}
           <IconButton
             sx={{ p: 0.5 }}
             onClick={(e) => {
