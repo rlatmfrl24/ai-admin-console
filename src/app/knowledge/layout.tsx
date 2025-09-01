@@ -3,7 +3,7 @@
 import { COLORS } from "@/constants/color";
 import { NAV_ITEMS } from "@/constants/navigation";
 import { ArrowDropDown } from "@mui/icons-material";
-import { Box, Breadcrumbs, Portal, Typography } from "@mui/material";
+import { Box, Breadcrumbs, Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import { useHeaderStore } from "@/app/knowledge/store/headerStore";
@@ -86,12 +86,16 @@ export default function KnowledgeLayout({
 
   return (
     <Box display={"flex"} flexDirection={"column"} height={"100%"}>
-      <Box p={1.5} height={"100%"}>
+      <Box height={"100%"} display={"flex"} flexDirection={"column"}>
         <Box
           bgcolor={"white"}
           border={1}
           borderColor={COLORS.blueGrey[100]}
-          height={"100%"}
+          flexGrow={1}
+          height={0}
+          minHeight={0}
+          overflow={"auto"}
+          m={1.5}
           borderRadius={2}
           display={"flex"}
           flexDirection={"column"}
@@ -104,6 +108,7 @@ export default function KnowledgeLayout({
             {children}
           </Box>
         </Box>
+        <Box id="knowledge-footer" />
       </Box>
     </Box>
   );

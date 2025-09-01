@@ -120,6 +120,7 @@ export function makeRandomChunk(): ChunkProps {
     ]),
     progressId: faker.string.numeric(4),
     attachedFile: [],
+    embeddingAt: faker.date.recent(),
     updatedAt: faker.date.recent(),
     createdAt: faker.date.past(),
   };

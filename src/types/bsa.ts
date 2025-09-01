@@ -38,6 +38,7 @@ interface ChunkProps {
     file: File;
     description: string;
   }[];
+  embeddingAt: Date | null;
   updatedAt: Date;
   createdAt: Date;
 }

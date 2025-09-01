@@ -1,6 +1,13 @@
 "use client";
 
-import { Box, Breadcrumbs, Button, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Breadcrumbs,
+  Button,
+  TextField,
+  Typography,
+  Portal,
+} from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -22,6 +29,7 @@ import { BSA_MENU_TREE, makeRandomChunk } from "@/constants/bsa";
 import ChunkCard from "../ChunkCard";
 import SegmentedTabs from "@/components/common/SegmentedTabs";
 import InputWithLabel from "@/components/common/Input";
+import { format } from "date-fns";
 
 function findIndexPath(
   nodes: BSAMenuTreeItemProps[],
@@ -52,6 +60,17 @@ function getInitialSelection(items: BSAMenuTreeItemProps[]): {
     return { selected: firstChild, expandedIds: [first.id] };
   }
   return { selected: first, expandedIds: [] };
+}
+
+function isChunkChanged(chunk: ChunkProps, chunks: ChunkProps[]): boolean {
+  return (
+    chunk.title !==
+      chunks.find((c) => c.progressId === chunk.progressId)?.title ||
+    chunk.content !==
+      chunks.find((c) => c.progressId === chunk.progressId)?.content ||
+    chunk.attachedFile !==
+      chunks.find((c) => c.progressId === chunk.progressId)?.attachedFile
+  );
 }
 
 export default function BSAChunkList() {
@@ -105,7 +124,10 @@ export default function BSAChunkList() {
           {selectedChunk && (
             <Box display={"flex"} alignItems={"center"} p={0.5} gap={0.5}>
               <Typography lineHeight={1} fontSize={12} color="text.primary">
-                {selectedChunk.title}
+                {
+                  chunks.find((c) => c.progressId === selectedChunk.progressId)
+                    ?.title
+                }
               </Typography>
             </Box>
           )}
@@ -130,7 +152,7 @@ export default function BSAChunkList() {
       apiRef.current?.selectRow(selectedData.id, true, true);
     }
     return () => setHeaderNode(null);
-  }, [setHeaderNode, apiRef, selectedData, selectedChunk]);
+  }, [setHeaderNode, apiRef, selectedData, selectedChunk, chunks]);
 
   useEffect(() => {
     setChunks(Array.from({ length: 10 }, () => makeRandomChunk()));
@@ -216,9 +238,9 @@ export default function BSAChunkList() {
           >
             {chunks.map((chunk) => (
               <ChunkCard
-                key={chunk.title}
+                key={chunk.progressId}
                 chunk={chunk}
-                selected={selectedChunk?.title === chunk.title}
+                selected={selectedChunk?.progressId === chunk.progressId}
                 onSelect={setSelectedChunk}
               />
             ))}
@@ -331,23 +353,110 @@ export default function BSAChunkList() {
                     gap={0.5}
                   >
                     <Cached sx={{ fontSize: 16 }} />
-                    {selectedChunk.updatedAt.toLocaleDateString()}
+                    {selectedChunk.updatedAt
+                      ? format(selectedChunk.updatedAt, "yyyy-MM-dd HH:mm:ss")
+                      : ""}
                   </Typography>
-                  <Button size="small" variant="contained">
+                  <Button
+                    size="small"
+                    variant="contained"
+                    disabled={!isChunkChanged(selectedChunk, chunks)}
+                    onClick={() => {
+                      setChunks(
+                        chunks.map((c) =>
+                          c.progressId === selectedChunk.progressId
+                            ? {
+                                ...selectedChunk,
+                                updatedAt: new Date(),
+                              }
+                            : c
+                        )
+                      );
+                      setSelectedChunk({
+                        ...selectedChunk,
+                        updatedAt: new Date(),
+                      });
+                    }}
+                  >
                     Save
                   </Button>
                 </Box>
               </Box>
             </Box>
             <Box flex={1} display={"flex"} flexDirection={"column"} gap={1}>
-              <Typography fontSize={14} fontWeight={500} color="text.primary">
-                Current Data
-              </Typography>
-              <Box flex={1} bgcolor={COLORS.grey[100]} borderRadius={2}></Box>
+              <Box
+                display={"flex"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+              >
+                <Typography fontSize={14} fontWeight={500} color="text.primary">
+                  Current Data
+                </Typography>
+                <Typography
+                  fontSize={12}
+                  fontWeight={400}
+                  color={COLORS.blueGrey[200]}
+                  display={"flex"}
+                  alignItems={"center"}
+                  gap={0.5}
+                >
+                  <Cached sx={{ fontSize: 16 }} />
+                  {selectedChunk.embeddingAt
+                    ? format(selectedChunk.embeddingAt, "yyyy-MM-dd HH:mm:ss")
+                    : ""}
+                </Typography>
+              </Box>
+              <Box
+                flex={1}
+                bgcolor={COLORS.grey[100]}
+                borderRadius={2}
+                display={"flex"}
+                flexDirection={"column"}
+                px={2}
+                py={1.5}
+                gap={1}
+              >
+                <Typography fontSize={14} fontWeight={500} color="text.primary">
+                  {
+                    chunks.find(
+                      (c) => c.progressId === selectedChunk.progressId
+                    )?.title
+                  }
+                </Typography>
+                <Typography fontSize={12} fontWeight={400}>
+                  {
+                    chunks.find(
+                      (c) => c.progressId === selectedChunk.progressId
+                    )?.content
+                  }
+                </Typography>
+              </Box>
             </Box>
           </Box>
         )}
       </Box>
+      <Portal container={() => document.getElementById("knowledge-footer")}>
+        {selectedChunk ? (
+          <Box
+            display={"flex"}
+            justifyContent={"flex-end"}
+            alignItems={"center"}
+            bgcolor="white"
+            px={2}
+            py={1}
+            borderTop={1}
+            borderColor={COLORS.blueGrey[100]}
+          >
+            <Button
+              size="small"
+              variant="contained"
+              onClick={() => setActiveTab("embedding")}
+            >
+              Next
+            </Button>
+          </Box>
+        ) : null}
+      </Portal>
     </Box>
   );
 }
