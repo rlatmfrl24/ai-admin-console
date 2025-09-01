@@ -80,6 +80,7 @@ export const COLORS = {
   blueGrey: {
     50: "#dde4ea",
     100: "#ccd2e3",
+    200: "#B5BED7",
     300: "#90a4ae",
     400: "#78909c",
     700: "#455a64",

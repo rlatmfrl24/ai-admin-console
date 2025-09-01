@@ -52,7 +52,16 @@ const theme = createTheme({
   typography: {
     fontFamily: "var(--font-roboto)",
   },
-  components: {},
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {},
+        contained: {
+          borderRadius: 6,
+        },
+      },
+    },
+  },
 });
 
 export const dataGridTheme = {

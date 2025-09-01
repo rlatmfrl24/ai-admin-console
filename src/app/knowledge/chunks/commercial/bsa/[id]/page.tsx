@@ -1,12 +1,17 @@
 "use client";
 
-import { Box, Breadcrumbs, Typography } from "@mui/material";
+import { Box, Breadcrumbs, Button, TextField, Typography } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   useBSASelectionStore,
   useHeaderStore,
 } from "@/app/knowledge/store/headerStore";
-import { InsertDriveFileOutlined } from "@mui/icons-material";
+import {
+  Cached,
+  FileUploadOutlined,
+  InsertDriveFileOutlined,
+} from "@mui/icons-material";
 import { GridColDef, useGridApiRef } from "@mui/x-data-grid";
 import { BSATableProps, BSAMenuTreeItemProps, ChunkProps } from "@/types/bsa";
 import { DataGrid } from "@mui/x-data-grid";
@@ -16,6 +21,7 @@ import MenuTree from "@/app/knowledge/chunks/commercial/bsa/MenuTree";
 import { BSA_MENU_TREE, makeRandomChunk } from "@/constants/bsa";
 import ChunkCard from "../ChunkCard";
 import SegmentedTabs from "@/components/common/SegmentedTabs";
+import InputWithLabel from "@/components/common/Input";
 
 function findIndexPath(
   nodes: BSAMenuTreeItemProps[],
@@ -52,6 +58,7 @@ export default function BSAChunkList() {
   const apiRef = useGridApiRef();
   const setHeaderNode = useHeaderStore((s) => s.setHeaderNode);
   const selectedRow = useBSASelectionStore((s) => s.selectedRow);
+  const router = useRouter();
   const [chunks, setChunks] = useState<ChunkProps[]>([]);
   const [selectedChunk, setSelectedChunk] = useState<ChunkProps | null>(null);
   const { selected: initialSelectedItem, expandedIds: initialExpandedIds } =
@@ -75,25 +82,15 @@ export default function BSAChunkList() {
   const [selectedTreeItem, setSelectedTreeItem] =
     useState<BSAMenuTreeItemProps | null>(initialSelectedItem);
 
-  const selectedData = useMemo(() => {
-    if (selectedRow) return selectedRow;
-    return {
-      id: 0,
-      stream: "-",
-      module: "-",
-      fileName: "-",
-      pageName: "-",
-      category: "-",
-      chunk: "-",
-      semanticTitle: "-",
-      semanticSummary: "-",
-      semanticChunk: "-",
-      language: "-",
-      date: new Date(),
-      version: "-",
-      filePath: "-",
-    } as BSATableProps;
+  const selectedData = useMemo<BSATableProps | null>(() => {
+    return selectedRow ?? null;
   }, [selectedRow]);
+
+  useEffect(() => {
+    if (!selectedRow) {
+      router.replace("/knowledge/chunks/commercial/bsa");
+    }
+  }, [selectedRow, router]);
 
   useEffect(() => {
     const header = (
@@ -102,7 +99,7 @@ export default function BSAChunkList() {
           <Box />
           <Box display={"flex"} alignItems={"center"} p={0.5} gap={0.5}>
             <Typography lineHeight={1} fontSize={12} color="text.primary">
-              Basic Slot Allocation ({selectedData.fileName})
+              Basic Slot Allocation ({selectedData?.fileName ?? "-"})
             </Typography>
           </Box>
           {selectedChunk && (
@@ -129,7 +126,9 @@ export default function BSAChunkList() {
       </Box>
     );
     setHeaderNode(header);
-    apiRef.current?.selectRow(selectedData.id, true, true);
+    if (selectedData) {
+      apiRef.current?.selectRow(selectedData.id, true, true);
+    }
     return () => setHeaderNode(null);
   }, [setHeaderNode, apiRef, selectedData, selectedChunk]);
 
@@ -152,7 +151,7 @@ export default function BSAChunkList() {
         <Box>
           <DataGrid
             apiRef={apiRef}
-            rows={[selectedData]}
+            rows={selectedData ? [selectedData] : []}
             columns={columns}
             hideFooter
             sx={{ ...dataGridTheme.sx, height: "114px" }}
@@ -236,11 +235,113 @@ export default function BSAChunkList() {
                 border={2}
                 borderColor={"primary.main"}
                 borderRadius={2}
-              ></Box>
+                display={"flex"}
+                flexDirection={"column"}
+              >
+                <Box
+                  flex={1}
+                  display={"flex"}
+                  flexDirection={"column"}
+                  gap={2}
+                  p={1.5}
+                  sx={{
+                    borderRadius: "8px 8px 0px 0px",
+                    background:
+                      "linear-gradient(180deg, #FFF 0%, #F7F6FF 100%)",
+                  }}
+                >
+                  <InputWithLabel
+                    label="Title"
+                    value={selectedChunk.title}
+                    onChange={(e) =>
+                      setSelectedChunk({
+                        ...selectedChunk,
+                        title: e.target.value,
+                      })
+                    }
+                  />
+                  {selectedData?.fileName.includes(".pdf") && (
+                    <InputWithLabel
+                      label="Program ID"
+                      value={selectedChunk.progressId}
+                      disabled
+                    />
+                  )}
+                  <Box display={"flex"} flexDirection={"column"}>
+                    <Typography
+                      variant="caption"
+                      color={"text.primary"}
+                      lineHeight={1.3}
+                      fontWeight={500}
+                      m={"2px"}
+                    >
+                      Content
+                    </Typography>
+                    <TextField
+                      value={selectedChunk.content}
+                      sx={{
+                        "& .MuiInputBase-root": {
+                          padding: "6px 12px",
+                        },
+                        "& .MuiOutlinedInput-root": {
+                          height: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          fontSize: "13px",
+                        },
+                      }}
+                      onChange={(e) =>
+                        setSelectedChunk({
+                          ...selectedChunk,
+                          content: e.target.value,
+                        })
+                      }
+                      multiline
+                    />
+                  </Box>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<FileUploadOutlined sx={{ fontSize: 20 }} />}
+                    sx={{
+                      fontSize: 14,
+                      lineHeight: 1.4,
+                      width: "fit-content",
+                      textTransform: "none",
+                      color: "text.primary",
+                      borderColor: "text.primary",
+                    }}
+                  >
+                    Attach File
+                  </Button>
+                </Box>
+                <Box
+                  display={"flex"}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                  px={2}
+                  py={1}
+                >
+                  <Typography
+                    fontSize={12}
+                    fontWeight={400}
+                    color={COLORS.blueGrey[200]}
+                    display={"flex"}
+                    alignItems={"center"}
+                    gap={0.5}
+                  >
+                    <Cached sx={{ fontSize: 16 }} />
+                    {selectedChunk.updatedAt.toLocaleDateString()}
+                  </Typography>
+                  <Button size="small" variant="contained">
+                    Save
+                  </Button>
+                </Box>
+              </Box>
             </Box>
             <Box flex={1} display={"flex"} flexDirection={"column"} gap={1}>
               <Typography fontSize={14} fontWeight={500} color="text.primary">
-                Embedding Data
+                Current Data
               </Typography>
               <Box flex={1} bgcolor={COLORS.grey[100]} borderRadius={2}></Box>
             </Box>
