@@ -1,20 +1,35 @@
 "use client";
 
-import { Box, Button, TextField, Typography, Portal } from "@mui/material";
-import { Cached, FileUploadOutlined } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Portal,
+  IconButton,
+  InputBase,
+} from "@mui/material";
+import { Cached, Close, FileUploadOutlined } from "@mui/icons-material";
 import MenuTree from "@/app/knowledge/chunks/commercial/bsa/MenuTree";
 import { BSA_MENU_TREE } from "@/constants/bsa";
 import { ChunkCard } from "../ChunkCard";
 import InputWithLabel from "@/components/common/Input";
 import { COLORS } from "@/constants/color";
 import { format } from "date-fns";
-import { type Dispatch, type SetStateAction } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import type {
   BSAMenuTreeItemProps,
   BSATableProps,
   ChunkProps,
 } from "@/types/bsa";
 import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
+import Image from "next/image";
 
 function findIndexPath(
   nodes: BSAMenuTreeItemProps[],
@@ -39,7 +54,13 @@ function isChunkChanged(chunk: ChunkProps, chunks: ChunkProps[]): boolean {
     chunk.content !==
       chunks.find((c) => c.progressId === chunk.progressId)?.content ||
     chunk.attachedFile !==
-      chunks.find((c) => c.progressId === chunk.progressId)?.attachedFile
+      chunks.find((c) => c.progressId === chunk.progressId)?.attachedFile ||
+    chunk.attachedFile?.some(
+      (a, i) =>
+        a.description !==
+        chunks.find((c) => c.progressId === chunk.progressId)?.attachedFile?.[i]
+          ?.description
+    )
   );
 }
 
@@ -62,6 +83,84 @@ export default function BSAChunkEdit({
   const setSelectedChunk = useBSAChunksStore((s) => s.setSelectedChunk);
   const selectedChunk = useBSAChunksStore((s) => s.selectedChunk);
   const updateChunk = useBSAChunksStore((s) => s.updateChunk);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [savedPreviewUrls, setSavedPreviewUrls] = useState<string[]>([]);
+  const baseChunk = chunks.find(
+    (c) => c.progressId === selectedChunk?.progressId
+  );
+  const [draftChunk, setDraftChunk] = useState<ChunkProps | null>(null);
+  const flushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scheduleFlush = (next: ChunkProps) => {
+    if (flushTimerRef.current) clearTimeout(flushTimerRef.current);
+    flushTimerRef.current = setTimeout(() => {
+      setSelectedChunk(next);
+    }, 300);
+  };
+
+  useEffect(() => {
+    if (!draftChunk) {
+      setPreviewUrls([]);
+      return;
+    }
+    const files = (draftChunk.attachedFile ?? []).map((a) => a.file);
+    let cancelled = false;
+    Promise.all(
+      files.map(
+        (file) =>
+          new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve((reader.result as string) || "");
+            reader.onerror = () => resolve("");
+            reader.readAsDataURL(file);
+          })
+      )
+    ).then((urls) => {
+      if (!cancelled) {
+        setPreviewUrls(urls.filter(Boolean));
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [draftChunk]);
+  useEffect(() => {
+    if (!selectedChunk) {
+      setSavedPreviewUrls([]);
+      return;
+    }
+    const files = (baseChunk?.attachedFile ?? []).map((a) => a.file);
+    let cancelled = false;
+    Promise.all(
+      files.map(
+        (file) =>
+          new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve((reader.result as string) || "");
+            reader.onerror = () => resolve("");
+            reader.readAsDataURL(file);
+          })
+      )
+    ).then((urls) => {
+      if (!cancelled) {
+        setSavedPreviewUrls(urls.filter(Boolean));
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [chunks, selectedChunk, baseChunk]);
+  useEffect(() => {
+    if (flushTimerRef.current) {
+      clearTimeout(flushTimerRef.current);
+      flushTimerRef.current = null;
+    }
+    if (!selectedChunk) {
+      setDraftChunk(null);
+      return;
+    }
+    setDraftChunk({ ...selectedChunk });
+  }, [selectedChunk]);
   return (
     <>
       <Box
@@ -133,18 +232,21 @@ export default function BSAChunkEdit({
               >
                 <InputWithLabel
                   label="Title"
-                  value={selectedChunk.title}
-                  onChange={(e) =>
-                    setSelectedChunk({
-                      ...selectedChunk,
+                  value={draftChunk?.title ?? ""}
+                  onChange={(e) => {
+                    if (!draftChunk) return;
+                    const next = {
+                      ...draftChunk,
                       title: e.target.value,
-                    })
-                  }
+                    } as ChunkProps;
+                    setDraftChunk(next);
+                    scheduleFlush(next);
+                  }}
                 />
                 {selectedData?.fileName.includes(".pdf") && (
                   <InputWithLabel
                     label="Program ID"
-                    value={selectedChunk.progressId}
+                    value={draftChunk?.progressId ?? ""}
                     disabled
                   />
                 )}
@@ -159,7 +261,7 @@ export default function BSAChunkEdit({
                     Content
                   </Typography>
                   <TextField
-                    value={selectedChunk.content}
+                    value={draftChunk?.content ?? ""}
                     sx={{
                       "& .MuiInputBase-root": {
                         padding: "6px 12px",
@@ -171,12 +273,15 @@ export default function BSAChunkEdit({
                         fontSize: "13px",
                       },
                     }}
-                    onChange={(e) =>
-                      setSelectedChunk({
-                        ...selectedChunk,
+                    onChange={(e) => {
+                      if (!draftChunk) return;
+                      const next = {
+                        ...draftChunk,
                         content: e.target.value,
-                      })
-                    }
+                      } as ChunkProps;
+                      setDraftChunk(next);
+                      scheduleFlush(next);
+                    }}
                     multiline
                   />
                 </Box>
@@ -192,9 +297,103 @@ export default function BSAChunkEdit({
                     color: "text.primary",
                     borderColor: "text.primary",
                   }}
+                  onClick={() => fileInputRef.current?.click()}
                 >
                   Attach File
                 </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  multiple
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files ?? []);
+                    if (!files.length || !draftChunk) return;
+                    const newAttachments = files.map((file) => ({
+                      file,
+                      description: "",
+                    }));
+                    const updated: ChunkProps = {
+                      ...draftChunk,
+                      attachedFile: [
+                        ...(draftChunk.attachedFile ?? []),
+                        ...newAttachments,
+                      ],
+                    };
+                    setDraftChunk(updated);
+                    scheduleFlush(updated);
+                    e.currentTarget.value = "";
+                  }}
+                />
+                {previewUrls.length > 0 && (
+                  <Box gap={1} display={"flex"} flexDirection={"column"}>
+                    {previewUrls.map((url, idx) => (
+                      <Box
+                        key={`${url}-${idx}`}
+                        bgcolor={"white"}
+                        borderRadius={2}
+                        border={1}
+                        borderColor={COLORS.blueGrey[100]}
+                        p={1.5}
+                        sx={{ lineHeight: 0 }}
+                        position={"relative"}
+                        display={"flex"}
+                        alignItems={"center"}
+                        gap={1.5}
+                      >
+                        <Image
+                          width={48}
+                          height={48}
+                          src={url}
+                          alt={`attachment-preview-${idx}`}
+                          style={{ display: "block", borderRadius: "4px" }}
+                          objectFit="cover"
+                        />
+                        <InputBase
+                          sx={{ flex: 1 }}
+                          multiline
+                          minRows={1}
+                          maxRows={8}
+                          onChange={(e) => {
+                            if (!draftChunk) return;
+                            const value = (e.target as HTMLInputElement).value;
+                            const updated: ChunkProps = {
+                              ...draftChunk,
+                              attachedFile: (draftChunk.attachedFile ?? []).map(
+                                (a, i) =>
+                                  i === idx ? { ...a, description: value } : a
+                              ),
+                            };
+                            setDraftChunk(updated);
+                            scheduleFlush(updated);
+                          }}
+                          placeholder="Please input description"
+                          value={
+                            draftChunk?.attachedFile?.[idx]?.description ?? ""
+                          }
+                        />
+                        <IconButton
+                          size="small"
+                          sx={{ alignSelf: "flex-start" }}
+                          onClick={() => {
+                            if (!draftChunk) return;
+                            const updated: ChunkProps = {
+                              ...draftChunk,
+                              attachedFile: (
+                                draftChunk.attachedFile ?? []
+                              ).filter((_, i) => i !== idx),
+                            };
+                            setDraftChunk(updated);
+                            scheduleFlush(updated);
+                          }}
+                        >
+                          <Close sx={{ fontSize: 16 }} />
+                        </IconButton>
+                      </Box>
+                    ))}
+                  </Box>
+                )}
               </Box>
               <Box
                 display={"flex"}
@@ -279,6 +478,42 @@ export default function BSAChunkEdit({
                     ?.content
                 }
               </Typography>
+              {savedPreviewUrls.length > 0 && (
+                <Box gap={1} display={"flex"} flexDirection={"column"} mt={0.5}>
+                  {savedPreviewUrls.map((url, idx) => (
+                    <Box
+                      key={`saved-${url}-${idx}`}
+                      bgcolor={"white"}
+                      borderRadius={2}
+                      border={1}
+                      borderColor={COLORS.blueGrey[100]}
+                      p={1.5}
+                      sx={{ lineHeight: 0 }}
+                      position={"relative"}
+                      display={"flex"}
+                      alignItems={"center"}
+                      gap={1.5}
+                    >
+                      <Image
+                        width={48}
+                        height={48}
+                        src={url}
+                        alt={`current-attachment-${idx}`}
+                        style={{ display: "block", borderRadius: "4px" }}
+                        objectFit="cover"
+                      />
+                      <Typography
+                        sx={{ flex: 1, whiteSpace: "pre-line" }}
+                        fontSize={12}
+                      >
+                        {chunks.find(
+                          (c) => c.progressId === selectedChunk.progressId
+                        )?.attachedFile?.[idx]?.description ?? ""}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+              )}
             </Box>
           </Box>
         </Box>

@@ -143,7 +143,8 @@ export default function BSAChunkList() {
       setSelectedChunk(null);
       return;
     }
-    if (latest !== selectedChunk) {
+    // Only sync when persisted data changed (e.g., after Save/Embedding)
+    if (latest.updatedAt !== selectedChunk.updatedAt) {
       setSelectedChunk(latest);
     }
   }, [chunks, selectedChunk, setSelectedChunk]);
