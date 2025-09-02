@@ -19,6 +19,23 @@ import BSAChunkEdit from "./edit";
 import BSAChunkEmbedding from "./embedding";
 import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
 
+function getAncestorIds(
+  items: BSAMenuTreeItemProps[],
+  targetId: string,
+  acc: string[] = []
+): string[] {
+  for (const node of items) {
+    if (node.id === targetId) return acc;
+    if (node.children && node.children.length > 0) {
+      const found = getAncestorIds(node.children, targetId, [...acc, node.id]);
+      if (found.length > 0 || (found.length === 0 && node.id === targetId)) {
+        return found;
+      }
+    }
+  }
+  return [];
+}
+
 function getInitialSelection(items: BSAMenuTreeItemProps[]): {
   selected: BSAMenuTreeItemProps | null;
   expandedIds: string[];
@@ -67,6 +84,13 @@ export default function BSAChunkList() {
   const selectedData = useMemo<BSATableProps | null>(() => {
     return selectedRow ?? null;
   }, [selectedRow]);
+
+  const expandedIdsForSelected = useMemo(() => {
+    if (selectedTreeItem) {
+      return getAncestorIds(BSA_MENU_TREE, selectedTreeItem.id);
+    }
+    return initialExpandedIds;
+  }, [selectedTreeItem, initialExpandedIds]);
 
   useEffect(() => {
     if (!selectedRow) {
@@ -144,7 +168,10 @@ export default function BSAChunkList() {
       return;
     }
     // Only sync when persisted data changed (e.g., after Save/Embedding)
-    if (latest.updatedAt !== selectedChunk.updatedAt) {
+    if (
+      latest.updatedAt !== selectedChunk.updatedAt ||
+      latest.embeddingAt !== selectedChunk.embeddingAt
+    ) {
       setSelectedChunk(latest);
     }
   }, [chunks, selectedChunk, setSelectedChunk]);
@@ -196,7 +223,7 @@ export default function BSAChunkList() {
             selectedData={selectedData}
             selectedTreeItem={selectedTreeItem}
             setSelectedTreeItem={setSelectedTreeItem}
-            initialExpandedIds={initialExpandedIds}
+            initialExpandedIds={expandedIdsForSelected}
             onNext={() => setActiveTab("embedding")}
           />
         ) : (

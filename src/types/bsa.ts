@@ -41,6 +41,7 @@ interface ChunkProps {
   embeddingAt: Date | null;
   updatedAt: Date;
   createdAt: Date;
+  isNew?: boolean;
 }
 
 type BSAChunksState = {
@@ -49,6 +50,8 @@ type BSAChunksState = {
   setChunks: (chunks: ChunkProps[]) => void;
   updateChunk: (updated: ChunkProps) => void;
   setSelectedChunk: (chunk: ChunkProps | null) => void;
+  addChunk: (chunk: ChunkProps) => void;
+  cleanupNewEmptyChunks: (excludeProgressId?: string) => void;
   reset: () => void;
 };
 

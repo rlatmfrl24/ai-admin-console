@@ -35,6 +35,7 @@ import type {
 } from "@/types/bsa";
 import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
 import Image from "next/image";
+import { faker } from "@faker-js/faker";
 
 function findIndexPath(
   nodes: BSAMenuTreeItemProps[],
@@ -88,6 +89,10 @@ export default function BSAChunkEdit({
   const setSelectedChunk = useBSAChunksStore((s) => s.setSelectedChunk);
   const selectedChunk = useBSAChunksStore((s) => s.selectedChunk);
   const updateChunk = useBSAChunksStore((s) => s.updateChunk);
+  const addChunk = useBSAChunksStore((s) => s.addChunk);
+  const cleanupNewEmptyChunks = useBSAChunksStore(
+    (s) => s.cleanupNewEmptyChunks
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [savedPreviewUrls, setSavedPreviewUrls] = useState<string[]>([]);
@@ -212,7 +217,22 @@ export default function BSAChunkEdit({
             justifyContent={"center"}
             alignItems={"center"}
             gap={0.5}
-            onClick={() => {}}
+            onClick={() => {
+              const now = new Date();
+              const newChunk: ChunkProps = {
+                title: "",
+                content: "",
+                status: "draft",
+                progressId: faker.string.numeric(4),
+                attachedFile: [],
+                embeddingAt: null,
+                updatedAt: now,
+                createdAt: now,
+                isNew: true,
+              };
+              addChunk(newChunk);
+              setSelectedChunk(newChunk);
+            }}
           >
             <AddCircle sx={{ color: "primary.main" }} />
             <Typography fontSize={14} fontWeight={500} color="primary.main">
@@ -442,14 +462,19 @@ export default function BSAChunkEdit({
                 <Button
                   size="small"
                   variant="contained"
-                  disabled={!isChunkChanged(selectedChunk, chunks)}
+                  disabled={
+                    !selectedChunk.isNew &&
+                    !isChunkChanged(selectedChunk, chunks)
+                  }
                   onClick={() => {
                     const updated = {
                       ...selectedChunk,
                       updatedAt: new Date(),
+                      isNew: false,
                     } as ChunkProps;
                     updateChunk(updated);
                     setSelectedChunk(updated);
+                    cleanupNewEmptyChunks(updated.progressId);
                   }}
                 >
                   Save
@@ -457,89 +482,102 @@ export default function BSAChunkEdit({
               </Box>
             </Box>
           </Box>
-          <Box flex={1} display={"flex"} flexDirection={"column"} gap={1}>
-            <Box
-              display={"flex"}
-              justifyContent={"space-between"}
-              alignItems={"center"}
-            >
-              <Typography fontSize={14} fontWeight={500} color="text.primary">
-                Current Data
-              </Typography>
-              <Typography
-                fontSize={12}
-                fontWeight={400}
-                color={COLORS.blueGrey[200]}
+          {!selectedChunk.isNew && (
+            <Box flex={1} display={"flex"} flexDirection={"column"} gap={1}>
+              <Box
                 display={"flex"}
+                justifyContent={"space-between"}
                 alignItems={"center"}
-                gap={0.5}
               >
-                <Cached sx={{ fontSize: 16 }} />
-                {selectedChunk.embeddingAt
-                  ? format(selectedChunk.embeddingAt, "yyyy-MM-dd HH:mm:ss")
-                  : ""}
-              </Typography>
-            </Box>
-            <Box
-              flex={1}
-              bgcolor={COLORS.grey[100]}
-              borderRadius={2}
-              display={"flex"}
-              flexDirection={"column"}
-              px={2}
-              py={1.5}
-              gap={1}
-            >
-              <Typography fontSize={14} fontWeight={500} color="text.primary">
-                {
-                  chunks.find((c) => c.progressId === selectedChunk.progressId)
-                    ?.title
-                }
-              </Typography>
-              <Typography fontSize={12} fontWeight={400}>
-                {
-                  chunks.find((c) => c.progressId === selectedChunk.progressId)
-                    ?.content
-                }
-              </Typography>
-              {savedPreviewUrls.length > 0 && (
-                <Box gap={1} display={"flex"} flexDirection={"column"} mt={0.5}>
-                  {savedPreviewUrls.map((url, idx) => (
-                    <Box
-                      key={`saved-${url}-${idx}`}
-                      bgcolor={"white"}
-                      borderRadius={2}
-                      border={1}
-                      borderColor={COLORS.blueGrey[100]}
-                      p={1.5}
-                      sx={{ lineHeight: 0 }}
-                      position={"relative"}
-                      display={"flex"}
-                      alignItems={"center"}
-                      gap={1.5}
-                    >
-                      <Image
-                        width={48}
-                        height={48}
-                        src={url}
-                        alt={`current-attachment-${idx}`}
-                        style={{ display: "block", borderRadius: "4px" }}
-                        objectFit="cover"
-                      />
-                      <Typography
-                        sx={{ flex: 1, whiteSpace: "pre-line" }}
-                        fontSize={12}
+                <Typography fontSize={14} fontWeight={500} color="text.primary">
+                  Current Data
+                </Typography>
+                <Typography
+                  fontSize={12}
+                  fontWeight={400}
+                  color={COLORS.blueGrey[200]}
+                  display={"flex"}
+                  alignItems={"center"}
+                  gap={0.5}
+                >
+                  <Cached sx={{ fontSize: 16 }} />
+                  {selectedChunk.embeddingAt
+                    ? format(selectedChunk.embeddingAt, "yyyy-MM-dd HH:mm:ss")
+                    : ""}
+                </Typography>
+              </Box>
+              <Box
+                flex={1}
+                bgcolor={COLORS.grey[100]}
+                borderRadius={2}
+                display={"flex"}
+                flexDirection={"column"}
+                px={2}
+                py={1.5}
+                gap={1}
+              >
+                <Typography fontSize={14} fontWeight={500} color="text.primary">
+                  {
+                    chunks.find(
+                      (c) => c.progressId === selectedChunk.progressId
+                    )?.title
+                  }
+                </Typography>
+                <Typography
+                  fontSize={12}
+                  fontWeight={400}
+                  whiteSpace={"pre-line"}
+                >
+                  {
+                    chunks.find(
+                      (c) => c.progressId === selectedChunk.progressId
+                    )?.content
+                  }
+                </Typography>
+                {savedPreviewUrls.length > 0 && (
+                  <Box
+                    gap={1}
+                    display={"flex"}
+                    flexDirection={"column"}
+                    mt={0.5}
+                  >
+                    {savedPreviewUrls.map((url, idx) => (
+                      <Box
+                        key={`saved-${url}-${idx}`}
+                        bgcolor={"white"}
+                        borderRadius={2}
+                        border={1}
+                        borderColor={COLORS.blueGrey[100]}
+                        p={1.5}
+                        sx={{ lineHeight: 0 }}
+                        position={"relative"}
+                        display={"flex"}
+                        alignItems={"center"}
+                        gap={1.5}
                       >
-                        {chunks.find(
-                          (c) => c.progressId === selectedChunk.progressId
-                        )?.attachedFile?.[idx]?.description ?? ""}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
-              )}
+                        <Image
+                          width={48}
+                          height={48}
+                          src={url}
+                          alt={`current-attachment-${idx}`}
+                          style={{ display: "block", borderRadius: "4px" }}
+                          objectFit="cover"
+                        />
+                        <Typography
+                          sx={{ flex: 1, whiteSpace: "pre-line" }}
+                          fontSize={12}
+                        >
+                          {chunks.find(
+                            (c) => c.progressId === selectedChunk.progressId
+                          )?.attachedFile?.[idx]?.description ?? ""}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                )}
+              </Box>
             </Box>
-          </Box>
+          )}
         </Box>
       )}
       <Portal container={() => document.getElementById("knowledge-footer")}>

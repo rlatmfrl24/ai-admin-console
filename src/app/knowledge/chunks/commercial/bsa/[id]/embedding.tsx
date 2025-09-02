@@ -11,7 +11,10 @@ export default function BSAChunkEmbedding() {
   const embeddingRequiredChunks = useMemo<ChunkProps[]>(
     () =>
       chunks.filter((chunk: ChunkProps) => {
-        return chunk.embeddingAt && chunk.embeddingAt <= chunk.updatedAt;
+        return (
+          (chunk.embeddingAt && chunk.embeddingAt <= chunk.updatedAt) ||
+          chunk.embeddingAt === null
+        );
       }),
     [chunks]
   );
