@@ -9,7 +9,12 @@ import {
   IconButton,
   InputBase,
 } from "@mui/material";
-import { Cached, Close, FileUploadOutlined } from "@mui/icons-material";
+import {
+  AddCircle,
+  Cached,
+  Close,
+  FileUploadOutlined,
+} from "@mui/icons-material";
 import MenuTree from "@/app/knowledge/chunks/commercial/bsa/MenuTree";
 import { BSA_MENU_TREE } from "@/constants/bsa";
 import { ChunkCard } from "../ChunkCard";
@@ -195,6 +200,25 @@ export default function BSAChunkEdit({
           gridTemplateColumns={"repeat(auto-fill, minmax(252px, 1fr))"}
           gap={1.5}
         >
+          <Box
+            display={"flex"}
+            flexDirection={"column"}
+            sx={{
+              border: "2px dashed",
+              borderColor: COLORS.blueGrey[100],
+              borderRadius: 2,
+              cursor: "pointer",
+            }}
+            justifyContent={"center"}
+            alignItems={"center"}
+            gap={0.5}
+            onClick={() => {}}
+          >
+            <AddCircle sx={{ color: "primary.main" }} />
+            <Typography fontSize={14} fontWeight={500} color="primary.main">
+              New Chunk
+            </Typography>
+          </Box>
           {chunks.map((chunk) => (
             <ChunkCard
               key={chunk.progressId}
