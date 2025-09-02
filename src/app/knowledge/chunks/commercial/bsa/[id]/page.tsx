@@ -19,23 +19,6 @@ import BSAChunkEdit from "./edit";
 import BSAChunkEmbedding from "./embedding";
 import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
 
-function getAncestorIds(
-  items: BSAMenuTreeItemProps[],
-  targetId: string,
-  acc: string[] = []
-): string[] {
-  for (const node of items) {
-    if (node.id === targetId) return acc;
-    if (node.children && node.children.length > 0) {
-      const found = getAncestorIds(node.children, targetId, [...acc, node.id]);
-      if (found.length > 0 || (found.length === 0 && node.id === targetId)) {
-        return found;
-      }
-    }
-  }
-  return [];
-}
-
 function getInitialSelection(items: BSAMenuTreeItemProps[]): {
   selected: BSAMenuTreeItemProps | null;
   expandedIds: string[];
@@ -60,8 +43,10 @@ export default function BSAChunkList() {
   const setChunks = useBSAChunksStore((s) => s.setChunks);
   const selectedChunk = useBSAChunksStore((s) => s.selectedChunk);
   const setSelectedChunk = useBSAChunksStore((s) => s.setSelectedChunk);
-  const { selected: initialSelectedItem, expandedIds: initialExpandedIds } =
-    useMemo(() => getInitialSelection(BSA_MENU_TREE), []);
+  const { selected: initialSelectedItem } = useMemo(
+    () => getInitialSelection(BSA_MENU_TREE),
+    []
+  );
   const columns: GridColDef<BSATableProps>[] = [
     { field: "stream", headerName: "Stream", width: 150 },
     { field: "module", headerName: "Module", width: 150 },
@@ -84,13 +69,6 @@ export default function BSAChunkList() {
   const selectedData = useMemo<BSATableProps | null>(() => {
     return selectedRow ?? null;
   }, [selectedRow]);
-
-  const expandedIdsForSelected = useMemo(() => {
-    if (selectedTreeItem) {
-      return getAncestorIds(BSA_MENU_TREE, selectedTreeItem.id);
-    }
-    return initialExpandedIds;
-  }, [selectedTreeItem, initialExpandedIds]);
 
   useEffect(() => {
     if (!selectedRow) {
@@ -223,7 +201,6 @@ export default function BSAChunkList() {
             selectedData={selectedData}
             selectedTreeItem={selectedTreeItem}
             setSelectedTreeItem={setSelectedTreeItem}
-            initialExpandedIds={expandedIdsForSelected}
             onNext={() => setActiveTab("embedding")}
           />
         ) : (

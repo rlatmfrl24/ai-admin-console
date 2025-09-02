@@ -74,7 +74,6 @@ type BSAEditProps = {
   selectedData: BSATableProps | null;
   selectedTreeItem: BSAMenuTreeItemProps | null;
   setSelectedTreeItem: Dispatch<SetStateAction<BSAMenuTreeItemProps | null>>;
-  initialExpandedIds: string[];
   onNext?: () => void;
 };
 
@@ -82,7 +81,6 @@ export default function BSAChunkEdit({
   selectedData,
   selectedTreeItem,
   setSelectedTreeItem,
-  initialExpandedIds,
   onNext,
 }: BSAEditProps) {
   const chunks = useBSAChunksStore((s) => s.chunks);
@@ -182,7 +180,6 @@ export default function BSAChunkEdit({
         <MenuTree
           items={BSA_MENU_TREE}
           ariaLabel="BSA Menu Tree"
-          defaultExpandedIds={initialExpandedIds}
           selectedId={selectedTreeItem?.id}
           onSelect={(_, item) => setSelectedTreeItem(item)}
         />
