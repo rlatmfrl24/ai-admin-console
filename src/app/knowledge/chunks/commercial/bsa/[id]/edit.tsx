@@ -176,6 +176,7 @@ export default function BSAChunkEdit({
         borderRight={1}
         borderColor={COLORS.blueGrey[100]}
         width={"264px"}
+        sx={{ overflow: "auto", minHeight: 0 }}
       >
         <MenuTree
           items={BSA_MENU_TREE}
@@ -186,10 +187,11 @@ export default function BSAChunkEdit({
       </Box>
       <Box
         flex={selectedChunk ? 0 : 1}
-        flexBasis={"560px"}
+        flexBasis={"565px"}
         p={2}
         borderRight={selectedChunk ? 1 : 0}
         borderColor={COLORS.blueGrey[100]}
+        sx={{ overflow: "auto", minHeight: 0 }}
       >
         <Typography fontSize={14} fontWeight={500} color="text.primary">
           {findIndexPath(BSA_MENU_TREE, selectedTreeItem?.id ?? "")?.join(".") +
@@ -247,7 +249,7 @@ export default function BSAChunkEdit({
         </Box>
       </Box>
       {selectedChunk && (
-        <Box flex={1} display={"flex"} p={2} gap={2}>
+        <Box flex={1} display={"flex"} p={2} gap={2} sx={{ minHeight: 0 }}>
           <Box flex={1} display={"flex"} flexDirection={"column"} gap={1}>
             <Typography fontSize={14} fontWeight={500} color="text.primary">
               Edit Data
@@ -259,6 +261,7 @@ export default function BSAChunkEdit({
               borderRadius={2}
               display={"flex"}
               flexDirection={"column"}
+              sx={{ minHeight: 0 }}
             >
               <Box
                 flex={1}
@@ -269,6 +272,7 @@ export default function BSAChunkEdit({
                 sx={{
                   borderRadius: "8px 8px 0px 0px",
                   background: "linear-gradient(180deg, #FFF 0%, #F7F6FF 100%)",
+                  overflow: "auto",
                 }}
               >
                 <InputWithLabel
@@ -480,7 +484,13 @@ export default function BSAChunkEdit({
             </Box>
           </Box>
           {!selectedChunk.isNew && (
-            <Box flex={1} display={"flex"} flexDirection={"column"} gap={1}>
+            <Box
+              flex={1}
+              display={"flex"}
+              flexDirection={"column"}
+              gap={1}
+              sx={{ minHeight: 0 }}
+            >
               <Box
                 display={"flex"}
                 justifyContent={"space-between"}
@@ -512,6 +522,7 @@ export default function BSAChunkEdit({
                 px={2}
                 py={1.5}
                 gap={1}
+                sx={{ overflow: "auto" }}
               >
                 <Typography fontSize={14} fontWeight={500} color="text.primary">
                   {

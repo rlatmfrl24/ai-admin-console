@@ -191,10 +191,10 @@ export default function BSAChunkList() {
         flexGrow={1}
         height={0}
         minHeight={0}
-        overflow={"auto"}
         borderRadius={2}
         borderColor={COLORS.blueGrey[100]}
         display={"flex"}
+        overflow={"hidden"}
       >
         {activeTab === "edit" ? (
           <BSAChunkEdit
