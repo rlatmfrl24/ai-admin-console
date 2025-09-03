@@ -96,7 +96,7 @@ export default function FilterChipMenu({
             p={0.5}
             sx={{
               cursor: "pointer",
-              "&:hover": { backgroundColor: COLORS.blueGrey[50] },
+              "&:hover": { backgroundColor: COLORS.text.states.selected },
             }}
             onClick={(e) => {
               e.stopPropagation();
@@ -111,7 +111,7 @@ export default function FilterChipMenu({
               size="small"
               checked={filter.length === STATUS_OPTIONS.length}
             />
-            <Typography fontSize={13}>All Status ({chunks.length})</Typography>
+            <Typography fontSize={13}>All Status</Typography>
           </Box>
         </div>
         <Divider />
@@ -126,7 +126,8 @@ export default function FilterChipMenu({
               display={"flex"}
               alignItems={"center"}
               gap={0.5}
-              p={0.5}
+              pl={0.5}
+              pr={1.5}
               sx={{
                 cursor: "pointer",
                 "&:hover": { backgroundColor: COLORS.blueGrey[50] },
@@ -141,8 +142,27 @@ export default function FilterChipMenu({
               }}
             >
               <Checkbox size="small" checked={filter.includes(value)} />
-              <Typography fontSize={13}>
-                {label} ({statusCounts[value as ChunkProps["status"]]})
+              <Typography fontSize={13} flex={1}>
+                {label}
+              </Typography>
+              <Typography
+                fontSize={12}
+                px={1}
+                py={0.5}
+                lineHeight={1}
+                borderRadius={1}
+                bgcolor={
+                  // set bg color based on status
+                  value === "draft"
+                    ? COLORS.grey[300]
+                    : value === "in-progress"
+                    ? COLORS.cyan[100]
+                    : value === "completed"
+                    ? COLORS.green.A100
+                    : COLORS.grey[200]
+                }
+              >
+                {statusCounts[value as ChunkProps["status"]]}
               </Typography>
             </Box>
           </div>

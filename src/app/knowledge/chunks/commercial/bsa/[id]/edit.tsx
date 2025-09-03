@@ -204,7 +204,9 @@ export default function BSAChunkEdit({
         borderColor={COLORS.blueGrey[100]}
         width={isMenuCollapsed ? "46px" : "264px"}
         sx={{
-          overflow: isMenuCollapsed ? "hidden" : "auto",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
           minHeight: 0,
           transition: "width 240ms ease-in-out",
           willChange: "width",
@@ -247,8 +249,11 @@ export default function BSAChunkEdit({
         </Box>
         <Box
           sx={{
+            flex: 1,
             width: "264px",
             minWidth: "264px",
+            overflowY: "auto",
+            overflowX: "hidden",
             transition: "opacity 200ms ease, transform 200ms ease",
             willChange: "transform, opacity",
             opacity: isMenuCollapsed ? 0 : 1,
