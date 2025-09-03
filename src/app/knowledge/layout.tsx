@@ -85,23 +85,30 @@ export default function KnowledgeLayout({
   }, [segments]);
 
   return (
-    <Box p={1.5} height={"100%"}>
-      <Box
-        bgcolor={"white"}
-        border={1}
-        borderColor={COLORS.blueGrey[100]}
-        height={"100%"}
-        borderRadius={2}
-        display={"flex"}
-        flexDirection={"column"}
-      >
-        <KnowledgeBreadcrumbs
-          breadcrumbs={initialBreadcrumbs}
-          headerNode={headerNode}
-        />
-        <Box p={1.5} flex={1} minHeight={0}>
-          {children}
+    <Box display={"flex"} flexDirection={"column"} height={"100%"}>
+      <Box height={"100%"} display={"flex"} flexDirection={"column"}>
+        <Box
+          bgcolor={"white"}
+          border={1}
+          borderColor={COLORS.blueGrey[100]}
+          flexGrow={1}
+          height={0}
+          minHeight={0}
+          overflow={"auto"}
+          m={1.5}
+          borderRadius={2}
+          display={"flex"}
+          flexDirection={"column"}
+        >
+          <KnowledgeBreadcrumbs
+            breadcrumbs={initialBreadcrumbs}
+            headerNode={headerNode}
+          />
+          <Box p={1.5} flex={1} minHeight={0}>
+            {children}
+          </Box>
         </Box>
+        <Box id="knowledge-footer" />
       </Box>
     </Box>
   );

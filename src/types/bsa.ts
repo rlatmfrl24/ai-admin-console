@@ -32,13 +32,33 @@ type BSAMenuTreeItemProps = {
 interface ChunkProps {
   title: string;
   status: "done" | "in-progress" | "completed" | "draft";
+  content: string;
   progressId: string;
   attachedFile: {
     file: File;
     description: string;
-  };
+  }[];
+  embeddingAt: Date | null;
   updatedAt: Date;
   createdAt: Date;
+  isNew?: boolean;
 }
 
-export type { BSAFilter, BSATableProps, BSAMenuTreeItemProps, ChunkProps };
+type BSAChunksState = {
+  chunks: ChunkProps[];
+  selectedChunk: ChunkProps | null;
+  setChunks: (chunks: ChunkProps[]) => void;
+  updateChunk: (updated: ChunkProps) => void;
+  setSelectedChunk: (chunk: ChunkProps | null) => void;
+  addChunk: (chunk: ChunkProps) => void;
+  cleanupNewEmptyChunks: (excludeProgressId?: string) => void;
+  reset: () => void;
+};
+
+export type {
+  BSAFilter,
+  BSATableProps,
+  BSAMenuTreeItemProps,
+  ChunkProps,
+  BSAChunksState,
+};
