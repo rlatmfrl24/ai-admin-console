@@ -37,6 +37,8 @@ import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
 import Image from "next/image";
 import { faker } from "@faker-js/faker";
 import FilterChipMenu from "../FilterChipMenu";
+import LeftPanelOpenIcon from "@/assets/icon-left-panel-open.svg";
+import LeftPanelCloseIcon from "@/assets/icon-left-panel-close.svg";
 
 function findIndexPath(
   nodes: BSAMenuTreeItemProps[],
@@ -70,8 +72,6 @@ function isChunkChanged(chunk: ChunkProps, chunks: ChunkProps[]): boolean {
     )
   );
 }
-
-// moved FilterChipMenu to ./FilterChipMenu
 
 type BSAEditProps = {
   selectedData: BSATableProps | null;
@@ -181,6 +181,7 @@ export default function BSAChunkEdit({
   ]);
   const [searchQuery, setSearchQuery] = useState("");
   const normalizedQuery = searchQuery.trim().toLowerCase();
+  const [isMenuCollapsed, setIsMenuCollapsed] = useState(false);
   const visibleChunks =
     filter.length === 0
       ? []
@@ -198,17 +199,71 @@ export default function BSAChunkEdit({
     <>
       <Box
         aria-label="BSA Menu Tree"
+        aria-expanded={!isMenuCollapsed}
         borderRight={1}
         borderColor={COLORS.blueGrey[100]}
-        width={"264px"}
-        sx={{ overflow: "auto", minHeight: 0 }}
+        width={isMenuCollapsed ? "46px" : "264px"}
+        sx={{
+          overflow: isMenuCollapsed ? "hidden" : "auto",
+          minHeight: 0,
+          transition: "width 240ms ease-in-out",
+          willChange: "width",
+        }}
       >
-        <MenuTree
-          items={BSA_MENU_TREE}
-          ariaLabel="BSA Menu Tree"
-          selectedId={selectedTreeItem?.id}
-          onSelect={(_, item) => setSelectedTreeItem(item)}
-        />
+        <Box
+          display={"flex"}
+          alignItems={"center"}
+          gap={0.5}
+          px={0.5}
+          py={1}
+          borderBottom={isMenuCollapsed ? 0 : 1}
+          borderColor={COLORS.blueGrey[100]}
+        >
+          <IconButton
+            aria-label={
+              isMenuCollapsed
+                ? "Expand BSA Menu Tree"
+                : "Collapse BSA Menu Tree"
+            }
+            onClick={() => setIsMenuCollapsed((prev) => !prev)}
+          >
+            {isMenuCollapsed ? <LeftPanelOpenIcon /> : <LeftPanelCloseIcon />}
+          </IconButton>
+          <Typography
+            fontSize={14}
+            fontWeight={500}
+            color="text.primary"
+            sx={{
+              transition: "opacity 200ms ease, transform 200ms ease",
+              opacity: isMenuCollapsed ? 0 : 1,
+              transform: isMenuCollapsed ? "translateX(-4px)" : "none",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            Commercial
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            width: "264px",
+            minWidth: "264px",
+            transition: "opacity 200ms ease, transform 200ms ease",
+            willChange: "transform, opacity",
+            opacity: isMenuCollapsed ? 0 : 1,
+            transform: isMenuCollapsed ? "translateX(-218px)" : "none",
+            pointerEvents: isMenuCollapsed ? "none" : "auto",
+          }}
+          aria-hidden={isMenuCollapsed}
+        >
+          <MenuTree
+            items={BSA_MENU_TREE}
+            ariaLabel="BSA Menu Tree"
+            selectedId={selectedTreeItem?.id}
+            onSelect={(_, item) => setSelectedTreeItem(item)}
+          />
+        </Box>
       </Box>
       <Box
         flex={selectedChunk ? 0 : 1}
