@@ -1,7 +1,7 @@
 import { COLORS } from "@/constants/color";
 import { ChunkProps } from "@/types/bsa";
 import { Box, Card, CardContent, IconButton, Typography } from "@mui/material";
-import Chip from "@/components/common/Chip";
+import { Chip } from "@/components/common/Chip";
 import { CheckCircle, MoreVert } from "@mui/icons-material";
 
 function getStatusChip(status: string) {

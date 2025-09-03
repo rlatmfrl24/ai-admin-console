@@ -1,6 +1,6 @@
 import { Chip as MuiChip, ChipProps } from "@mui/material";
 
-export default function Chip({
+export function Chip({
   label,
   backgroundColor,
   ...props

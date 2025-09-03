@@ -109,7 +109,20 @@ export default function BSAChunkList() {
             </Box>
           )}
         </Breadcrumbs>
-        <Box display={"flex"} alignItems={"center"} gap={0.5}>
+        <Box
+          display={"flex"}
+          alignItems={"center"}
+          gap={0.5}
+          sx={{
+            cursor: "pointer",
+            paddingLeft: 1,
+            paddingRight: 1,
+            borderRadius: 2,
+            "&:hover": {
+              backgroundColor: "action.hover",
+            },
+          }}
+        >
           <InsertDriveFileOutlined sx={{ fontSize: 16 }} />
           <Typography
             lineHeight={1}

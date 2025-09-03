@@ -36,6 +36,7 @@ import type {
 import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
 import Image from "next/image";
 import { faker } from "@faker-js/faker";
+import FilterChipMenu from "../FilterChipMenu";
 
 function findIndexPath(
   nodes: BSAMenuTreeItemProps[],
@@ -69,6 +70,8 @@ function isChunkChanged(chunk: ChunkProps, chunks: ChunkProps[]): boolean {
     )
   );
 }
+
+// moved FilterChipMenu to ./FilterChipMenu
 
 type BSAEditProps = {
   selectedData: BSATableProps | null;
@@ -169,6 +172,16 @@ export default function BSAChunkEdit({
     }
     setDraftChunk({ ...selectedChunk });
   }, [selectedChunk]);
+
+  const [filter, setFilter] = useState<string[]>([
+    "draft",
+    "in-progress",
+    "completed",
+    "done",
+  ]);
+  const visibleChunks =
+    filter.length === 0 ? [] : chunks.filter((c) => filter.includes(c.status));
+
   return (
     <>
       <Box
@@ -193,11 +206,21 @@ export default function BSAChunkEdit({
         borderColor={COLORS.blueGrey[100]}
         sx={{ overflow: "auto", minHeight: 0 }}
       >
-        <Typography fontSize={14} fontWeight={500} color="text.primary">
-          {findIndexPath(BSA_MENU_TREE, selectedTreeItem?.id ?? "")?.join(".") +
-            ". " +
-            selectedTreeItem?.label}
-        </Typography>
+        <Box
+          display={"flex"}
+          alignItems={"center"}
+          gap={0.5}
+          justifyContent={"space-between"}
+        >
+          <Typography fontSize={14} fontWeight={500} color="text.primary">
+            {findIndexPath(BSA_MENU_TREE, selectedTreeItem?.id ?? "")?.join(
+              "."
+            ) +
+              ". " +
+              selectedTreeItem?.label}
+          </Typography>
+          <FilterChipMenu filter={filter} setFilter={setFilter} />
+        </Box>
         <Box
           mt={1.5}
           display={"grid"}
@@ -213,6 +236,7 @@ export default function BSAChunkEdit({
               borderRadius: 2,
               cursor: "pointer",
             }}
+            minHeight={100}
             justifyContent={"center"}
             alignItems={"center"}
             gap={0.5}
@@ -238,7 +262,7 @@ export default function BSAChunkEdit({
               New Chunk
             </Typography>
           </Box>
-          {chunks.map((chunk) => (
+          {visibleChunks.map((chunk) => (
             <ChunkCard
               key={chunk.progressId}
               chunk={chunk}
