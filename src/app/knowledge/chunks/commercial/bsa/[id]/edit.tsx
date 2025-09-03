@@ -331,7 +331,7 @@ export default function BSAChunkEdit({
               borderRadius: 2,
               cursor: "pointer",
             }}
-            minHeight={100}
+            minHeight={80}
             justifyContent={"center"}
             alignItems={"center"}
             gap={0.5}
@@ -361,6 +361,7 @@ export default function BSAChunkEdit({
             <ChunkCard
               key={chunk.progressId}
               chunk={chunk}
+              showProgressId={!selectedData?.fileName.includes(".pdf")}
               selected={selectedChunk?.progressId === chunk.progressId}
               onSelect={setSelectedChunk}
             />

@@ -22,11 +22,13 @@ function getStatusChip(status: string) {
 export function ChunkCard({
   chunk,
   selected = false,
+  showProgressId = true,
   onSelect,
   onMore,
 }: {
   chunk: ChunkProps;
   selected?: boolean;
+  showProgressId?: boolean;
   onSelect?: (chunk: ChunkProps) => void;
   onMore?: (chunk: ChunkProps) => void;
 }) {
@@ -59,9 +61,15 @@ export function ChunkCard({
         <Typography mt="10px" fontSize={14} fontWeight={400}>
           {chunk.title}
         </Typography>
-        <Typography color={COLORS.blueGrey[300]} fontSize={12} fontWeight={500}>
-          {chunk.progressId}
-        </Typography>
+        {showProgressId && (
+          <Typography
+            color={COLORS.blueGrey[300]}
+            fontSize={12}
+            fontWeight={500}
+          >
+            {chunk.progressId}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   );
