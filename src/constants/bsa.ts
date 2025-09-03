@@ -106,6 +106,7 @@ export const BSA_MENU_TREE: BSAMenuTreeItemProps[] = [
 
 export function makeRandomChunk(): ChunkProps {
   return {
+    content: faker.lorem.paragraphs(5),
     title: faker.lorem
       .words(3)
       .split(" ")
@@ -118,10 +119,8 @@ export function makeRandomChunk(): ChunkProps {
       "draft",
     ]),
     progressId: faker.string.numeric(4),
-    attachedFile: {
-      file: new File([], "test.pdf"),
-      description: faker.lorem.sentence(),
-    },
+    attachedFile: [],
+    embeddingAt: faker.date.recent(),
     updatedAt: faker.date.recent(),
     createdAt: faker.date.past(),
   };

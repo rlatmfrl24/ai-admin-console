@@ -5,22 +5,26 @@ import { SxProps } from "@mui/system";
 const InputWithLabel = ({
   label,
   size = "medium",
+  noLabel,
   ...props
 }: {
-  label: string;
+  label?: string;
   size?: "small" | "medium";
+  noLabel?: boolean;
 } & TextFieldProps) => {
   return (
     <Box display={"flex"} flexDirection={"column"}>
-      <Typography
-        variant="caption"
-        color={"text.primary"}
-        lineHeight={size === "small" ? 1 : 1.3}
-        fontWeight={size === "small" ? 400 : 500}
-        m={"2px"}
-      >
-        {label}
-      </Typography>
+      {!noLabel && (
+        <Typography
+          variant="caption"
+          color={"text.primary"}
+          lineHeight={size === "small" ? 1 : 1.3}
+          fontWeight={size === "small" ? 400 : 500}
+          m={"2px"}
+        >
+          {label}
+        </Typography>
+      )}
       <TextField
         variant="outlined"
         {...props}
