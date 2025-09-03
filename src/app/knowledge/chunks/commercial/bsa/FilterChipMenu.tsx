@@ -30,6 +30,16 @@ export default function FilterChipMenu({
     done: chunks.filter((c) => c.status === "done").length,
   };
 
+  const menuLabel = (() => {
+    const count = filter.length;
+    if (count === 0) return "None";
+    if (count === STATUS_OPTIONS.length) return "All Status";
+    const firstLabel =
+      STATUS_OPTIONS.find((o) => o.value === filter[0])?.label ?? "";
+    if (count === 1) return firstLabel;
+    return `${firstLabel} +${count - 1}`;
+  })();
+
   return (
     <Menu>
       <MenuButton as="div">
@@ -43,9 +53,18 @@ export default function FilterChipMenu({
           p={"6px 4px 6px 8px"}
           sx={{
             cursor: "pointer",
+            backgroundColor:
+              filter.length === 0 || filter.length === STATUS_OPTIONS.length
+                ? "white"
+                : COLORS.indigo[900],
           }}
+          color={
+            filter.length === 0 || filter.length === STATUS_OPTIONS.length
+              ? "rgba(0, 0, 0, 0.87)"
+              : "white"
+          }
         >
-          <Typography fontSize={12}>Filter</Typography>
+          <Typography fontSize={12}>{menuLabel}</Typography>
           <ArrowDropDown sx={{ fontSize: 16 }} />
         </Box>
       </MenuButton>
