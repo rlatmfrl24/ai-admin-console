@@ -56,7 +56,9 @@ export function ChunkCard({
             <MoreVert sx={{ fontSize: "16px" }} />
           </IconButton>
         </Box>
-        <Typography mt="10px">{chunk.title}</Typography>
+        <Typography mt="10px" fontSize={14} fontWeight={400}>
+          {chunk.title}
+        </Typography>
         <Typography color={COLORS.blueGrey[300]} fontSize={12} fontWeight={500}>
           {chunk.progressId}
         </Typography>

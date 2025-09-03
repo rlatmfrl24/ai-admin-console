@@ -8,6 +8,7 @@ import {
   Portal,
   IconButton,
   InputBase,
+  Popover,
 } from "@mui/material";
 import {
   AddCircle,
@@ -39,6 +40,9 @@ import { faker } from "@faker-js/faker";
 import FilterChipMenu from "../FilterChipMenu";
 import LeftPanelOpenIcon from "@/assets/icon-left-panel-open.svg";
 import LeftPanelCloseIcon from "@/assets/icon-left-panel-close.svg";
+import AIProcessIcon from "@/assets/icon-ai-process.svg";
+import { alpha } from "@mui/material/styles";
+// Headless UI Popover removed in favor of MUI Popover to resolve shadow clipping
 
 function findIndexPath(
   nodes: BSAMenuTreeItemProps[],
@@ -182,6 +186,13 @@ export default function BSAChunkEdit({
   const [searchQuery, setSearchQuery] = useState("");
   const normalizedQuery = searchQuery.trim().toLowerCase();
   const [isMenuCollapsed, setIsMenuCollapsed] = useState(false);
+  const [promptAnchorEl, setPromptAnchorEl] = useState<HTMLElement | null>(
+    null
+  );
+  const isPromptOpen = Boolean(promptAnchorEl);
+  const openPrompt = (e: React.MouseEvent<HTMLElement>) =>
+    setPromptAnchorEl(e.currentTarget as HTMLElement);
+  const closePrompt = () => setPromptAnchorEl(null);
   const visibleChunks =
     filter.length === 0
       ? []
@@ -359,9 +370,172 @@ export default function BSAChunkEdit({
       {selectedChunk && (
         <Box flex={1} display={"flex"} p={2} gap={2} sx={{ minHeight: 0 }}>
           <Box flex={1} display={"flex"} flexDirection={"column"} gap={1}>
-            <Typography fontSize={14} fontWeight={500} color="text.primary">
-              Edit Data
-            </Typography>
+            <Box
+              display={"flex"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+            >
+              <Typography fontSize={14} fontWeight={500} color="text.primary">
+                Edit Data
+              </Typography>
+              <Box>
+                <Box
+                  onClick={openPrompt}
+                  display={"flex"}
+                  alignItems={"center"}
+                  gap={0.5}
+                  px={1.5}
+                  py={0.5}
+                  sx={{
+                    border: "1px solid transparent",
+                    borderRadius: "6px",
+                    background: `linear-gradient(${alpha(
+                      COLORS.primary.states.focus,
+                      isPromptOpen ? 0.12 : 0
+                    )}, ${alpha(
+                      COLORS.primary.states.focus,
+                      isPromptOpen ? 0.12 : 0
+                    )}) padding-box, linear-gradient(${COLORS.common.white}, ${
+                      COLORS.common.white
+                    }) padding-box, ${COLORS.gradient.secondary} border-box`,
+                    cursor: "pointer",
+                  }}
+                >
+                  <AIProcessIcon />
+                  <Typography
+                    fontSize={13}
+                    fontWeight={500}
+                    sx={{
+                      background: COLORS.gradient.secondary,
+                      backgroundClip: "text",
+                      textFillColor: "transparent",
+                    }}
+                  >
+                    PROMPT
+                  </Typography>
+                </Box>
+                <Popover
+                  open={isPromptOpen}
+                  anchorEl={promptAnchorEl}
+                  onClose={closePrompt}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                  transformOrigin={{ vertical: "top", horizontal: "left" }}
+                  sx={{ zIndex: 2100 }}
+                  slotProps={{
+                    paper: {
+                      elevation: 1,
+                      sx: {
+                        width: "560px",
+                        border: 1,
+                        borderColor: COLORS.blueGrey[100],
+                        borderRadius: 2,
+                        bgcolor: COLORS.common.white,
+                        overflow: "visible",
+                      },
+                    },
+                  }}
+                >
+                  <Box
+                    display={"flex"}
+                    alignItems={"center"}
+                    gap={0.5}
+                    p={"12px 16px 8px 16px"}
+                  >
+                    <AIProcessIcon />
+                    <Typography
+                      fontSize={16}
+                      fontWeight={500}
+                      sx={{
+                        background: COLORS.gradient.secondary,
+                        backgroundClip: "text",
+                        textFillColor: "transparent",
+                      }}
+                    >
+                      Prompt
+                    </Typography>
+                  </Box>
+                  <Box
+                    borderTop={1}
+                    borderBottom={1}
+                    borderColor={COLORS.blueGrey[100]}
+                    p={2}
+                    gap={1.5}
+                    display={"flex"}
+                    flexDirection={"column"}
+                  >
+                    <Box
+                      display={"flex"}
+                      flexDirection={"column"}
+                      p={2}
+                      fontSize={14}
+                      fontWeight={500}
+                      bgcolor={COLORS.grey[100]}
+                      borderRadius={2}
+                    >
+                      <p>
+                        해당 Chunk data를 이용해서 다음 메타 항목들을
+                        추출해주세요.
+                      </p>
+                      <p>semantic_title</p>
+                      <p>semantic_summary</p>
+                      <p>semantic_chunk</p>
+                    </Box>
+                    <Box display={"flex"} flexDirection={"column"}>
+                      <Typography
+                        variant="caption"
+                        color={"text.primary"}
+                        lineHeight={1.3}
+                        fontWeight={500}
+                        m={"2px"}
+                      >
+                        Add Prompt
+                      </Typography>
+                      <TextField
+                        placeholder="추가로 원하는 프롬프트를 유저별로 입력"
+                        sx={{
+                          "& .MuiInputBase-root": {
+                            padding: "6px 12px",
+                          },
+                          "& .MuiOutlinedInput-root": {
+                            height: "100%",
+                            display: "flex",
+                            alignItems: "center",
+                            fontSize: "13px",
+                          },
+                        }}
+                        multiline
+                        rows={10}
+                      />
+                    </Box>
+                  </Box>
+                  <Box
+                    display={"flex"}
+                    gap={1}
+                    justifyContent={"end"}
+                    p={"8px 16px"}
+                  >
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        color: "text.primary",
+                        borderColor: "text.primary",
+                      }}
+                      onClick={closePrompt}
+                    >
+                      CANCEL
+                    </Button>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={closePrompt}
+                    >
+                      ADD
+                    </Button>
+                  </Box>
+                </Popover>
+              </Box>
+            </Box>
             <Box
               flex={1}
               border={2}
