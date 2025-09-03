@@ -50,7 +50,7 @@ export default function FilterChipMenu({
           border={1}
           borderColor={"rgba(0, 0, 0, 0.42)"}
           borderRadius={2}
-          p={"6px 4px 6px 8px"}
+          p={"3px 4px 3px 8px"}
           sx={{
             cursor: "pointer",
             backgroundColor:
@@ -64,7 +64,9 @@ export default function FilterChipMenu({
               : "white"
           }
         >
-          <Typography fontSize={12}>{menuLabel}</Typography>
+          <Typography lineHeight={1} fontSize={12}>
+            {menuLabel}
+          </Typography>
           <ArrowDropDown sx={{ fontSize: 16 }} />
         </Box>
       </MenuButton>

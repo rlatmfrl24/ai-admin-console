@@ -179,8 +179,20 @@ export default function BSAChunkEdit({
     "completed",
     "done",
   ]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const normalizedQuery = searchQuery.trim().toLowerCase();
   const visibleChunks =
-    filter.length === 0 ? [] : chunks.filter((c) => filter.includes(c.status));
+    filter.length === 0
+      ? []
+      : chunks
+          .filter((c) => filter.includes(c.status))
+          .filter((c) => {
+            if (normalizedQuery === "") return true;
+            return (
+              c.title.toLowerCase().includes(normalizedQuery) ||
+              c.progressId.toLowerCase().includes(normalizedQuery)
+            );
+          });
 
   return (
     <>
@@ -219,7 +231,19 @@ export default function BSAChunkEdit({
               ". " +
               selectedTreeItem?.label}
           </Typography>
-          <FilterChipMenu filter={filter} setFilter={setFilter} />
+          {!selectedChunk && (
+            <Box display={"flex"} alignItems={"center"} gap={0.5}>
+              <FilterChipMenu filter={filter} setFilter={setFilter} />
+              <InputWithLabel
+                noLabel
+                variant="outlined"
+                size="small"
+                placeholder="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </Box>
+          )}
         </Box>
         <Box
           mt={1.5}
