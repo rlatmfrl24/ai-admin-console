@@ -107,7 +107,15 @@ export default function BSA() {
             {...register("stream")}
           />
           <SelectWithLabel
-            label="Module"
+            label="Module 01"
+            size="small"
+            sx={{ minWidth: 160 }}
+            defaultValue={"all"}
+            options={MODULE_OPTIONS}
+            {...register("module")}
+          />
+          <SelectWithLabel
+            label="Module 02"
             size="small"
             sx={{ minWidth: 160 }}
             defaultValue={"all"}
@@ -121,6 +129,14 @@ export default function BSA() {
             defaultValue={"all"}
             options={STATUS_OPTIONS}
             {...register("status")}
+          />
+          <SelectWithLabel
+            label="Category"
+            size="small"
+            sx={{ minWidth: 160 }}
+            defaultValue={"all"}
+            options={MODULE_OPTIONS}
+            {...register("module")}
           />
           <InputWithLabel
             label="Search"
