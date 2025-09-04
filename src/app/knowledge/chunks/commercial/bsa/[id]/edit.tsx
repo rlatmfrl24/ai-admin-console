@@ -7,18 +7,12 @@ import {
   Typography,
   Portal,
   IconButton,
-  InputBase,
   Popover,
 } from "@mui/material";
-import {
-  AddCircle,
-  Cached,
-  Close,
-  FileUploadOutlined,
-} from "@mui/icons-material";
-import MenuTree from "@/app/knowledge/chunks/commercial/bsa/MenuTree";
+import { AddCircle, Cached, FileUploadOutlined } from "@mui/icons-material";
+import MenuTree from "@/app/knowledge/chunks/commercial/bsa/[id]/components/MenuTree";
 import { BSA_MENU_TREE } from "@/constants/bsa";
-import { ChunkCard } from "../ChunkCard";
+import { ChunkCard } from "./components/ChunkCard";
 import InputWithLabel from "@/components/common/Input";
 import { COLORS } from "@/constants/color";
 import { format } from "date-fns";
@@ -35,9 +29,13 @@ import type {
   ChunkProps,
 } from "@/types/bsa";
 import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
-import Image from "next/image";
+// Image import removed; previews handled by AttachmentPreviewItem
 import { faker } from "@faker-js/faker";
-import FilterChipMenu from "../FilterChipMenu";
+import {
+  AttachmentPreviewForDocument,
+  AttachmentPreviewForUI,
+} from "./components/AttachmenPreview";
+import FilterChipMenu from "./components/FilterChipMenu";
 import LeftPanelOpenIcon from "@/assets/icon-left-panel-open.svg";
 import LeftPanelCloseIcon from "@/assets/icon-left-panel-close.svg";
 import AIProcessIcon from "@/assets/icon-ai-process.svg";
@@ -656,36 +654,18 @@ export default function BSAChunkEdit({
                 />
                 {previewUrls.length > 0 && (
                   <Box gap={1} display={"flex"} flexDirection={"column"}>
-                    {previewUrls.map((url, idx) => (
-                      <Box
-                        key={`${url}-${idx}`}
-                        bgcolor={"white"}
-                        borderRadius={2}
-                        border={1}
-                        borderColor={COLORS.blueGrey[100]}
-                        p={1.5}
-                        sx={{ lineHeight: 0 }}
-                        position={"relative"}
-                        display={"flex"}
-                        alignItems={"center"}
-                        gap={1.5}
-                      >
-                        <Image
-                          width={48}
-                          height={48}
-                          src={url}
-                          alt={`attachment-preview-${idx}`}
-                          style={{ display: "block", borderRadius: "4px" }}
-                          objectFit="cover"
-                        />
-                        <InputBase
-                          sx={{ flex: 1 }}
-                          multiline
-                          minRows={1}
-                          maxRows={8}
-                          onChange={(e) => {
+                    {previewUrls.map((url, idx) =>
+                      selectedData?.fileName.includes(".pdf") ? (
+                        <AttachmentPreviewForDocument
+                          key={`${url}-${idx}`}
+                          url={url}
+                          index={idx}
+                          mode="edit"
+                          description={
+                            draftChunk?.attachedFile?.[idx]?.description ?? ""
+                          }
+                          onChangeDescription={(value) => {
                             if (!draftChunk) return;
-                            const value = (e.target as HTMLInputElement).value;
                             const updated: ChunkProps = {
                               ...draftChunk,
                               attachedFile: (draftChunk.attachedFile ?? []).map(
@@ -696,15 +676,7 @@ export default function BSAChunkEdit({
                             setDraftChunk(updated);
                             scheduleFlush(updated);
                           }}
-                          placeholder="Please input description"
-                          value={
-                            draftChunk?.attachedFile?.[idx]?.description ?? ""
-                          }
-                        />
-                        <IconButton
-                          size="small"
-                          sx={{ alignSelf: "flex-start" }}
-                          onClick={() => {
+                          onRemove={() => {
                             if (!draftChunk) return;
                             const updated: ChunkProps = {
                               ...draftChunk,
@@ -715,11 +687,30 @@ export default function BSAChunkEdit({
                             setDraftChunk(updated);
                             scheduleFlush(updated);
                           }}
-                        >
-                          <Close sx={{ fontSize: 16 }} />
-                        </IconButton>
-                      </Box>
-                    ))}
+                        />
+                      ) : (
+                        <AttachmentPreviewForUI
+                          key={`${url}-${idx}`}
+                          url={url}
+                          index={idx}
+                          mode="edit"
+                          description={
+                            draftChunk?.attachedFile?.[idx]?.description ?? ""
+                          }
+                          onRemove={() => {
+                            if (!draftChunk) return;
+                            const updated: ChunkProps = {
+                              ...draftChunk,
+                              attachedFile: (
+                                draftChunk.attachedFile ?? []
+                              ).filter((_, i) => i !== idx),
+                            };
+                            setDraftChunk(updated);
+                            scheduleFlush(updated);
+                          }}
+                        />
+                      )
+                    )}
                   </Box>
                 )}
               </Box>
@@ -833,36 +824,17 @@ export default function BSAChunkEdit({
                     mt={0.5}
                   >
                     {savedPreviewUrls.map((url, idx) => (
-                      <Box
+                      <AttachmentPreviewForDocument
                         key={`saved-${url}-${idx}`}
-                        bgcolor={"white"}
-                        borderRadius={2}
-                        border={1}
-                        borderColor={COLORS.blueGrey[100]}
-                        p={1.5}
-                        sx={{ lineHeight: 0 }}
-                        position={"relative"}
-                        display={"flex"}
-                        alignItems={"center"}
-                        gap={1.5}
-                      >
-                        <Image
-                          width={48}
-                          height={48}
-                          src={url}
-                          alt={`current-attachment-${idx}`}
-                          style={{ display: "block", borderRadius: "4px" }}
-                          objectFit="cover"
-                        />
-                        <Typography
-                          sx={{ flex: 1, whiteSpace: "pre-line" }}
-                          fontSize={12}
-                        >
-                          {chunks.find(
+                        url={url}
+                        index={idx}
+                        mode="read"
+                        description={
+                          chunks.find(
                             (c) => c.progressId === selectedChunk.progressId
-                          )?.attachedFile?.[idx]?.description ?? ""}
-                        </Typography>
-                      </Box>
+                          )?.attachedFile?.[idx]?.description ?? ""
+                        }
+                      />
                     ))}
                   </Box>
                 )}
