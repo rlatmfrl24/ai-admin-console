@@ -500,6 +500,7 @@ export default function BSAChunkEdit({
                             display: "flex",
                             alignItems: "center",
                             fontSize: "13px",
+                            backgroundColor: "white",
                           },
                         }}
                         multiline
@@ -597,6 +598,7 @@ export default function BSAChunkEdit({
                         display: "flex",
                         alignItems: "center",
                         fontSize: "13px",
+                        backgroundColor: "white",
                       },
                     }}
                     onChange={(e) => {
