@@ -6,7 +6,7 @@ import { ArrowDropDown } from "@mui/icons-material";
 import { Box, Breadcrumbs, Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
-import { useHeaderStore } from "@/app/knowledge/store/headerStore";
+import { useHeaderStore } from "@/app/knowledge/chunks/commercial/bsa/store/headerStore";
 
 const KnowledgeBreadcrumbs = ({
   breadcrumbs,

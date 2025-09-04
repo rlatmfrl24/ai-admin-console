@@ -28,19 +28,17 @@ import type {
   BSATableProps,
   ChunkProps,
 } from "@/types/bsa";
-import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
-// Image import removed; previews handled by AttachmentPreviewItem
+import { useBSAChunksStore } from "@/app/knowledge/chunks/commercial/bsa/store/bsaChunksStore";
 import { faker } from "@faker-js/faker";
 import {
   AttachmentPreviewForDocument,
   AttachmentPreviewForUI,
-} from "./components/AttachmenPreview";
+} from "./components/AttachmentPreview";
 import FilterChipMenu from "./components/FilterChipMenu";
 import LeftPanelOpenIcon from "@/assets/icon-left-panel-open.svg";
 import LeftPanelCloseIcon from "@/assets/icon-left-panel-close.svg";
 import AIProcessIcon from "@/assets/icon-ai-process.svg";
 import { alpha } from "@mui/material/styles";
-// Headless UI Popover removed in favor of MUI Popover to resolve shadow clipping
 
 function findIndexPath(
   nodes: BSAMenuTreeItemProps[],

@@ -3,7 +3,7 @@
 import { Box, Checkbox, Divider, Typography } from "@mui/material";
 import { ArrowDropDown } from "@mui/icons-material";
 import { Menu, MenuButton, MenuItems } from "@headlessui/react";
-import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
+import { useBSAChunksStore } from "@/app/knowledge/chunks/commercial/bsa/store/bsaChunksStore";
 import type { ChunkProps } from "@/types/bsa";
 import { COLORS } from "@/constants/color";
 import type { Dispatch, SetStateAction } from "react";
