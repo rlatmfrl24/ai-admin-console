@@ -29,11 +29,19 @@ const KnowledgeBreadcrumbs = ({
       <Breadcrumbs separator="/" aria-label="breadcrumb">
         {breadcrumbs.map((breadcrumb, index) => (
           <Box
+            aria-label="Breadcrumb"
             key={index}
             display={"flex"}
             alignItems={"center"}
             p={0.5}
             gap={0.5}
+            borderRadius={1}
+            sx={{
+              cursor: "pointer",
+              "&:hover": {
+                backgroundColor: COLORS.action.selected,
+              },
+            }}
           >
             <Typography lineHeight={1} fontSize={12} color="text.primary">
               {breadcrumb.label}

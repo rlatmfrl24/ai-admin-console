@@ -91,6 +91,7 @@ export default function BSAChunkEdit({
   const selectedChunk = useBSAChunksStore((s) => s.selectedChunk);
   const updateChunk = useBSAChunksStore((s) => s.updateChunk);
   const addChunk = useBSAChunksStore((s) => s.addChunk);
+  const removeChunk = useBSAChunksStore((s) => s.removeChunk);
   const cleanupNewEmptyChunks = useBSAChunksStore(
     (s) => s.cleanupNewEmptyChunks
   );
@@ -360,6 +361,7 @@ export default function BSAChunkEdit({
               showProgressId={!selectedData?.fileName.includes(".pdf")}
               selected={selectedChunk?.progressId === chunk.progressId}
               onSelect={setSelectedChunk}
+              onDelete={(c) => removeChunk(c.progressId)}
             />
           ))}
         </Box>
