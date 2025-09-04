@@ -1,9 +1,17 @@
 "use client";
 
-import { Box, IconButton, InputBase, Typography } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  InputBase,
+  Typography,
+  Modal,
+  CircularProgress,
+} from "@mui/material";
 import { Close, OpenInNew } from "@mui/icons-material";
 import Image from "next/image";
 import { COLORS } from "@/constants/color";
+import { useEffect, useMemo, useState } from "react";
 
 type AttachmentPreviewItemProps = {
   url: string;
@@ -14,16 +22,52 @@ type AttachmentPreviewItemProps = {
   onRemove?: () => void;
 };
 
-function getMimeTypeFromDataUrl(dataUrl: string): string {
-  const match = dataUrl.match(/^data:([^;]+);/);
-  return match ? match[1] : "";
-}
+// removed: getMimeTypeFromDataUrl - no longer needed after removing type branches
 
 export function AttachmentPreviewForUI({
   url,
   index,
   onRemove,
 }: AttachmentPreviewItemProps) {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [naturalWidth, setNaturalWidth] = useState<number | null>(null);
+  const [naturalHeight, setNaturalHeight] = useState<number | null>(null);
+
+  const { displayWidth, displayHeight } = useMemo(() => {
+    if (
+      typeof window === "undefined" ||
+      naturalWidth == null ||
+      naturalHeight == null
+    ) {
+      return { displayWidth: 0, displayHeight: 0 };
+    }
+    const maxWidth = window.innerWidth * 0.8;
+    const maxHeight = window.innerHeight * 0.8;
+    const scale = Math.min(
+      1,
+      maxWidth / naturalWidth,
+      maxHeight / naturalHeight
+    );
+    return {
+      displayWidth: Math.round(naturalWidth * scale),
+      displayHeight: Math.round(naturalHeight * scale),
+    };
+  }, [naturalWidth, naturalHeight]);
+
+  useEffect(() => {
+    if (
+      isPreviewOpen &&
+      (naturalWidth == null || naturalHeight == null) &&
+      typeof window !== "undefined"
+    ) {
+      const preload = new window.Image();
+      preload.src = url;
+      preload.onload = () => {
+        setNaturalWidth(preload.naturalWidth);
+        setNaturalHeight(preload.naturalHeight);
+      };
+    }
+  }, [isPreviewOpen, naturalWidth, naturalHeight, url]);
   return (
     <Box
       bgcolor={"white"}
@@ -44,7 +88,7 @@ export function AttachmentPreviewForUI({
         >
           UI Screen
         </Typography>
-        <IconButton size="small">
+        <IconButton size="small" onClick={() => setIsPreviewOpen(true)}>
           <OpenInNew sx={{ fontSize: 16 }} />
         </IconButton>
         <IconButton size="small" onClick={onRemove}>
@@ -64,7 +108,47 @@ export function AttachmentPreviewForUI({
           borderRadius: "4px",
         }}
         objectFit="cover"
+        onLoadingComplete={(img) => {
+          if (naturalWidth == null || naturalHeight == null) {
+            setNaturalWidth(img.naturalWidth);
+            setNaturalHeight(img.naturalHeight);
+          }
+        }}
       />
+
+      <Modal open={isPreviewOpen} onClose={() => setIsPreviewOpen(false)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          {displayWidth > 0 && displayHeight > 0 ? (
+            <Image
+              src={url}
+              alt={`attachment-preview-${index}-full`}
+              width={displayWidth}
+              height={displayHeight}
+              style={{ display: "block", borderRadius: 4 }}
+            />
+          ) : (
+            <Box
+              sx={{
+                width: "80vw",
+                maxWidth: "80vw",
+                maxHeight: "80vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <CircularProgress size={28} />
+            </Box>
+          )}
+        </Box>
+      </Modal>
     </Box>
   );
 }
@@ -77,9 +161,45 @@ export function AttachmentPreviewForDocument({
   onChangeDescription,
   onRemove,
 }: AttachmentPreviewItemProps) {
-  const mime = getMimeTypeFromDataUrl(url);
-  const isImage = mime.startsWith("image/");
-  const isPdf = mime === "application/pdf";
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [naturalWidth, setNaturalWidth] = useState<number | null>(null);
+  const [naturalHeight, setNaturalHeight] = useState<number | null>(null);
+
+  const { displayWidth, displayHeight } = useMemo(() => {
+    if (
+      typeof window === "undefined" ||
+      naturalWidth == null ||
+      naturalHeight == null
+    ) {
+      return { displayWidth: 0, displayHeight: 0 };
+    }
+    const maxWidth = window.innerWidth * 0.8;
+    const maxHeight = window.innerHeight * 0.8;
+    const scale = Math.min(
+      1,
+      maxWidth / naturalWidth,
+      maxHeight / naturalHeight
+    );
+    return {
+      displayWidth: Math.round(naturalWidth * scale),
+      displayHeight: Math.round(naturalHeight * scale),
+    };
+  }, [naturalWidth, naturalHeight]);
+
+  useEffect(() => {
+    if (
+      isPreviewOpen &&
+      (naturalWidth == null || naturalHeight == null) &&
+      typeof window !== "undefined"
+    ) {
+      const preload = new window.Image();
+      preload.src = url;
+      preload.onload = () => {
+        setNaturalWidth(preload.naturalWidth);
+        setNaturalHeight(preload.naturalHeight);
+      };
+    }
+  }, [isPreviewOpen, naturalWidth, naturalHeight, url]);
 
   return (
     <Box
@@ -94,48 +214,21 @@ export function AttachmentPreviewForDocument({
       alignItems={"center"}
       gap={1.5}
     >
-      {isImage ? (
-        <Image
-          width={48}
-          height={48}
-          src={url}
-          alt={`attachment-preview-${index}`}
-          style={{ display: "block", borderRadius: "4px" }}
-          objectFit="cover"
-        />
-      ) : isPdf ? (
-        <Box
-          width={48}
-          height={48}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          borderRadius={1}
-          bgcolor={COLORS.grey[100]}
-          border={1}
-          borderColor={COLORS.blueGrey[100]}
-        >
-          <Typography fontSize={10} fontWeight={700} color="text.primary">
-            PDF
-          </Typography>
-        </Box>
-      ) : (
-        <Box
-          width={48}
-          height={48}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          borderRadius={1}
-          bgcolor={COLORS.grey[100]}
-          border={1}
-          borderColor={COLORS.blueGrey[100]}
-        >
-          <Typography fontSize={10} fontWeight={700} color="text.primary">
-            FILE
-          </Typography>
-        </Box>
-      )}
+      <Image
+        width={48}
+        height={48}
+        src={url}
+        alt={`attachment-preview-${index}`}
+        style={{ display: "block", borderRadius: "4px", cursor: "zoom-in" }}
+        objectFit="cover"
+        onClick={() => setIsPreviewOpen(true)}
+        onLoadingComplete={(img) => {
+          if (naturalWidth == null || naturalHeight == null) {
+            setNaturalWidth(img.naturalWidth);
+            setNaturalHeight(img.naturalHeight);
+          }
+        }}
+      />
 
       {mode === "edit" ? (
         <InputBase
@@ -164,6 +257,40 @@ export function AttachmentPreviewForDocument({
           <Close sx={{ fontSize: 16 }} />
         </IconButton>
       )}
+
+      <Modal open={isPreviewOpen} onClose={() => setIsPreviewOpen(false)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          {displayWidth > 0 && displayHeight > 0 ? (
+            <Image
+              src={url}
+              alt={`attachment-preview-${index}-full`}
+              width={displayWidth}
+              height={displayHeight}
+              style={{ display: "block", borderRadius: 4 }}
+            />
+          ) : (
+            <Box
+              sx={{
+                width: "80vw",
+                maxWidth: "80vw",
+                maxHeight: "80vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <CircularProgress size={28} />
+            </Box>
+          )}
+        </Box>
+      </Modal>
     </Box>
   );
 }
