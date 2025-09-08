@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
   MenuItem,
   MenuList,
@@ -53,6 +54,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
   hoverOpenDelay,
   hoverCloseDelay,
 }) => {
+  const router = useRouter();
   const [subMenuState, setSubMenuState] = useState<SubMenuState | null>(null);
   const menuListRef = useRef<HTMLUListElement>(null);
   const focusedIndexRef = useRef<number>(-1);
@@ -165,13 +167,13 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
       if (item.disabled) return;
 
       if (item.href && !item.children) {
-        window.location.href = item.href;
+        router.push(item.href);
       }
 
       onItemClick?.(item);
       onClose?.();
     },
-    [onItemClick, onClose]
+    [onItemClick, onClose, router]
   );
 
   const handleKeyDown = useCallback(

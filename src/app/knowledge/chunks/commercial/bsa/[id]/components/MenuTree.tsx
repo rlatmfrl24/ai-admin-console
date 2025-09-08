@@ -82,6 +82,7 @@ function MenuTree({
           <ListItemButton
             role="treeitem"
             aria-level={level + 1}
+            aria-current={isSelected ? "true" : undefined}
             selected={isSelected}
             onClick={() => handleSelect(node)}
             sx={{
