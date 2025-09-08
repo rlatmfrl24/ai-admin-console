@@ -35,12 +35,16 @@ export function ChunkCard({
   showProgressId = true,
   onSelect,
   onDelete,
+  disableClick = false,
+  disableActions = false,
 }: {
   chunk: ChunkProps;
   selected?: boolean;
   showProgressId?: boolean;
   onSelect?: (chunk: ChunkProps) => void;
   onDelete?: (chunk: ChunkProps) => void;
+  disableClick?: boolean;
+  disableActions?: boolean;
 }) {
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
   const isMenuOpen = Boolean(menuAnchorEl);
@@ -57,11 +61,11 @@ export function ChunkCard({
         borderRadius: 2,
         minWidth: 252,
         width: "100%",
-        cursor: "pointer",
+        cursor: disableClick ? "grab" : "pointer",
       }}
       elevation={selected ? 2 : 0}
       onClick={(e) => {
-        if (isMenuOpen) {
+        if (disableClick || isMenuOpen) {
           e.stopPropagation();
           return;
         }
@@ -74,9 +78,10 @@ export function ChunkCard({
           <IconButton
             aria-label="More Options"
             sx={{ p: 0.5 }}
+            disabled={disableActions}
             onMouseDown={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
-            onClick={openMenu}
+            onClick={disableActions ? undefined : openMenu}
           >
             <MoreVert sx={{ fontSize: "16px" }} />
           </IconButton>

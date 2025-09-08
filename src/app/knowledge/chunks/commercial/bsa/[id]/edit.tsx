@@ -8,6 +8,8 @@ import {
   Portal,
   IconButton,
   Popover,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import { AddCircle, Cached, FileUploadOutlined } from "@mui/icons-material";
 import MenuTree from "@/app/knowledge/chunks/commercial/bsa/[id]/components/MenuTree";
@@ -39,6 +41,23 @@ import LeftPanelOpenIcon from "@/assets/icon-left-panel-open.svg";
 import LeftPanelCloseIcon from "@/assets/icon-left-panel-close.svg";
 import AIProcessIcon from "@/assets/icon-ai-process.svg";
 import { alpha } from "@mui/material/styles";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  KeyboardSensor,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  rectSortingStrategy,
+  useSortable,
+  arrayMove,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 function findIndexPath(
   nodes: BSAMenuTreeItemProps[],
@@ -87,6 +106,7 @@ export default function BSAChunkEdit({
   onNext,
 }: BSAEditProps) {
   const chunks = useBSAChunksStore((s) => s.chunks);
+  const setChunks = useBSAChunksStore((s) => s.setChunks);
   const setSelectedChunk = useBSAChunksStore((s) => s.setSelectedChunk);
   const selectedChunk = useBSAChunksStore((s) => s.selectedChunk);
   const updateChunk = useBSAChunksStore((s) => s.updateChunk);
@@ -183,6 +203,7 @@ export default function BSAChunkEdit({
   const [searchQuery, setSearchQuery] = useState("");
   const normalizedQuery = searchQuery.trim().toLowerCase();
   const [isMenuCollapsed, setIsMenuCollapsed] = useState(false);
+  const [isDragMode, setIsDragMode] = useState(false);
   const [promptAnchorEl, setPromptAnchorEl] = useState<HTMLElement | null>(
     null
   );
@@ -202,6 +223,50 @@ export default function BSAChunkEdit({
               c.progressId.toLowerCase().includes(normalizedQuery)
             );
           });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = chunks.findIndex((c) => c.progressId === active.id);
+    const newIndex = chunks.findIndex((c) => c.progressId === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+    setChunks(arrayMove(chunks, oldIndex, newIndex));
+  };
+
+  function SortableChunkItem({ chunk }: { chunk: ChunkProps }) {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging,
+    } = useSortable({ id: chunk.progressId });
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      zIndex: isDragging ? 1 : 0,
+    } as React.CSSProperties;
+    return (
+      <Box ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        <ChunkCard
+          key={chunk.progressId}
+          chunk={chunk}
+          showProgressId={!selectedData?.fileName.includes(".pdf")}
+          selected={selectedChunk?.progressId === chunk.progressId}
+          onSelect={setSelectedChunk}
+          onDelete={(c) => removeChunk(c.progressId)}
+          disableClick={isDragMode}
+          disableActions={isDragMode}
+        />
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -299,25 +364,45 @@ export default function BSAChunkEdit({
               ". " +
               selectedTreeItem?.label}
           </Typography>
-          {!selectedChunk && (
-            <Box display={"flex"} alignItems={"center"} gap={0.5}>
-              <FilterChipMenu filter={filter} setFilter={setFilter} />
-              <InputWithLabel
-                noLabel
-                variant="outlined"
-                size="small"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </Box>
-          )}
+          <Box display={"flex"} alignItems={"center"} gap={0.5}>
+            <FormControlLabel
+              control={
+                <Switch
+                  size="small"
+                  checked={isDragMode}
+                  onChange={(_, checked) => setIsDragMode(checked)}
+                />
+              }
+              label="Drag & Drop"
+              sx={{
+                "& .MuiFormControlLabel-label": {
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: "text.primary",
+                },
+              }}
+            />
+            {!selectedChunk && (
+              <>
+                <FilterChipMenu filter={filter} setFilter={setFilter} />
+                <InputWithLabel
+                  noLabel
+                  variant="outlined"
+                  size="small"
+                  placeholder="Search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </>
+            )}
+          </Box>
         </Box>
         <Box
           mt={1.5}
           display={"grid"}
           gridTemplateColumns={"repeat(auto-fill, minmax(252px, 1fr))"}
           gap={1.5}
+          aria-label="Chunks"
         >
           <Box
             display={"flex"}
@@ -354,16 +439,33 @@ export default function BSAChunkEdit({
               New Chunk
             </Typography>
           </Box>
-          {visibleChunks.map((chunk) => (
-            <ChunkCard
-              key={chunk.progressId}
-              chunk={chunk}
-              showProgressId={!selectedData?.fileName.includes(".pdf")}
-              selected={selectedChunk?.progressId === chunk.progressId}
-              onSelect={setSelectedChunk}
-              onDelete={(c) => removeChunk(c.progressId)}
-            />
-          ))}
+          {isDragMode ? (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={visibleChunks.map((c) => c.progressId)}
+                strategy={rectSortingStrategy}
+              >
+                {visibleChunks.map((chunk) => (
+                  <SortableChunkItem key={chunk.progressId} chunk={chunk} />
+                ))}
+              </SortableContext>
+            </DndContext>
+          ) : (
+            visibleChunks.map((chunk) => (
+              <ChunkCard
+                key={chunk.progressId}
+                chunk={chunk}
+                showProgressId={!selectedData?.fileName.includes(".pdf")}
+                selected={selectedChunk?.progressId === chunk.progressId}
+                onSelect={setSelectedChunk}
+                onDelete={(c) => removeChunk(c.progressId)}
+              />
+            ))
+          )}
         </Box>
       </Box>
       {selectedChunk && (
