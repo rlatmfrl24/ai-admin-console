@@ -3,7 +3,7 @@ import { Box, MenuItem, Select, SelectProps } from "@mui/material";
 import { Typography } from "@mui/material";
 import { SxProps } from "@mui/system";
 import type { Theme } from "@mui/material/styles";
-import { COLORS } from "@/constants/color";
+import { COLORS } from "@/lib/theme";
 
 export interface SelectWithLabelOption {
   label: string;
@@ -24,6 +24,7 @@ const SelectWithLabel = forwardRef<HTMLDivElement, SelectWithLabelProps>(
     return (
       <Box display={"flex"} flexDirection={"column"}>
         <Typography
+          id={props.id ? `${props.id}-label` : undefined}
           variant="caption"
           color={"text.primary"}
           lineHeight={size === "small" ? 1 : 1.3}
@@ -35,6 +36,8 @@ const SelectWithLabel = forwardRef<HTMLDivElement, SelectWithLabelProps>(
         <Select
           {...props}
           ref={ref}
+          labelId={props.id ? `${props.id}-label` : undefined}
+          aria-labelledby={props.id ? `${props.id}-label` : undefined}
           sx={{
             height: size === "small" ? 24 : 36,
             ".MuiOutlinedInput-input": {

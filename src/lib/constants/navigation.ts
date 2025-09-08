@@ -1,6 +1,6 @@
-import type { NavigationItem } from "../types/navigation";
+import type { NavigationItem } from "@/lib/types/navigation";
 
-export const NAV_ITEMS: NavigationItem[] = [
+const NAV_ITEMS: NavigationItem[] = [
   {
     label: "챗봇 응답 지식 관리",
     id: "knowledge",
@@ -984,3 +984,5 @@ export const NAV_ITEMS: NavigationItem[] = [
     ],
   },
 ];
+
+export default NAV_ITEMS;

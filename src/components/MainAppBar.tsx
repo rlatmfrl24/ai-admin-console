@@ -6,7 +6,8 @@ import {
   Box,
   Divider,
   IconButton,
-  InputBase,
+  TextField,
+  InputAdornment,
   Typography,
 } from "@mui/material";
 import { Menu, Search } from "@mui/icons-material";
@@ -16,7 +17,7 @@ import FlowIcon from "@/assets/icon-flow.svg";
 import NotificationIcon from "@/assets/icon-notification.svg";
 import UserIcon from "@/assets/icon-user-profile.svg";
 import BusinessIcon from "@/assets/icon-business.svg";
-import { COLORS } from "@/constants/color";
+import { COLORS } from "@/lib/theme";
 
 type MainAppBarProps = {
   onMenuClick?: () => void;
@@ -42,21 +43,40 @@ export const MainAppBar = memo(function MainAppBar({
           <Menu sx={{ color: "white" }} />
         </IconButton>
         <NXLogo />
-        <Box flexGrow={1}>
-          <InputBase
-            startAdornment={
-              <Search sx={{ fontSize: 16, m: 1, color: COLORS.indigo[200] }} />
-            }
+        <Box
+          flexGrow={1}
+          component="form"
+          role="search"
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
+          <TextField
             placeholder="Search"
-            inputProps={{ "aria-label": "Search" }}
+            aria-label="Search"
+            variant="outlined"
+            size="small"
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search sx={{ fontSize: 16, color: COLORS.indigo[200] }} />
+                  </InputAdornment>
+                ),
+              },
+            }}
             sx={{
-              backgroundColor: COLORS.indigo[800],
-              borderRadius: "28px",
               mx: 1.5,
-              px: 0.5,
-              color: "white",
-              fontSize: 14,
               minWidth: 336,
+              "& .MuiOutlinedInput-root": {
+                backgroundColor: COLORS.indigo[800],
+                borderRadius: "28px",
+                color: "white",
+              },
+              "& .MuiOutlinedInput-input": {
+                padding: "8px 12px",
+                fontSize: 14,
+              },
             }}
           />
         </Box>

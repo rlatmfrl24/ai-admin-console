@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Close, OpenInNew } from "@mui/icons-material";
 import Image from "next/image";
-import { COLORS } from "@/constants/color";
+import { COLORS } from "@/lib/theme";
 import { useEffect, useMemo, useState } from "react";
 
 type AttachmentPreviewItemProps = {
@@ -81,6 +81,7 @@ export function AttachmentPreviewForUI({
     >
       <Box display={"flex"} alignItems={"center"}>
         <Typography
+          id={`attachment-ui-screen-title-${index}`}
           fontSize={12}
           fontWeight={500}
           color="text.primary"
@@ -88,10 +89,18 @@ export function AttachmentPreviewForUI({
         >
           UI Screen
         </Typography>
-        <IconButton size="small" onClick={() => setIsPreviewOpen(true)}>
+        <IconButton
+          size="small"
+          aria-label="Open preview"
+          onClick={() => setIsPreviewOpen(true)}
+        >
           <OpenInNew sx={{ fontSize: 16 }} />
         </IconButton>
-        <IconButton size="small" onClick={onRemove}>
+        <IconButton
+          size="small"
+          aria-label="Remove attachment"
+          onClick={onRemove}
+        >
           <Close sx={{ fontSize: 16 }} />
         </IconButton>
       </Box>
@@ -106,8 +115,9 @@ export function AttachmentPreviewForUI({
           width: "100%",
           height: "auto",
           borderRadius: "4px",
+          objectFit: "cover",
         }}
-        objectFit="cover"
+        loading="lazy"
         onLoadingComplete={(img) => {
           if (naturalWidth == null || naturalHeight == null) {
             setNaturalWidth(img.naturalWidth);
@@ -116,7 +126,11 @@ export function AttachmentPreviewForUI({
         }}
       />
 
-      <Modal open={isPreviewOpen} onClose={() => setIsPreviewOpen(false)}>
+      <Modal
+        open={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        aria-labelledby={`attachment-ui-screen-title-${index}`}
+      >
         <Box
           sx={{
             position: "absolute",
@@ -125,6 +139,14 @@ export function AttachmentPreviewForUI({
             transform: "translate(-50%, -50%)",
           }}
         >
+          <IconButton
+            aria-label="Close preview"
+            autoFocus
+            onClick={() => setIsPreviewOpen(false)}
+            sx={{ position: "absolute", top: -36, right: -36 }}
+          >
+            <Close />
+          </IconButton>
           {displayWidth > 0 && displayHeight > 0 ? (
             <Image
               src={url}
@@ -132,6 +154,7 @@ export function AttachmentPreviewForUI({
               width={displayWidth}
               height={displayHeight}
               style={{ display: "block", borderRadius: 4 }}
+              unoptimized
             />
           ) : (
             <Box
@@ -219,8 +242,13 @@ export function AttachmentPreviewForDocument({
         height={48}
         src={url}
         alt={`attachment-preview-${index}`}
-        style={{ display: "block", borderRadius: "4px", cursor: "zoom-in" }}
-        objectFit="cover"
+        style={{
+          display: "block",
+          borderRadius: "4px",
+          cursor: "zoom-in",
+          objectFit: "cover",
+        }}
+        loading="lazy"
         onClick={() => setIsPreviewOpen(true)}
         onLoadingComplete={(img) => {
           if (naturalWidth == null || naturalHeight == null) {
@@ -252,13 +280,18 @@ export function AttachmentPreviewForDocument({
         <IconButton
           size="small"
           sx={{ alignSelf: "flex-start" }}
+          aria-label="Remove attachment"
           onClick={onRemove}
         >
           <Close sx={{ fontSize: 16 }} />
         </IconButton>
       )}
 
-      <Modal open={isPreviewOpen} onClose={() => setIsPreviewOpen(false)}>
+      <Modal
+        open={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        aria-labelledby={`attachment-document-title-${index}`}
+      >
         <Box
           sx={{
             position: "absolute",
@@ -267,6 +300,14 @@ export function AttachmentPreviewForDocument({
             transform: "translate(-50%, -50%)",
           }}
         >
+          <IconButton
+            aria-label="Close preview"
+            autoFocus
+            onClick={() => setIsPreviewOpen(false)}
+            sx={{ position: "absolute", top: -36, right: -36 }}
+          >
+            <Close />
+          </IconButton>
           {displayWidth > 0 && displayHeight > 0 ? (
             <Image
               src={url}
@@ -274,6 +315,7 @@ export function AttachmentPreviewForDocument({
               width={displayWidth}
               height={displayHeight}
               style={{ display: "block", borderRadius: 4 }}
+              unoptimized
             />
           ) : (
             <Box

@@ -4,7 +4,7 @@ import { Box, Typography } from "@mui/material";
 import MainLayer1 from "@/assets/main-layer-1.svg";
 import MainLayer2 from "@/assets/main-layer-2.svg";
 import { useEffect, useRef, useState, memo } from "react";
-import type { NavigationItem } from "@/types/navigation";
+import type { NavigationItem } from "@/lib/types/navigation";
 import { MainCard } from "@/components/MainCard";
 
 export interface MainLandingProps {

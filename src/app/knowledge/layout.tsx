@@ -1,17 +1,18 @@
 "use client";
 
-import { COLORS } from "@/constants/color";
-import { NAV_ITEMS } from "@/constants/navigation";
+import { COLORS } from "@/lib/theme";
 import { ArrowDropDown } from "@mui/icons-material";
 import { Box, Breadcrumbs, Typography } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
-import { useMemo, useState, useRef } from "react";
-import { useHeaderStore } from "@/app/knowledge/chunks/commercial/bsa/store/headerStore";
+import { useMemo, useState, useRef, useCallback } from "react";
+import type React from "react";
+import { useHeaderStore } from "@/lib/headerStore";
 import {
   NestedDropdownMenu,
   MenuItemData,
 } from "@/components/NestedDropdownMenu";
-import { NavigationItem } from "@/types/navigation";
+import { NavigationItem } from "@/lib/types/navigation";
+import { breadcrumbFor, siblingsFor } from "@/lib/navigation";
 
 /**
  * NavigationItem을 MenuItemData로 변환하는 유틸리티 함수
@@ -40,29 +41,7 @@ const convertNavItemsToMenuItems = (
 const getAvailableItemsAtLevel = (
   segments: string[],
   breadcrumbIndex: number
-): NavigationItem[] => {
-  let currentItems = NAV_ITEMS;
-
-  // 클릭한 브레드크럼 레벨까지 탐색
-  for (let i = 0; i <= breadcrumbIndex; i++) {
-    const segment = segments[i];
-    const matched = currentItems.find((item) => item.id === segment);
-
-    if (!matched) {
-      return [];
-    }
-
-    // 마지막 레벨(클릭한 브레드크럼)에서는 형제 요소들을 반환
-    if (i === breadcrumbIndex) {
-      return currentItems;
-    }
-
-    // 다음 레벨로 진행
-    currentItems = matched.children ?? [];
-  }
-
-  return currentItems;
-};
+): NavigationItem[] => siblingsFor(`/${segments.join("/")}`, breadcrumbIndex);
 
 const KnowledgeBreadcrumbs = ({
   breadcrumbs,
@@ -85,54 +64,56 @@ const KnowledgeBreadcrumbs = ({
   /**
    * 브레드크럼 클릭 시 드롭다운 메뉴 토글
    */
-  const handleBreadcrumbClick = (index: number, event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const handleBreadcrumbClick = useCallback(
+    (index: number) => (event: React.MouseEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
 
-    if (openMenuIndex === index) {
-      setOpenMenuIndex(null);
-    } else {
-      setOpenMenuIndex(index);
-    }
-  };
+      if (openMenuIndex === index) {
+        setOpenMenuIndex(null);
+      } else {
+        setOpenMenuIndex(index);
+      }
+    },
+    [openMenuIndex]
+  );
 
   /**
    * 메뉴 닫기
    */
-  const handleCloseMenu = () => {
+  const handleCloseMenu = useCallback(() => {
     setOpenMenuIndex(null);
-  };
+  }, []);
 
   /**
    * 메뉴 아이템 클릭 시 네비게이션 처리
    */
-  const handleMenuItemClick = (item: MenuItemData) => {
-    if (item.href) {
-      router.push(item.href);
-    }
-    handleCloseMenu();
-  };
+  const handleMenuItemClick = useCallback(
+    (item: MenuItemData) => {
+      if (item.href) {
+        router.push(item.href);
+      }
+      handleCloseMenu();
+    },
+    [router, handleCloseMenu]
+  );
 
   /**
    * 현재 열린 메뉴의 아이템들을 가져오기
    */
-  const getCurrentMenuItems = (): MenuItemData[] => {
+  const currentMenuItems = useMemo<MenuItemData[]>(() => {
     if (openMenuIndex === null) return [];
-
     const availableItems = getAvailableItemsAtLevel(segments, openMenuIndex);
-
-    // 현재 브레드크럼까지의 경로 구성
     const basePath = breadcrumbs
       .slice(0, openMenuIndex)
       .map((b) => b.href.split("/").pop())
       .filter(Boolean)
       .join("/");
-
     return convertNavItemsToMenuItems(
       availableItems,
       basePath ? `/${basePath}` : ""
     );
-  };
+  }, [openMenuIndex, segments, breadcrumbs]);
 
   return (
     <Box
@@ -158,7 +139,7 @@ const KnowledgeBreadcrumbs = ({
             p={0.5}
             gap={0.5}
             borderRadius={1}
-            onClick={(event) => handleBreadcrumbClick(index, event)}
+            onClick={handleBreadcrumbClick(index)}
             sx={{
               cursor: "pointer",
               backgroundColor:
@@ -188,7 +169,7 @@ const KnowledgeBreadcrumbs = ({
       {/* 드롭다운 메뉴 */}
       {openMenuIndex !== null && (
         <NestedDropdownMenu
-          items={getCurrentMenuItems()}
+          items={currentMenuItems}
           anchorEl={breadcrumbRefs.current[openMenuIndex]}
           open={openMenuIndex !== null}
           onClose={handleCloseMenu}
@@ -214,25 +195,10 @@ export default function KnowledgeLayout({
   );
   const headerNode = useHeaderStore((s) => s.headerNode);
   const initialBreadcrumbs = useMemo(() => {
-    let currentItems = NAV_ITEMS;
-    const accumulated: string[] = [];
-    return segments.reduce<{ label: string; href: string }[]>(
-      (acc, segment) => {
-        const matched = currentItems.find((item) => item.id === segment);
-        if (!matched) {
-          currentItems = [];
-          return acc;
-        }
-        accumulated.push(segment);
-        currentItems = matched.children ?? [];
-        acc.push({
-          label: matched.label,
-          href: `/${accumulated.join("/")}`,
-        });
-        return acc;
-      },
-      []
-    );
+    return breadcrumbFor(`/${segments.join("/")}`).map((b) => ({
+      label: b.label,
+      href: b.href,
+    }));
   }, [segments]);
 
   return (

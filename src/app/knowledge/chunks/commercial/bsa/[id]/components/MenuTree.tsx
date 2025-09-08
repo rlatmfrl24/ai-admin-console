@@ -1,7 +1,7 @@
 import { Fragment, useCallback, memo } from "react";
 import { List, ListItemButton, ListItemText, Box } from "@mui/material";
-import type { BSAMenuTreeItemProps } from "@/types/bsa";
-import { COLORS } from "@/constants/color";
+import type { BSAMenuTreeItemProps } from "@/lib/types/bsa";
+import { COLORS } from "@/lib/theme";
 
 type MenuTreeProps = {
   items: BSAMenuTreeItemProps[];

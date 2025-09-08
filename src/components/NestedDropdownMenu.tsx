@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { ArrowDropDown } from "@mui/icons-material";
 import type { PopperProps } from "@mui/material/Popper";
+import { pathFor } from "@/lib/navigation";
 export interface MenuItemData {
   id: string;
   label: string;
@@ -34,6 +35,7 @@ export interface NestedDropdownMenuProps {
   placement?: PopperProps["placement"];
   hoverOpenDelay?: number;
   hoverCloseDelay?: number;
+  baseIds?: string[];
 }
 
 interface SubMenuState {
@@ -53,6 +55,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
   placement = "bottom-start",
   hoverOpenDelay,
   hoverCloseDelay,
+  baseIds = [],
 }) => {
   const router = useRouter();
   const [subMenuState, setSubMenuState] = useState<SubMenuState | null>(null);
@@ -166,14 +169,15 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
     (item: MenuItemData) => {
       if (item.disabled) return;
 
-      if (item.href && !item.children) {
-        router.push(item.href);
+      if (!item.children) {
+        const targetHref = item.href ?? pathFor([...baseIds, item.id]);
+        router.push(targetHref);
       }
 
       onItemClick?.(item);
       onClose?.();
     },
-    [onItemClick, onClose, router]
+    [onItemClick, onClose, router, baseIds]
   );
 
   const handleKeyDown = useCallback(
@@ -470,6 +474,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
             placement="right-start"
             hoverOpenDelay={openDelay}
             hoverCloseDelay={closeDelay}
+            baseIds={[...baseIds, subMenuState.menuItem.id]}
           />
         )}
       </div>

@@ -13,15 +13,17 @@ import {
 } from "@mui/material";
 import { AddCircle, Cached, FileUploadOutlined } from "@mui/icons-material";
 import MenuTree from "@/app/knowledge/chunks/commercial/bsa/[id]/components/MenuTree";
-import { BSA_MENU_TREE } from "@/constants/bsa";
+import { getBsaMenuTree } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaUtil";
 import { ChunkCard } from "./components/ChunkCard";
 import InputWithLabel from "@/components/common/Input";
-import { COLORS } from "@/constants/color";
+import { COLORS } from "@/lib/theme";
 import { format } from "date-fns";
 import {
   useEffect,
+  useMemo,
   useRef,
   useState,
+  useCallback,
   type Dispatch,
   type SetStateAction,
 } from "react";
@@ -29,13 +31,14 @@ import type {
   BSAMenuTreeItemProps,
   BSATableProps,
   ChunkProps,
-} from "@/types/bsa";
-import { useBSAChunksStore } from "@/app/knowledge/chunks/commercial/bsa/store/bsaChunksStore";
+} from "@/lib/types/bsa";
+import { useBSAStore } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaStore";
 import { faker } from "@faker-js/faker";
 import {
   AttachmentPreviewForDocument,
   AttachmentPreviewForUI,
 } from "./components/AttachmentPreview";
+import { generateThumbnailsWithWorker } from "../utils/thumbnailWorkerClient";
 import FilterChipMenu from "./components/FilterChipMenu";
 import LeftPanelOpenIcon from "@/assets/icon-left-panel-open.svg";
 import LeftPanelCloseIcon from "@/assets/icon-left-panel-close.svg";
@@ -76,19 +79,17 @@ function findIndexPath(
 }
 
 function isChunkChanged(chunk: ChunkProps, chunks: ChunkProps[]): boolean {
-  return (
-    chunk.title !==
-      chunks.find((c) => c.progressId === chunk.progressId)?.title ||
-    chunk.content !==
-      chunks.find((c) => c.progressId === chunk.progressId)?.content ||
-    chunk.attachedFile !==
-      chunks.find((c) => c.progressId === chunk.progressId)?.attachedFile ||
-    chunk.attachedFile?.some(
-      (a, i) =>
-        a.description !==
-        chunks.find((c) => c.progressId === chunk.progressId)?.attachedFile?.[i]
-          ?.description
-    )
+  const base = chunks.find((c) => c.progressId === chunk.progressId);
+  if (!base) return true;
+  if (
+    chunk.title !== base.title ||
+    chunk.content !== base.content ||
+    chunk.attachedFile !== base.attachedFile
+  ) {
+    return true;
+  }
+  return (chunk.attachedFile ?? []).some(
+    (a, i) => a.description !== (base.attachedFile ?? [])[i]?.description
   );
 }
 
@@ -105,19 +106,19 @@ export default function BSAChunkEdit({
   setSelectedTreeItem,
   onNext,
 }: BSAEditProps) {
-  const chunks = useBSAChunksStore((s) => s.chunks);
-  const setChunks = useBSAChunksStore((s) => s.setChunks);
-  const setSelectedChunk = useBSAChunksStore((s) => s.setSelectedChunk);
-  const selectedChunk = useBSAChunksStore((s) => s.selectedChunk);
-  const updateChunk = useBSAChunksStore((s) => s.updateChunk);
-  const addChunk = useBSAChunksStore((s) => s.addChunk);
-  const removeChunk = useBSAChunksStore((s) => s.removeChunk);
-  const cleanupNewEmptyChunks = useBSAChunksStore(
-    (s) => s.cleanupNewEmptyChunks
-  );
+  const chunks = useBSAStore((s) => s.chunks);
+  const setChunks = useBSAStore((s) => s.setChunks);
+  const setSelectedChunk = useBSAStore((s) => s.setSelectedChunk);
+  const selectedChunk = useBSAStore((s) => s.selectedChunk);
+  const updateChunk = useBSAStore((s) => s.updateChunk);
+  const addChunk = useBSAStore((s) => s.addChunk);
+  const removeChunk = useBSAStore((s) => s.removeChunk);
+  const cleanupNewEmptyChunks = useBSAStore((s) => s.cleanupNewEmptyChunks);
+  const BSA_MENU_TREE = useMemo(() => getBsaMenuTree(), []);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [savedPreviewUrls, setSavedPreviewUrls] = useState<string[]>([]);
+  const prevObjectUrlsRef = useRef<string[]>([]);
   const baseChunk = chunks.find(
     (c) => c.progressId === selectedChunk?.progressId
   );
@@ -131,29 +132,50 @@ export default function BSAChunkEdit({
   };
 
   useEffect(() => {
+    // Cleanup previous object URLs
+    prevObjectUrlsRef.current.forEach((u) => URL.revokeObjectURL(u));
+    prevObjectUrlsRef.current = [];
     if (!draftChunk) {
       setPreviewUrls([]);
       return;
     }
     const files = (draftChunk.attachedFile ?? []).map((a) => a.file);
+    if (files.length === 0) {
+      setPreviewUrls([]);
+      return;
+    }
     let cancelled = false;
-    Promise.all(
-      files.map(
-        (file) =>
-          new Promise<string>((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve((reader.result as string) || "");
-            reader.onerror = () => resolve("");
-            reader.readAsDataURL(file);
-          })
-      )
-    ).then((urls) => {
-      if (!cancelled) {
-        setPreviewUrls(urls.filter(Boolean));
+    const run = async () => {
+      try {
+        // Use worker only for larger batches to reduce main-thread work
+        const useWorker = files.length >= 8;
+        const blobs = useWorker
+          ? await generateThumbnailsWithWorker(files, {
+              maxEdge: 640,
+              quality: 0.85,
+            })
+          : [];
+        const sources: (Blob | File)[] =
+          blobs.length === files.length ? blobs : files;
+        const urls = sources.map((src) => URL.createObjectURL(src));
+        if (!cancelled) {
+          prevObjectUrlsRef.current = urls;
+          setPreviewUrls(urls);
+        }
+      } catch {
+        // Fallback to original files
+        const urls = files.map((f) => URL.createObjectURL(f));
+        if (!cancelled) {
+          prevObjectUrlsRef.current = urls;
+          setPreviewUrls(urls);
+        }
       }
-    });
+    };
+    run();
     return () => {
       cancelled = true;
+      prevObjectUrlsRef.current.forEach((u) => URL.revokeObjectURL(u));
+      prevObjectUrlsRef.current = [];
     };
   }, [draftChunk]);
   useEffect(() => {
@@ -162,24 +184,10 @@ export default function BSAChunkEdit({
       return;
     }
     const files = (baseChunk?.attachedFile ?? []).map((a) => a.file);
-    let cancelled = false;
-    Promise.all(
-      files.map(
-        (file) =>
-          new Promise<string>((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve((reader.result as string) || "");
-            reader.onerror = () => resolve("");
-            reader.readAsDataURL(file);
-          })
-      )
-    ).then((urls) => {
-      if (!cancelled) {
-        setSavedPreviewUrls(urls.filter(Boolean));
-      }
-    });
+    const urls = files.map((f) => URL.createObjectURL(f));
+    setSavedPreviewUrls(urls);
     return () => {
-      cancelled = true;
+      urls.forEach((u) => URL.revokeObjectURL(u));
     };
   }, [chunks, selectedChunk, baseChunk]);
   useEffect(() => {
@@ -208,9 +216,12 @@ export default function BSAChunkEdit({
     null
   );
   const isPromptOpen = Boolean(promptAnchorEl);
-  const openPrompt = (e: React.MouseEvent<HTMLElement>) =>
-    setPromptAnchorEl(e.currentTarget as HTMLElement);
-  const closePrompt = () => setPromptAnchorEl(null);
+  const openPrompt = useCallback(
+    (e: React.MouseEvent<HTMLElement>) =>
+      setPromptAnchorEl(e.currentTarget as HTMLElement),
+    []
+  );
+  const closePrompt = useCallback(() => setPromptAnchorEl(null), []);
   const visibleChunks =
     filter.length === 0
       ? []
@@ -229,14 +240,17 @@ export default function BSAChunkEdit({
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    const oldIndex = chunks.findIndex((c) => c.progressId === active.id);
-    const newIndex = chunks.findIndex((c) => c.progressId === over.id);
-    if (oldIndex === -1 || newIndex === -1) return;
-    setChunks(arrayMove(chunks, oldIndex, newIndex));
-  };
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+      const oldIndex = chunks.findIndex((c) => c.progressId === active.id);
+      const newIndex = chunks.findIndex((c) => c.progressId === over.id);
+      if (oldIndex === -1 || newIndex === -1) return;
+      setChunks(arrayMove(chunks, oldIndex, newIndex));
+    },
+    [chunks, setChunks]
+  );
 
   function SortableChunkItem({ chunk }: { chunk: ChunkProps }) {
     const {
