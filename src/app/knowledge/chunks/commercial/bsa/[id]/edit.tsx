@@ -1,5 +1,20 @@
 "use client";
 
+/**
+ * [인수인계 메모]
+ * - 역할: 선택된 BSA 항목에 대한 Chunk 편집 화면.
+ * - 현재 동작: 로컬 상태(Zustand)의 chunks 배열을 편집/저장.
+ * - API 교체 포인트:
+ *   1) 새 Chunk 생성 시(progressId: faker) → 서버에서 ID 발급/생성 API로 대체
+ *      예) POST /api/bsa/:id/chunks → 반환된 progressId를 상태에 반영
+ *   2) Save 버튼 → PATCH /api/bsa/:id/chunks/:progressId 로 내용 저장
+ *   3) 파일 첨부 → 업로드 API(멀티파트). 성공 시 파일 URL/메타데이터를 상태에 반영
+ * - 유의사항:
+ *   - draftChunk ↔ selectedChunk 간 동기화 시 타이밍 이슈 주의(setTimeout 제거 가능)
+ *   - 파일 미리보기 URL은 URL.revokeObjectURL로 누수 방지하고, 서버 URL 수신 후 교체
+ *   - 검증/자동저장: 제목/내용 최소 길이 등 프론트 검증 + 디바운스 자동저장 정책 합의
+ *   - 정렬 영속화: 드래그앤드롭 순서는 서버에도 반영(순서 필드)하여 새로고침 시 유지
+ */
 import {
   Box,
   Button,

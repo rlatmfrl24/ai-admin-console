@@ -1,5 +1,10 @@
 import { COLORS } from "@/lib/theme";
 import { ChunkProps } from "@/lib/types/bsa";
+// [인수인계 메모]
+// - 역할: 단일 Chunk 카드 UI(상태칩/제목/진행ID/액션)
+// - API 연동 시 onDelete, onSelect는 상위에서 서버 호출 후 상태를 동기화하세요.
+// - 선택/삭제/드래그 상태에서 이벤트 버블링 제어 주의.
+// - 접근성: 버튼에 적절한 aria-label 적용(이미 반영), 카드 선택 시 키보드 접근 고려.
 import {
   Box,
   Card,

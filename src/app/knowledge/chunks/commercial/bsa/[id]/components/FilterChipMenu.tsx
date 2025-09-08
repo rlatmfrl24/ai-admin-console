@@ -1,5 +1,11 @@
 "use client";
 
+// [인수인계 메모]
+// - 역할: 상태(draft/in-progress/completed/done) 필터 Chip + 메뉴.
+// - API 연동 시: 필터 변경(setFilter) 시 서버 목록 재조회 트리거로 연결.
+// - 유의: 메뉴 열림 상태(anchorEl)와 클릭 이벤트 버블링 제어.
+// - 접근성: 메뉴키보드 탐색/포커스 관리(MUI 기본 제공), aria 속성 검토.
+
 import { Box, Checkbox, Divider, Typography, Menu } from "@mui/material";
 import { ArrowDropDown } from "@mui/icons-material";
 import { useBSAStore } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaStore";

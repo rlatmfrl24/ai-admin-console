@@ -1,5 +1,11 @@
 "use client";
 
+// [인수인계 메모]
+// - 역할: 첨부 이미지/문서 미리보기 및 설명 입력.
+// - API 연동 시: 파일 업로드 후 받은 CDN/서버 URL을 props로 전달하여 표시.
+// - 유의: Next/Image 최적화와 모달 프리로드 로직으로 초기 깜빡임 최소화.
+// - 접근성: 모달 열림 시 포커스 트랩/esc 닫기, aria-labelledby 제공(이미 반영).
+
 import {
   Box,
   IconButton,

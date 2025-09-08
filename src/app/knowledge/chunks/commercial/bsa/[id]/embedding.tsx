@@ -6,6 +6,16 @@ import { CheckableChunkCard } from "./components/ChunkCard";
 import { useBSAStore } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaStore";
 import { UploadFile } from "@mui/icons-material";
 
+/**
+ * [인수인계 메모]
+ * - 역할: Embedding 대상 Chunk 선택 및 Embedding 실행.
+ * - API 교체 포인트:
+ *   1) handleEmbedding에서 POST /api/bsa/:id/embedding (배치 처리) 호출 후 embeddingAt 업데이트
+ *   2) 서버가 처리 큐/상태를 관리하는 경우, 폴링 또는 웹소켓으로 상태 동기화
+ * - 유의사항:
+ *   - 멱등성: 동일 요청 반복 시 중복 처리 방지(서버측 요청 ID 활용)
+ *   - 부분 실패: 일부 Chunk 실패 시 재시도 가능하도록 결과 매핑/표시 설계
+ */
 export default function BSAChunkEmbedding() {
   const chunks = useBSAStore((s) => s.chunks);
   const updateChunk = useBSAStore((s) => s.updateChunk);
