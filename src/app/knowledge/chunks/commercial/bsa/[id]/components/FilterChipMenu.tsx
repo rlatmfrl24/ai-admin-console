@@ -1,12 +1,11 @@
 "use client";
 
-import { Box, Checkbox, Divider, Typography } from "@mui/material";
+import { Box, Checkbox, Divider, Typography, Menu } from "@mui/material";
 import { ArrowDropDown } from "@mui/icons-material";
-import { Menu, MenuButton, MenuItems } from "@headlessui/react";
-import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
+import { useBSAChunksStore } from "@/app/knowledge/chunks/commercial/bsa/store/bsaChunksStore";
 import type { ChunkProps } from "@/types/bsa";
 import { COLORS } from "@/constants/color";
-import type { Dispatch, SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 
 export default function FilterChipMenu({
   filter,
@@ -15,6 +14,9 @@ export default function FilterChipMenu({
   filter: string[];
   setFilter: Dispatch<SetStateAction<string[]>>;
 }) {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
   const STATUS_OPTIONS = [
     { value: "draft", label: "Draft" },
     { value: "in-progress", label: "In-Progress" },
@@ -41,52 +43,66 @@ export default function FilterChipMenu({
   })();
 
   return (
-    <Menu>
-      <MenuButton as="div">
-        <Box
-          display={"flex"}
-          alignItems={"center"}
-          gap={0.5}
-          border={1}
-          borderColor={"rgba(0, 0, 0, 0.42)"}
-          borderRadius={2}
-          p={"3px 4px 3px 8px"}
-          sx={{
-            cursor: "pointer",
-            backgroundColor:
-              filter.length === 0 || filter.length === STATUS_OPTIONS.length
-                ? "white"
-                : COLORS.indigo[900],
-          }}
-          color={
+    <>
+      <Box
+        display={"flex"}
+        alignItems={"center"}
+        gap={0.5}
+        border={1}
+        borderColor={"rgba(0, 0, 0, 0.42)"}
+        borderRadius={2}
+        p={"3px 4px 3px 8px"}
+        sx={{
+          cursor: "pointer",
+          backgroundColor:
             filter.length === 0 || filter.length === STATUS_OPTIONS.length
-              ? "rgba(0, 0, 0, 0.87)"
-              : "white"
-          }
-        >
-          <Typography lineHeight={1} fontSize={12}>
-            {menuLabel}
-          </Typography>
-          <ArrowDropDown sx={{ fontSize: 16 }} />
-        </Box>
-      </MenuButton>
-
-      <MenuItems
-        anchor="bottom end"
-        onMouseDown={(e) => {
-          e.preventDefault();
+              ? "white"
+              : COLORS.indigo[900],
         }}
-        style={{
-          borderRadius: "8px",
-          minWidth: "200px",
-          backgroundColor: "white",
-          boxShadow:
-            "0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.20)",
+        color={
+          filter.length === 0 || filter.length === STATUS_OPTIONS.length
+            ? "rgba(0, 0, 0, 0.87)"
+            : "white"
+        }
+        onClick={(e) => {
+          if (open) {
+            setAnchorEl(null);
+          } else {
+            setAnchorEl(e.currentTarget as HTMLElement);
+          }
+        }}
+      >
+        <Typography lineHeight={1} fontSize={12}>
+          {menuLabel}
+        </Typography>
+        <ArrowDropDown sx={{ fontSize: 16 }} />
+      </Box>
+
+      <Menu
+        open={open}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: "8px",
+              minWidth: "200px",
+              backgroundColor: "white",
+              boxShadow:
+                "0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.20)",
+            },
+          },
+          list: { disablePadding: true },
         }}
       >
         <div
-          onClick={(e) => {
+          onMouseDown={(e) => {
             e.preventDefault();
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
           }}
         >
           <Box
@@ -152,7 +168,6 @@ export default function FilterChipMenu({
                 lineHeight={1}
                 borderRadius={1}
                 bgcolor={
-                  // set bg color based on status
                   value === "draft"
                     ? COLORS.grey[300]
                     : value === "in-progress"
@@ -167,7 +182,7 @@ export default function FilterChipMenu({
             </Box>
           </div>
         ))}
-      </MenuItems>
-    </Menu>
+      </Menu>
+    </>
   );
 }

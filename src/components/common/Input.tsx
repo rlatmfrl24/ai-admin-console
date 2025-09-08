@@ -30,14 +30,16 @@ const InputWithLabel = ({
         {...props}
         sx={{
           height: size === "small" ? 24 : 36,
-          ".MuiOutlinedInput-root": {
+          "& .MuiOutlinedInput-root": {
             height: "100%",
             display: "flex",
             alignItems: "center",
             fontSize: size === "small" ? "12px" : "13px",
+            backgroundColor: "white",
           },
           "& .MuiOutlinedInput-input": {
-            px: size === "small" ? "8px" : "12px",
+            // px: size === "small" ? "8px" : "12px",
+            padding: "0px 12px",
           },
           ...(props.sx as SxProps),
         }}

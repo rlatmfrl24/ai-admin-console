@@ -15,6 +15,14 @@ export const useBSAChunksStore = create<BSAChunksState>((set, get) => ({
     set({
       chunks: [chunk, ...get().chunks],
     }),
+  removeChunk: (progressId) =>
+    set({
+      chunks: get().chunks.filter((c) => c.progressId !== progressId),
+      selectedChunk:
+        get().selectedChunk?.progressId === progressId
+          ? null
+          : get().selectedChunk,
+    }),
   cleanupNewEmptyChunks: (excludeProgressId) =>
     set({
       chunks: get().chunks.filter((c) => {

@@ -11,7 +11,7 @@ import { BSAFilter, BSATableProps } from "@/types/bsa";
 import { faker } from "@faker-js/faker";
 import { useRouter } from "next/navigation";
 import { dataGridTheme } from "@/theme";
-import { useBSASelectionStore } from "@/app/knowledge/store/headerStore";
+import { useBSASelectionStore } from "@/app/knowledge/chunks/commercial/bsa/store/headerStore";
 
 const STREAM_OPTIONS = [
   { label: "All", value: "all" },

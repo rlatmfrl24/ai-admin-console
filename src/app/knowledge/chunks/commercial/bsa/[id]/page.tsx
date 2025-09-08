@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   useBSASelectionStore,
   useHeaderStore,
-} from "@/app/knowledge/store/headerStore";
+} from "@/app/knowledge/chunks/commercial/bsa/store/headerStore";
 import { InsertDriveFileOutlined } from "@mui/icons-material";
 import { GridColDef, useGridApiRef } from "@mui/x-data-grid";
 import { BSATableProps, BSAMenuTreeItemProps } from "@/types/bsa";
@@ -17,7 +17,7 @@ import { BSA_MENU_TREE, makeRandomChunk } from "@/constants/bsa";
 import SegmentedTabs from "@/components/common/SegmentedTabs";
 import BSAChunkEdit from "./edit";
 import BSAChunkEmbedding from "./embedding";
-import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
+import { useBSAChunksStore } from "@/app/knowledge/chunks/commercial/bsa/store/bsaChunksStore";
 
 function getInitialSelection(items: BSAMenuTreeItemProps[]): {
   selected: BSAMenuTreeItemProps | null;
