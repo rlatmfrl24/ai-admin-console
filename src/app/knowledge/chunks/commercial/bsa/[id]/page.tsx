@@ -2,22 +2,22 @@
 
 import { Box, Breadcrumbs, Typography } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  useBSASelectionStore,
-  useHeaderStore,
-} from "@/app/knowledge/chunks/commercial/bsa/store/headerStore";
+import { useParams } from "next/navigation";
+import { useHeaderStore } from "@/lib/headerStore";
 import { InsertDriveFileOutlined } from "@mui/icons-material";
 import { GridColDef, useGridApiRef } from "@mui/x-data-grid";
-import { BSATableProps, BSAMenuTreeItemProps } from "@/types/bsa";
+import { BSATableProps, BSAMenuTreeItemProps } from "@/lib/types/bsa";
 import { DataGrid } from "@mui/x-data-grid";
-import { dataGridTheme } from "@/theme";
-import { COLORS } from "@/constants/color";
-import { BSA_MENU_TREE, makeRandomChunk } from "@/constants/bsa";
+import { COLORS } from "@/lib/theme";
+import {
+  getBsaMenuTree,
+  makeRandomChunk,
+} from "@/app/knowledge/chunks/commercial/bsa/utils/bsaUtil";
 import SegmentedTabs from "@/components/common/SegmentedTabs";
 import BSAChunkEdit from "./edit";
 import BSAChunkEmbedding from "./embedding";
-import { useBSAChunksStore } from "@/app/knowledge/chunks/commercial/bsa/store/bsaChunksStore";
+import { useBSAStore } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaStore";
+import { getBsaRowById } from "../utils/bsaUtil";
 
 function getInitialSelection(items: BSAMenuTreeItemProps[]): {
   selected: BSAMenuTreeItemProps | null;
@@ -37,15 +37,16 @@ function getInitialSelection(items: BSAMenuTreeItemProps[]): {
 export default function BSAChunkList() {
   const apiRef = useGridApiRef();
   const setHeaderNode = useHeaderStore((s) => s.setHeaderNode);
-  const selectedRow = useBSASelectionStore((s) => s.selectedRow);
-  const router = useRouter();
-  const chunks = useBSAChunksStore((s) => s.chunks);
-  const setChunks = useBSAChunksStore((s) => s.setChunks);
-  const selectedChunk = useBSAChunksStore((s) => s.selectedChunk);
-  const setSelectedChunk = useBSAChunksStore((s) => s.setSelectedChunk);
+  const params = useParams();
+  const idParam = (params as { id?: string })?.id;
+  const chunks = useBSAStore((s) => s.chunks);
+  const setChunks = useBSAStore((s) => s.setChunks);
+  const selectedChunk = useBSAStore((s) => s.selectedChunk);
+  const setSelectedChunk = useBSAStore((s) => s.setSelectedChunk);
+  const BSA_MENU_TREE = useMemo(() => getBsaMenuTree(), []);
   const { selected: initialSelectedItem } = useMemo(
     () => getInitialSelection(BSA_MENU_TREE),
-    []
+    [BSA_MENU_TREE]
   );
   const columns: GridColDef<BSATableProps>[] = [
     { field: "stream", headerName: "Stream", width: 150 },
@@ -67,19 +68,18 @@ export default function BSAChunkList() {
     useState<BSAMenuTreeItemProps | null>(initialSelectedItem);
   const [activeTab, setActiveTab] = useState<string>("edit");
   const selectedData = useMemo<BSATableProps | null>(() => {
-    return selectedRow ?? null;
-  }, [selectedRow]);
-
-  useEffect(() => {
-    if (!selectedRow) {
-      router.replace("/knowledge/chunks/commercial/bsa");
-    }
-  }, [selectedRow, router]);
+    if (!idParam) return null;
+    const row = getBsaRowById(idParam);
+    return row;
+  }, [idParam]);
+  if (!selectedData) {
+    throw new Error("BSA data not found");
+  }
 
   // Reset selectedChunk only when selectedTreeItem or selectedRow changes
   useEffect(() => {
     setSelectedChunk(null);
-  }, [selectedTreeItem, selectedRow, setSelectedChunk]);
+  }, [selectedTreeItem, idParam, setSelectedChunk]);
 
   useEffect(() => {
     const header = (
@@ -138,9 +138,7 @@ export default function BSAChunkList() {
       </Box>
     );
     setHeaderNode(header);
-    if (selectedData) {
-      apiRef.current?.selectRow(selectedData.id, true, true);
-    }
+    apiRef.current?.selectRow(selectedData.id, true, true);
     return () => setHeaderNode(null);
   }, [setHeaderNode, apiRef, selectedData, selectedChunk, chunks, activeTab]);
 
@@ -180,12 +178,10 @@ export default function BSAChunkList() {
         <Box>
           <DataGrid
             apiRef={apiRef}
-            rows={selectedData ? [selectedData] : []}
+            rows={[selectedData]}
             columns={columns}
             hideFooter
-            sx={{ ...dataGridTheme.sx, height: "114px" }}
-            rowHeight={dataGridTheme.rowHeight}
-            columnHeaderHeight={dataGridTheme.columnHeaderHeight}
+            sx={{ height: "114px" }}
           />
         </Box>
       ) : (

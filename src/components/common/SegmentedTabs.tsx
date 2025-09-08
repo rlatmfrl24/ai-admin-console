@@ -1,7 +1,7 @@
 "use client";
 
 import { Tab, Tabs } from "@mui/material";
-import { COLORS } from "@/constants/color";
+import { COLORS } from "@/lib/theme";
 
 export type SegmentedTabItem = {
   value: string;

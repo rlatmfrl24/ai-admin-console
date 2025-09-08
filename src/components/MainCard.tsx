@@ -10,9 +10,10 @@ import {
 import AssistantOutlinedIcon from "@mui/icons-material/AssistantOutlined";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { forwardRef, useEffect, useState } from "react";
-import { NavigationItem } from "../types/navigation";
+import { NavigationItem } from "../lib/types/navigation";
 import { useRouter } from "next/navigation";
-import { COLORS } from "@/constants/color";
+import { COLORS } from "@/lib/theme";
+import { pathFor } from "@/lib/navigation";
 
 export const MainCard = forwardRef<
   HTMLDivElement,
@@ -142,7 +143,7 @@ export const MainCard = forwardRef<
             onClick={
               hasChildren
                 ? () => handleToggleAtDepth(item.id, items)
-                : () => router.push(`/${currentPathIds.join("/")}`)
+                : () => router.push(pathFor(currentPathIds))
             }
             sx={{
               pl: stylesByDepth?.paddingLeft,

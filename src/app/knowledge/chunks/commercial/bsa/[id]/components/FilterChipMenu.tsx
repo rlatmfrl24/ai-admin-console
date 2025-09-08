@@ -2,10 +2,22 @@
 
 import { Box, Checkbox, Divider, Typography, Menu } from "@mui/material";
 import { ArrowDropDown } from "@mui/icons-material";
-import { useBSAChunksStore } from "@/app/knowledge/chunks/commercial/bsa/store/bsaChunksStore";
-import type { ChunkProps } from "@/types/bsa";
-import { COLORS } from "@/constants/color";
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useBSAStore } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaStore";
+import type { ChunkProps } from "@/lib/types/bsa";
+import { COLORS } from "@/lib/theme";
+import {
+  useState,
+  useMemo,
+  useCallback,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
+import {
+  BSA_STATUS_OPTIONS,
+  BSA_STATUS_LABEL,
+  BSA_STATUS_CHIP_COLOR,
+  type BSAStatus,
+} from "@/lib/constants/bsa-status";
 
 export default function FilterChipMenu({
   filter,
@@ -17,30 +29,63 @@ export default function FilterChipMenu({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const STATUS_OPTIONS = [
-    { value: "draft", label: "Draft" },
-    { value: "in-progress", label: "In-Progress" },
-    { value: "completed", label: "Completed" },
-    { value: "done", label: "Done" },
-  ] as const;
+  const chunks = useBSAStore((s) => s.chunks);
+  const statusCounts: Record<BSAStatus, number> = useMemo(
+    () => ({
+      draft: chunks.filter((c) => c.status === "draft").length,
+      "in-progress": chunks.filter((c) => c.status === "in-progress").length,
+      completed: chunks.filter((c) => c.status === "completed").length,
+      done: chunks.filter((c) => c.status === "done").length,
+    }),
+    [chunks]
+  );
 
-  const chunks = useBSAChunksStore((s) => s.chunks);
-  const statusCounts: Record<ChunkProps["status"], number> = {
-    draft: chunks.filter((c) => c.status === "draft").length,
-    "in-progress": chunks.filter((c) => c.status === "in-progress").length,
-    completed: chunks.filter((c) => c.status === "completed").length,
-    done: chunks.filter((c) => c.status === "done").length,
-  };
-
-  const menuLabel = (() => {
+  const menuLabel = useMemo(() => {
     const count = filter.length;
     if (count === 0) return "None";
-    if (count === STATUS_OPTIONS.length) return "All Status";
-    const firstLabel =
-      STATUS_OPTIONS.find((o) => o.value === filter[0])?.label ?? "";
+    if (count === BSA_STATUS_OPTIONS.length) return "All Status";
+    const first = filter[0] as BSAStatus | undefined;
+    const firstLabel = first ? BSA_STATUS_LABEL[first] : "";
     if (count === 1) return firstLabel;
     return `${firstLabel} +${count - 1}`;
-  })();
+  }, [filter]);
+
+  const handleTriggerClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (open) {
+        setAnchorEl(null);
+      } else {
+        setAnchorEl(e.currentTarget as HTMLElement);
+      }
+    },
+    [open]
+  );
+
+  const handleMenuClose = useCallback(() => setAnchorEl(null), []);
+
+  const handleToggleAll = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setFilter((prev) =>
+        prev.length === BSA_STATUS_OPTIONS.length
+          ? []
+          : BSA_STATUS_OPTIONS.map((o) => o.value)
+      );
+    },
+    [setFilter]
+  );
+
+  const handleToggleOption = useCallback(
+    (value: string) => (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setFilter((prev) =>
+        prev.includes(value)
+          ? prev.filter((f) => f !== value)
+          : [...prev, value]
+      );
+    },
+    [setFilter]
+  );
 
   return (
     <>
@@ -55,22 +100,16 @@ export default function FilterChipMenu({
         sx={{
           cursor: "pointer",
           backgroundColor:
-            filter.length === 0 || filter.length === STATUS_OPTIONS.length
+            filter.length === 0 || filter.length === BSA_STATUS_OPTIONS.length
               ? "white"
               : COLORS.indigo[900],
         }}
         color={
-          filter.length === 0 || filter.length === STATUS_OPTIONS.length
+          filter.length === 0 || filter.length === BSA_STATUS_OPTIONS.length
             ? "rgba(0, 0, 0, 0.87)"
             : "white"
         }
-        onClick={(e) => {
-          if (open) {
-            setAnchorEl(null);
-          } else {
-            setAnchorEl(e.currentTarget as HTMLElement);
-          }
-        }}
+        onClick={handleTriggerClick}
       >
         <Typography lineHeight={1} fontSize={12}>
           {menuLabel}
@@ -81,7 +120,7 @@ export default function FilterChipMenu({
       <Menu
         open={open}
         anchorEl={anchorEl}
-        onClose={() => setAnchorEl(null)}
+        onClose={handleMenuClose}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
         slotProps={{
@@ -114,24 +153,17 @@ export default function FilterChipMenu({
               cursor: "pointer",
               "&:hover": { backgroundColor: COLORS.text.states.selected },
             }}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (filter.length === STATUS_OPTIONS.length) {
-                setFilter([]);
-              } else {
-                setFilter(STATUS_OPTIONS.map((o) => o.value));
-              }
-            }}
+            onClick={handleToggleAll}
           >
             <Checkbox
               size="small"
-              checked={filter.length === STATUS_OPTIONS.length}
+              checked={filter.length === BSA_STATUS_OPTIONS.length}
             />
             <Typography fontSize={13}>All Status</Typography>
           </Box>
         </div>
         <Divider />
-        {STATUS_OPTIONS.map(({ value, label }) => (
+        {BSA_STATUS_OPTIONS.map(({ value }) => (
           <div
             key={value}
             onClick={(e) => {
@@ -148,18 +180,11 @@ export default function FilterChipMenu({
                 cursor: "pointer",
                 "&:hover": { backgroundColor: COLORS.blueGrey[50] },
               }}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (filter.includes(value)) {
-                  setFilter(filter.filter((f) => f !== value));
-                } else {
-                  setFilter([...filter, value]);
-                }
-              }}
+              onClick={handleToggleOption(value)}
             >
               <Checkbox size="small" checked={filter.includes(value)} />
               <Typography fontSize={13} flex={1}>
-                {label}
+                {BSA_STATUS_LABEL[value]}
               </Typography>
               <Typography
                 fontSize={12}
@@ -167,15 +192,7 @@ export default function FilterChipMenu({
                 py={0.5}
                 lineHeight={1}
                 borderRadius={1}
-                bgcolor={
-                  value === "draft"
-                    ? COLORS.grey[300]
-                    : value === "in-progress"
-                    ? COLORS.cyan[100]
-                    : value === "completed"
-                    ? COLORS.green.A100
-                    : COLORS.grey[200]
-                }
+                bgcolor={BSA_STATUS_CHIP_COLOR[value]}
               >
                 {statusCounts[value as ChunkProps["status"]]}
               </Typography>

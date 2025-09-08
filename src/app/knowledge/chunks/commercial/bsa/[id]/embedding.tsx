@@ -1,13 +1,13 @@
 import { Box, Button, Portal, Typography } from "@mui/material";
-import { COLORS } from "@/constants/color";
-import { useMemo, useState } from "react";
-import { ChunkProps } from "@/types/bsa";
+import { COLORS } from "@/lib/theme";
+import { useMemo, useState, useCallback } from "react";
+import { ChunkProps } from "@/lib/types/bsa";
 import { CheckableChunkCard } from "./components/ChunkCard";
-import { useBSAChunksStore } from "@/app/knowledge/chunks/commercial/bsa/store/bsaChunksStore";
+import { useBSAStore } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaStore";
 
 export default function BSAChunkEmbedding() {
-  const chunks = useBSAChunksStore((s) => s.chunks);
-  const updateChunk = useBSAChunksStore((s) => s.updateChunk);
+  const chunks = useBSAStore((s) => s.chunks);
+  const updateChunk = useBSAStore((s) => s.updateChunk);
   const embeddingRequiredChunks = useMemo<ChunkProps[]>(
     () =>
       chunks.filter((chunk: ChunkProps) => {
@@ -20,6 +20,23 @@ export default function BSAChunkEmbedding() {
   );
 
   const [selectedChunks, setSelectedChunks] = useState<ChunkProps[]>([]);
+
+  const toggleSelect = useCallback((chunk: ChunkProps) => {
+    setSelectedChunks((prev) =>
+      prev.some((c) => c.progressId === chunk.progressId)
+        ? prev.filter((c) => c.progressId !== chunk.progressId)
+        : [...prev, chunk]
+    );
+  }, []);
+
+  const handleEmbedding = useCallback(() => {
+    const now = new Date();
+    const toUpdate = selectedChunks;
+    toUpdate.forEach((chunk) => {
+      updateChunk({ ...chunk, embeddingAt: now });
+    });
+    setSelectedChunks([]);
+  }, [selectedChunks, updateChunk]);
 
   return (
     <>
@@ -37,17 +54,7 @@ export default function BSAChunkEmbedding() {
               key={chunk.progressId}
               chunk={chunk}
               selected={selectedChunks.includes(chunk)}
-              onSelect={(chunk: ChunkProps) => {
-                if (selectedChunks.includes(chunk)) {
-                  setSelectedChunks(
-                    selectedChunks.filter(
-                      (c) => c.progressId !== chunk.progressId
-                    )
-                  );
-                } else {
-                  setSelectedChunks([...selectedChunks, chunk]);
-                }
-              }}
+              onSelect={toggleSelect}
             />
           ))}
         </Box>
@@ -67,13 +74,7 @@ export default function BSAChunkEmbedding() {
             size="small"
             variant="contained"
             disabled={selectedChunks.length === 0}
-            onClick={() => {
-              const now = new Date();
-              selectedChunks.forEach((chunk) => {
-                updateChunk({ ...chunk, embeddingAt: now });
-              });
-              setSelectedChunks([]);
-            }}
+            onClick={handleEmbedding}
           >
             Embedding
           </Button>

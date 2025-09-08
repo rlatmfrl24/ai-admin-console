@@ -1,7 +1,6 @@
-import { BSAMenuTreeItemProps, ChunkProps } from "@/types/bsa";
-import { faker } from "@faker-js/faker";
+import type { BSAMenuTreeItemProps } from "@/lib/types/bsa";
 
-export const BSA_MENU_TREE: BSAMenuTreeItemProps[] = [
+const BSA_MENU_TREE: BSAMenuTreeItemProps[] = [
   {
     id: "overview",
     index: 1,
@@ -15,7 +14,6 @@ export const BSA_MENU_TREE: BSAMenuTreeItemProps[] = [
     children: [
       {
         id: "agreement",
-
         index: 1,
         label: "Basic Slot Allocation Agreement",
         children: [],
@@ -51,12 +49,7 @@ export const BSA_MENU_TREE: BSAMenuTreeItemProps[] = [
     index: 3,
     label: "BSA Inquiry by VVD",
     children: [
-      {
-        id: "vvd-overview",
-        index: 1,
-        label: "VVD Overview",
-        children: [],
-      },
+      { id: "vvd-overview", index: 1, label: "VVD Overview", children: [] },
       {
         id: "vvd-capacity-status",
         index: 2,
@@ -69,12 +62,7 @@ export const BSA_MENU_TREE: BSAMenuTreeItemProps[] = [
         label: "Booking Status",
         children: [],
       },
-      {
-        id: "vvd-history",
-        index: 4,
-        label: "History",
-        children: [],
-      },
+      { id: "vvd-history", index: 4, label: "History", children: [] },
     ],
   },
   {
@@ -82,46 +70,11 @@ export const BSA_MENU_TREE: BSAMenuTreeItemProps[] = [
     index: 4,
     label: "Setup",
     children: [
-      {
-        id: "master-data",
-        index: 1,
-        label: "Master Data",
-        children: [],
-      },
-      {
-        id: "parameters",
-        index: 2,
-        label: "Parameters",
-        children: [],
-      },
-      {
-        id: "permissions",
-        index: 3,
-        label: "Permissions",
-        children: [],
-      },
+      { id: "master-data", index: 1, label: "Master Data", children: [] },
+      { id: "parameters", index: 2, label: "Parameters", children: [] },
+      { id: "permissions", index: 3, label: "Permissions", children: [] },
     ],
   },
 ];
 
-export function makeRandomChunk(): ChunkProps {
-  return {
-    content: faker.lorem.paragraphs(5),
-    title: faker.lorem
-      .words(3)
-      .split(" ")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" "),
-    status: faker.helpers.arrayElement([
-      "done",
-      "in-progress",
-      "completed",
-      "draft",
-    ]),
-    progressId: faker.string.numeric(4),
-    attachedFile: [],
-    embeddingAt: faker.date.recent(),
-    updatedAt: faker.date.recent(),
-    createdAt: faker.date.past(),
-  };
-}
+export default BSA_MENU_TREE;
