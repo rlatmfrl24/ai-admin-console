@@ -38,7 +38,6 @@ import {
   AttachmentPreviewForDocument,
   AttachmentPreviewForUI,
 } from "./components/AttachmentPreview";
-import { generateThumbnailsWithWorker } from "../utils/thumbnailWorkerClient";
 import FilterChipMenu from "./components/FilterChipMenu";
 import LeftPanelOpenIcon from "@/assets/icon-left-panel-open.svg";
 import LeftPanelCloseIcon from "@/assets/icon-left-panel-close.svg";
@@ -131,44 +130,38 @@ export default function BSAChunkEdit({
     }, 300);
   };
 
+  // Only regenerate preview URLs when the attached files actually change
+  const currentFiles = useMemo(() => {
+    const attached = draftChunk?.attachedFile ?? [];
+    return attached.map((a) => a.file as File);
+  }, [draftChunk?.attachedFile]);
+  const filesSignature = useMemo(() => {
+    return currentFiles
+      .map((f) => `${f.name}:${f.size}:${f.lastModified}`)
+      .join("|");
+  }, [currentFiles]);
+
+  // Keep latest files in a ref to avoid effect dependency on array identity
+  const latestFilesRef = useRef<File[]>([]);
+  useEffect(() => {
+    latestFilesRef.current = currentFiles;
+  }, [currentFiles]);
+
   useEffect(() => {
     // Cleanup previous object URLs
     prevObjectUrlsRef.current.forEach((u) => URL.revokeObjectURL(u));
     prevObjectUrlsRef.current = [];
-    if (!draftChunk) {
-      setPreviewUrls([]);
-      return;
-    }
-    const files = (draftChunk.attachedFile ?? []).map((a) => a.file);
+    const files = latestFilesRef.current;
     if (files.length === 0) {
       setPreviewUrls([]);
       return;
     }
     let cancelled = false;
-    const run = async () => {
-      try {
-        // Use worker only for larger batches to reduce main-thread work
-        const useWorker = files.length >= 8;
-        const blobs = useWorker
-          ? await generateThumbnailsWithWorker(files, {
-              maxEdge: 640,
-              quality: 0.85,
-            })
-          : [];
-        const sources: (Blob | File)[] =
-          blobs.length === files.length ? blobs : files;
-        const urls = sources.map((src) => URL.createObjectURL(src));
-        if (!cancelled) {
-          prevObjectUrlsRef.current = urls;
-          setPreviewUrls(urls);
-        }
-      } catch {
-        // Fallback to original files
-        const urls = files.map((f) => URL.createObjectURL(f));
-        if (!cancelled) {
-          prevObjectUrlsRef.current = urls;
-          setPreviewUrls(urls);
-        }
+    const run = () => {
+      const urls = files.map((f) => URL.createObjectURL(f));
+      if (!cancelled) {
+        prevObjectUrlsRef.current = urls;
+        setPreviewUrls(urls);
       }
     };
     run();
@@ -177,7 +170,7 @@ export default function BSAChunkEdit({
       prevObjectUrlsRef.current.forEach((u) => URL.revokeObjectURL(u));
       prevObjectUrlsRef.current = [];
     };
-  }, [draftChunk]);
+  }, [filesSignature]);
   useEffect(() => {
     if (!selectedChunk) {
       setSavedPreviewUrls([]);
@@ -775,7 +768,7 @@ export default function BSAChunkEdit({
                     {previewUrls.map((url, idx) =>
                       selectedData?.fileName.includes(".pdf") ? (
                         <AttachmentPreviewForDocument
-                          key={`${url}-${idx}`}
+                          key={`attachment-edit-${idx}`}
                           url={url}
                           index={idx}
                           mode="edit"
@@ -808,7 +801,7 @@ export default function BSAChunkEdit({
                         />
                       ) : (
                         <AttachmentPreviewForUI
-                          key={`${url}-${idx}`}
+                          key={`attachment-ui-edit-${idx}`}
                           url={url}
                           index={idx}
                           mode="edit"

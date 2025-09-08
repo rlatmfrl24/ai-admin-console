@@ -4,10 +4,16 @@ import { useMemo, useState, useCallback } from "react";
 import { ChunkProps } from "@/lib/types/bsa";
 import { CheckableChunkCard } from "./components/ChunkCard";
 import { useBSAStore } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaStore";
+import { UploadFile } from "@mui/icons-material";
 
 export default function BSAChunkEmbedding() {
   const chunks = useBSAStore((s) => s.chunks);
   const updateChunk = useBSAStore((s) => s.updateChunk);
+  const selectedRow = useBSAStore((s) => s.selectedRow);
+  const showProgressId = useMemo(() => {
+    const name = selectedRow?.fileName ?? selectedRow?.filePath ?? "";
+    return name.toLowerCase().endsWith(".png");
+  }, [selectedRow]);
   const embeddingRequiredChunks = useMemo<ChunkProps[]>(
     () =>
       chunks.filter((chunk: ChunkProps) => {
@@ -44,20 +50,39 @@ export default function BSAChunkEmbedding() {
         <Box>
           <Typography>List of Chunks Requiring Embedding</Typography>
         </Box>
-        <Box
-          display={"grid"}
-          gridTemplateColumns={"repeat(auto-fill, minmax(252px, 1fr))"}
-          gap={1.5}
-        >
-          {embeddingRequiredChunks.map((chunk: ChunkProps) => (
-            <CheckableChunkCard
-              key={chunk.progressId}
-              chunk={chunk}
-              selected={selectedChunks.includes(chunk)}
-              onSelect={toggleSelect}
-            />
-          ))}
-        </Box>
+        {embeddingRequiredChunks.length > 0 ? (
+          <Box
+            display={"grid"}
+            gridTemplateColumns={"repeat(auto-fill, minmax(252px, 1fr))"}
+            gap={1.5}
+          >
+            {embeddingRequiredChunks.map((chunk: ChunkProps) => (
+              <CheckableChunkCard
+                key={chunk.progressId}
+                chunk={chunk}
+                selected={selectedChunks.includes(chunk)}
+                onSelect={toggleSelect}
+                showProgressId={showProgressId}
+              />
+            ))}
+          </Box>
+        ) : (
+          <Box
+            display={"flex"}
+            flexDirection={"column"}
+            alignItems={"center"}
+            justifyContent={"center"}
+            gap={2}
+            flex={1}
+            height={"100%"}
+            color={COLORS.blueGrey[100]}
+          >
+            <UploadFile sx={{ fontSize: 40 }} />
+            <Typography fontSize={14} fontWeight={500}>
+              No chunks need embedding
+            </Typography>
+          </Box>
+        )}
       </Box>
       <Portal container={() => document.getElementById("knowledge-footer")}>
         <Box

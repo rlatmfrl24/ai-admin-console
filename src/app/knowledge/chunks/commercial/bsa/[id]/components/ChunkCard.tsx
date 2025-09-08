@@ -115,7 +115,16 @@ export function ChunkCard({
                 },
               }}
             >
-              <ListItemText>Delete</ListItemText>
+              <ListItemText
+                sx={{
+                  "& .MuiListItemText-primary": {
+                    fontSize: 12,
+                    lineHeight: "16px",
+                  },
+                }}
+              >
+                Delete
+              </ListItemText>
             </MenuItem>
           </Popover>
         </Box>
@@ -140,10 +149,12 @@ export function CheckableChunkCard({
   chunk,
   selected = false,
   onSelect,
+  showProgressId = false,
 }: {
   chunk: ChunkProps;
   selected?: boolean;
   onSelect?: (chunk: ChunkProps) => void;
+  showProgressId?: boolean;
 }) {
   return (
     <Card
@@ -167,6 +178,15 @@ export function CheckableChunkCard({
           />
         </Box>
         <Typography mt="10px">{chunk.title}</Typography>
+        {showProgressId && (
+          <Typography
+            color={COLORS.blueGrey[300]}
+            fontSize={12}
+            fontWeight={500}
+          >
+            {chunk.progressId}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   );

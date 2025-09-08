@@ -260,7 +260,7 @@ export function AttachmentPreviewForDocument({
 
       {mode === "edit" ? (
         <InputBase
-          sx={{ flex: 1 }}
+          sx={{ flex: 1, fontSize: 13 }}
           multiline
           minRows={1}
           maxRows={8}
