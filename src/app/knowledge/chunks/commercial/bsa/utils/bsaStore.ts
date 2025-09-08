@@ -1,7 +1,26 @@
 import { create } from "zustand";
-import type { BSAChunksState } from "@/types/bsa";
+import type { BSATableProps, ChunkProps } from "@/lib/types/bsa";
 
-export const useBSAChunksStore = create<BSAChunksState>((set, get) => ({
+type BSAState = {
+  // selection (detail target)
+  selectedRow: BSATableProps | null;
+  setSelectedRow: (row: BSATableProps | null) => void;
+  // chunks collection + selection
+  chunks: ChunkProps[];
+  selectedChunk: ChunkProps | null;
+  setChunks: (chunks: ChunkProps[]) => void;
+  updateChunk: (updated: ChunkProps) => void;
+  addChunk: (chunk: ChunkProps) => void;
+  removeChunk: (progressId: string) => void;
+  cleanupNewEmptyChunks: (excludeProgressId?: string) => void;
+  setSelectedChunk: (chunk: ChunkProps | null) => void;
+  reset: () => void;
+};
+
+export const useBSAStore = create<BSAState>((set, get) => ({
+  selectedRow: null,
+  setSelectedRow: (row) => set({ selectedRow: row }),
+
   chunks: [],
   selectedChunk: null,
   setChunks: (chunks) => set({ chunks }),
@@ -11,10 +30,7 @@ export const useBSAChunksStore = create<BSAChunksState>((set, get) => ({
         c.progressId === updated.progressId ? updated : c
       ),
     }),
-  addChunk: (chunk) =>
-    set({
-      chunks: [chunk, ...get().chunks],
-    }),
+  addChunk: (chunk) => set({ chunks: [chunk, ...get().chunks] }),
   removeChunk: (progressId) =>
     set({
       chunks: get().chunks.filter((c) => c.progressId !== progressId),
@@ -37,5 +53,5 @@ export const useBSAChunksStore = create<BSAChunksState>((set, get) => ({
       }),
     }),
   setSelectedChunk: (chunk) => set({ selectedChunk: chunk }),
-  reset: () => set({ chunks: [] }),
+  reset: () => set({ selectedRow: null, selectedChunk: null, chunks: [] }),
 }));

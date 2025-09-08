@@ -1,7 +1,5 @@
 export const COLORS = {
-  common: {
-    white: "#ffffff",
-  },
+  common: { white: "#ffffff" },
   primary: {
     main: "#5e5adb",
     dark: "#3f3bad",
@@ -48,9 +46,9 @@ export const COLORS = {
     },
   },
   text: {
-    primary: "rgb(0, 0, 0, 0.87)",
-    secondary: "rgb(0, 0, 0, 0.6)",
-    disabled: "rgb(0, 0, 0, 0.38)",
+    primary: "rgba(0, 0, 0, 0.87)",
+    secondary: "rgba(0, 0, 0, 0.6)",
+    disabled: "rgba(0, 0, 0, 0.38)",
     states: {
       hover: "#0000000a",
       selected: "#00000014",
@@ -66,10 +64,7 @@ export const COLORS = {
     disabled: "#07173561",
     disabledBackground: "#0717351f",
   },
-  background: {
-    default: "#ffffff",
-    paper: "#ffffff",
-  },
+  background: { default: "#ffffff", paper: "#ffffff" },
   grey: {
     50: "#fafafa",
     100: "#f0f2f7",
@@ -85,31 +80,19 @@ export const COLORS = {
     400: "#78909c",
     700: "#455a64",
   },
-  indigo: {
-    900: "#2c2a56",
-    800: "#3f3d77",
-    600: "#4a4891",
-    200: "#9fa8da",
-  },
-  cyan: {
-    100: "#b2ebf2",
-  },
-  green: {
-    A100: "#b9f6ca",
-  },
+  indigo: { 900: "#2c2a56", 800: "#3f3d77", 600: "#4a4891", 200: "#9fa8da" },
+  cyan: { 100: "#b2ebf2" },
+  green: { A100: "#b9f6ca" },
   gradient: {
     primary: "linear-gradient(180deg, #FFF 0%, #F7F6FF 100%)",
     secondary: "linear-gradient(90deg, #4B45FF 0%, #7E00EC 100%)",
   },
   components: {
     input: {
-      outlined: {
-        enabledBorder: "#0000003b",
-        hoverBorder: "#000000",
-      },
-      standard: {
-        enabledBorder: "#0000006b",
-      },
+      outlined: { enabledBorder: "#0000003b", hoverBorder: "#000000" },
+      standard: { enabledBorder: "#0000006b" },
     },
   },
-};
+} as const;
+
+export type Colors = typeof COLORS;

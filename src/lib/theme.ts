@@ -1,6 +1,9 @@
 "use client";
 import { createTheme } from "@mui/material/styles";
-import { COLORS } from "./constants/color";
+import type {} from "@mui/x-data-grid/themeAugmentation";
+import { COLORS as RAW_COLORS } from "@/lib/constants/color";
+export type Colors = typeof RAW_COLORS;
+export const COLORS = RAW_COLORS;
 
 const theme = createTheme({
   cssVariables: true,
@@ -61,32 +64,37 @@ const theme = createTheme({
         },
       },
     },
+    MuiDataGrid: {
+      defaultProps: {
+        rowHeight: 30,
+        columnHeaderHeight: 32,
+      },
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          borderWidth: 1,
+          borderStyle: "solid",
+          borderColor: COLORS.blueGrey[100],
+          paddingLeft: 8,
+          paddingRight: 8,
+          paddingTop: 4,
+          paddingBottom: 4,
+          "& .MuiDataGrid-columnHeader": {
+            fontSize: 13,
+            fontWeight: 600,
+          },
+          "& .MuiDataGrid-cell": {
+            fontSize: 13,
+          },
+          "& .MuiDataGrid-row.Mui-hover": {
+            backgroundColor: COLORS.text.states.hover,
+          },
+          "& .MuiDataGrid-row.Mui-selected": {
+            backgroundColor: COLORS.blueGrey[100],
+          },
+        },
+      },
+    },
   },
 });
-
-export const dataGridTheme = {
-  rowHeight: 30,
-  columnHeaderHeight: 32,
-  sx: {
-    border: 1,
-    px: 1,
-    py: 0.5,
-    borderRadius: 2,
-    borderColor: COLORS.blueGrey[100],
-    "& .MuiDataGrid-columnHeader": {
-      fontSize: 13,
-      fontWeight: 600,
-    },
-    "& .MuiDataGrid-cell": {
-      fontSize: 13,
-    },
-    "& .MuiDataGrid-row.Mui-hover": {
-      backgroundColor: COLORS.text.states.hover,
-    },
-    "& .MuiDataGrid-row.Mui-selected": {
-      backgroundColor: COLORS.blueGrey[100],
-    },
-  },
-};
-
 export default theme;

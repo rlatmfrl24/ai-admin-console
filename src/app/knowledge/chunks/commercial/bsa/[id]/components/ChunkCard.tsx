@@ -1,5 +1,5 @@
-import { COLORS } from "@/constants/color";
-import { ChunkProps } from "@/types/bsa";
+import { COLORS } from "@/lib/theme";
+import { ChunkProps } from "@/lib/types/bsa";
 import {
   Box,
   Card,
@@ -13,20 +13,19 @@ import {
 import { Chip } from "@/components/common/Chip";
 import { CheckCircle, MoreVert } from "@mui/icons-material";
 import { useState } from "react";
+import {
+  BSA_STATUS_CHIP_COLOR,
+  BSA_STATUS_LABEL,
+  type BSAStatus,
+} from "@/lib/constants/bsa-status";
 
-function getStatusChip(status: string) {
-  switch (status) {
-    case "done":
-      return <Chip label="Done" backgroundColor={COLORS.grey[200]} />;
-    case "in-progress":
-      return <Chip label="In-Progress" backgroundColor={COLORS.cyan[100]} />;
-    case "completed":
-      return <Chip label="Completed" backgroundColor={COLORS.green.A100} />;
-    case "draft":
-      return <Chip label="Draft" backgroundColor={COLORS.grey[300]} />;
-    default:
-      return null;
-  }
+function getStatusChip(status: BSAStatus) {
+  return (
+    <Chip
+      label={BSA_STATUS_LABEL[status]}
+      backgroundColor={BSA_STATUS_CHIP_COLOR[status]}
+    />
+  );
 }
 
 export function ChunkCard({
@@ -35,12 +34,16 @@ export function ChunkCard({
   showProgressId = true,
   onSelect,
   onDelete,
+  disableClick = false,
+  disableActions = false,
 }: {
   chunk: ChunkProps;
   selected?: boolean;
   showProgressId?: boolean;
   onSelect?: (chunk: ChunkProps) => void;
   onDelete?: (chunk: ChunkProps) => void;
+  disableClick?: boolean;
+  disableActions?: boolean;
 }) {
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
   const isMenuOpen = Boolean(menuAnchorEl);
@@ -57,11 +60,11 @@ export function ChunkCard({
         borderRadius: 2,
         minWidth: 252,
         width: "100%",
-        cursor: "pointer",
+        cursor: disableClick ? "grab" : "pointer",
       }}
       elevation={selected ? 2 : 0}
       onClick={(e) => {
-        if (isMenuOpen) {
+        if (disableClick || isMenuOpen) {
           e.stopPropagation();
           return;
         }
@@ -70,13 +73,14 @@ export function ChunkCard({
     >
       <CardContent sx={{ "&.MuiCardContent-root": { p: 1.5 } }}>
         <Box display={"flex"} justifyContent={"space-between"}>
-          {getStatusChip(chunk.status)}
+          {getStatusChip(chunk.status as BSAStatus)}
           <IconButton
             aria-label="More Options"
             sx={{ p: 0.5 }}
+            disabled={disableActions}
             onMouseDown={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
-            onClick={openMenu}
+            onClick={disableActions ? undefined : openMenu}
           >
             <MoreVert sx={{ fontSize: "16px" }} />
           </IconButton>

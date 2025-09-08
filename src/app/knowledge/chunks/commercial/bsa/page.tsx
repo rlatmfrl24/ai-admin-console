@@ -1,17 +1,16 @@
 "use client";
 
-import { COLORS } from "@/constants/color";
+import { COLORS } from "@/lib/theme";
 import { Box, Button, IconButton } from "@mui/material";
 import SelectWithLabel from "@/components/common/Select";
 import InputWithLabel from "@/components/common/Input";
 import { useForm } from "react-hook-form";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
-import { BSAFilter, BSATableProps } from "@/types/bsa";
+import { BSAFilter, BSATableProps } from "@/lib/types/bsa";
 import { faker } from "@faker-js/faker";
 import { useRouter } from "next/navigation";
-import { dataGridTheme } from "@/theme";
-import { useBSASelectionStore } from "@/app/knowledge/chunks/commercial/bsa/store/headerStore";
+import { useBSAStore } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaStore";
 
 const STREAM_OPTIONS = [
   { label: "All", value: "all" },
@@ -35,7 +34,7 @@ const STATUS_OPTIONS = [
 export default function BSA() {
   const { register, handleSubmit } = useForm<BSAFilter>();
   const router = useRouter();
-  const setSelectedRow = useBSASelectionStore((s) => s.setSelectedRow);
+  const setSelectedRow = useBSAStore((s) => s.setSelectedRow);
   const onSubmit = (data: BSAFilter) => {
     console.log(data);
   };
@@ -166,9 +165,7 @@ export default function BSA() {
         rows={rows}
         columns={columns}
         hideFooter
-        sx={{ ...dataGridTheme.sx, flexGrow: 1, mt: 1.5, height: 0 }}
-        rowHeight={dataGridTheme.rowHeight}
-        columnHeaderHeight={dataGridTheme.columnHeaderHeight}
+        sx={{ flexGrow: 1, mt: 1.5, height: 0 }}
         onRowClick={(params) => {
           console.log(params.row);
           setSelectedRow(params.row);
