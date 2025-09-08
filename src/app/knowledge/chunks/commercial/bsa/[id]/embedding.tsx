@@ -2,8 +2,8 @@ import { Box, Button, Portal, Typography } from "@mui/material";
 import { COLORS } from "@/constants/color";
 import { useMemo, useState } from "react";
 import { ChunkProps } from "@/types/bsa";
-import { CheckableChunkCard } from "../ChunkCard";
-import { useBSAChunksStore } from "@/app/knowledge/store/bsaChunksStore";
+import { CheckableChunkCard } from "./components/ChunkCard";
+import { useBSAChunksStore } from "@/app/knowledge/chunks/commercial/bsa/store/bsaChunksStore";
 
 export default function BSAChunkEmbedding() {
   const chunks = useBSAChunksStore((s) => s.chunks);

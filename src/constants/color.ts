@@ -97,6 +97,10 @@ export const COLORS = {
   green: {
     A100: "#b9f6ca",
   },
+  gradient: {
+    primary: "linear-gradient(180deg, #FFF 0%, #F7F6FF 100%)",
+    secondary: "linear-gradient(90deg, #4B45FF 0%, #7E00EC 100%)",
+  },
   components: {
     input: {
       outlined: {

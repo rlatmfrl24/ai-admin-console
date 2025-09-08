@@ -51,6 +51,7 @@ type BSAChunksState = {
   updateChunk: (updated: ChunkProps) => void;
   setSelectedChunk: (chunk: ChunkProps | null) => void;
   addChunk: (chunk: ChunkProps) => void;
+  removeChunk: (progressId: string) => void;
   cleanupNewEmptyChunks: (excludeProgressId?: string) => void;
   reset: () => void;
 };

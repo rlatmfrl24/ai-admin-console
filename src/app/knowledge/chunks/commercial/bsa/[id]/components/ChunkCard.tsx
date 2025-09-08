@@ -1,8 +1,18 @@
 import { COLORS } from "@/constants/color";
 import { ChunkProps } from "@/types/bsa";
-import { Box, Card, CardContent, IconButton, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  IconButton,
+  Typography,
+  Popover,
+  MenuItem,
+  ListItemText,
+} from "@mui/material";
 import { Chip } from "@/components/common/Chip";
 import { CheckCircle, MoreVert } from "@mui/icons-material";
+import { useState } from "react";
 
 function getStatusChip(status: string) {
   switch (status) {
@@ -22,14 +32,23 @@ function getStatusChip(status: string) {
 export function ChunkCard({
   chunk,
   selected = false,
+  showProgressId = true,
   onSelect,
-  onMore,
+  onDelete,
 }: {
   chunk: ChunkProps;
   selected?: boolean;
+  showProgressId?: boolean;
   onSelect?: (chunk: ChunkProps) => void;
-  onMore?: (chunk: ChunkProps) => void;
+  onDelete?: (chunk: ChunkProps) => void;
 }) {
+  const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
+  const isMenuOpen = Boolean(menuAnchorEl);
+  const openMenu = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    setMenuAnchorEl(e.currentTarget as HTMLElement);
+  };
+  const closeMenu = () => setMenuAnchorEl(null);
   return (
     <Card
       sx={{
@@ -41,25 +60,73 @@ export function ChunkCard({
         cursor: "pointer",
       }}
       elevation={selected ? 2 : 0}
-      onClick={() => onSelect?.(chunk)}
+      onClick={(e) => {
+        if (isMenuOpen) {
+          e.stopPropagation();
+          return;
+        }
+        onSelect?.(chunk);
+      }}
     >
       <CardContent sx={{ "&.MuiCardContent-root": { p: 1.5 } }}>
         <Box display={"flex"} justifyContent={"space-between"}>
           {getStatusChip(chunk.status)}
           <IconButton
+            aria-label="More Options"
             sx={{ p: 0.5 }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onMore?.(chunk);
-            }}
+            onMouseDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onClick={openMenu}
           >
             <MoreVert sx={{ fontSize: "16px" }} />
           </IconButton>
+          <Popover
+            open={isMenuOpen}
+            anchorEl={menuAnchorEl}
+            onClose={closeMenu}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+            slotProps={{
+              paper: {
+                elevation: 1,
+                sx: {
+                  border: "1px solid",
+                  borderColor: COLORS.blueGrey[100],
+                  borderRadius: 2,
+                  bgcolor: COLORS.common.white,
+                  overflow: "visible",
+                },
+              },
+            }}
+          >
+            <MenuItem
+              onClick={(e) => {
+                e.stopPropagation();
+                closeMenu();
+                onDelete?.(chunk);
+              }}
+              sx={{
+                "&.MuiMenuItem-root": {
+                  borderRadius: 2,
+                },
+              }}
+            >
+              <ListItemText>Delete</ListItemText>
+            </MenuItem>
+          </Popover>
         </Box>
-        <Typography mt="10px">{chunk.title}</Typography>
-        <Typography color={COLORS.blueGrey[300]} fontSize={12} fontWeight={500}>
-          {chunk.progressId}
+        <Typography mt="10px" fontSize={14} fontWeight={400}>
+          {chunk.title}
         </Typography>
+        {showProgressId && (
+          <Typography
+            color={COLORS.blueGrey[300]}
+            fontSize={12}
+            fontWeight={500}
+          >
+            {chunk.progressId}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   );
@@ -73,7 +140,6 @@ export function CheckableChunkCard({
   chunk: ChunkProps;
   selected?: boolean;
   onSelect?: (chunk: ChunkProps) => void;
-  onMore?: (chunk: ChunkProps) => void;
 }) {
   return (
     <Card
