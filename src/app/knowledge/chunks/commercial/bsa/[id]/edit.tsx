@@ -1,5 +1,20 @@
 "use client";
 
+/**
+ * [인수인계 메모]
+ * - 역할: 선택된 BSA 항목에 대한 Chunk 편집 화면.
+ * - 현재 동작: 로컬 상태(Zustand)의 chunks 배열을 편집/저장.
+ * - API 교체 포인트:
+ *   1) 새 Chunk 생성 시(progressId: faker) → 서버에서 ID 발급/생성 API로 대체
+ *      예) POST /api/bsa/:id/chunks → 반환된 progressId를 상태에 반영
+ *   2) Save 버튼 → PATCH /api/bsa/:id/chunks/:progressId 로 내용 저장
+ *   3) 파일 첨부 → 업로드 API(멀티파트). 성공 시 파일 URL/메타데이터를 상태에 반영
+ * - 유의사항:
+ *   - draftChunk ↔ selectedChunk 간 동기화 시 타이밍 이슈 주의(setTimeout 제거 가능)
+ *   - 파일 미리보기 URL은 URL.revokeObjectURL로 누수 방지하고, 서버 URL 수신 후 교체
+ *   - 검증/자동저장: 제목/내용 최소 길이 등 프론트 검증 + 디바운스 자동저장 정책 합의
+ *   - 정렬 영속화: 드래그앤드롭 순서는 서버에도 반영(순서 필드)하여 새로고침 시 유지
+ */
 import {
   Box,
   Button,
@@ -38,7 +53,6 @@ import {
   AttachmentPreviewForDocument,
   AttachmentPreviewForUI,
 } from "./components/AttachmentPreview";
-import { generateThumbnailsWithWorker } from "../utils/thumbnailWorkerClient";
 import FilterChipMenu from "./components/FilterChipMenu";
 import LeftPanelOpenIcon from "@/assets/icon-left-panel-open.svg";
 import LeftPanelCloseIcon from "@/assets/icon-left-panel-close.svg";
@@ -131,44 +145,38 @@ export default function BSAChunkEdit({
     }, 300);
   };
 
+  // Only regenerate preview URLs when the attached files actually change
+  const currentFiles = useMemo(() => {
+    const attached = draftChunk?.attachedFile ?? [];
+    return attached.map((a) => a.file as File);
+  }, [draftChunk?.attachedFile]);
+  const filesSignature = useMemo(() => {
+    return currentFiles
+      .map((f) => `${f.name}:${f.size}:${f.lastModified}`)
+      .join("|");
+  }, [currentFiles]);
+
+  // Keep latest files in a ref to avoid effect dependency on array identity
+  const latestFilesRef = useRef<File[]>([]);
+  useEffect(() => {
+    latestFilesRef.current = currentFiles;
+  }, [currentFiles]);
+
   useEffect(() => {
     // Cleanup previous object URLs
     prevObjectUrlsRef.current.forEach((u) => URL.revokeObjectURL(u));
     prevObjectUrlsRef.current = [];
-    if (!draftChunk) {
-      setPreviewUrls([]);
-      return;
-    }
-    const files = (draftChunk.attachedFile ?? []).map((a) => a.file);
+    const files = latestFilesRef.current;
     if (files.length === 0) {
       setPreviewUrls([]);
       return;
     }
     let cancelled = false;
-    const run = async () => {
-      try {
-        // Use worker only for larger batches to reduce main-thread work
-        const useWorker = files.length >= 8;
-        const blobs = useWorker
-          ? await generateThumbnailsWithWorker(files, {
-              maxEdge: 640,
-              quality: 0.85,
-            })
-          : [];
-        const sources: (Blob | File)[] =
-          blobs.length === files.length ? blobs : files;
-        const urls = sources.map((src) => URL.createObjectURL(src));
-        if (!cancelled) {
-          prevObjectUrlsRef.current = urls;
-          setPreviewUrls(urls);
-        }
-      } catch {
-        // Fallback to original files
-        const urls = files.map((f) => URL.createObjectURL(f));
-        if (!cancelled) {
-          prevObjectUrlsRef.current = urls;
-          setPreviewUrls(urls);
-        }
+    const run = () => {
+      const urls = files.map((f) => URL.createObjectURL(f));
+      if (!cancelled) {
+        prevObjectUrlsRef.current = urls;
+        setPreviewUrls(urls);
       }
     };
     run();
@@ -177,7 +185,7 @@ export default function BSAChunkEdit({
       prevObjectUrlsRef.current.forEach((u) => URL.revokeObjectURL(u));
       prevObjectUrlsRef.current = [];
     };
-  }, [draftChunk]);
+  }, [filesSignature]);
   useEffect(() => {
     if (!selectedChunk) {
       setSavedPreviewUrls([]);
@@ -239,6 +247,28 @@ export default function BSAChunkEdit({
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
+
+  // Keep selected grid to max 2 cols, collapse to 1 if too narrow
+  const selectedGridRef = useRef<HTMLDivElement | null>(null);
+  const [selectedGridCols, setSelectedGridCols] = useState<number>(2);
+  useEffect(() => {
+    if (!selectedChunk) return;
+    const el = selectedGridRef.current;
+    if (!el) return;
+    const gapPx = 12; // gap={1.5} → theme.spacing(1.5)=12px
+    const minPerTrackPx = 140; // 2컬럼일 때 각 트랙 최소 허용 폭
+    const observer = new ResizeObserver(() => {
+      const width = el.clientWidth;
+      const perTrackIfTwo = (width - gapPx) / 2;
+      setSelectedGridCols(perTrackIfTwo >= minPerTrackPx ? 2 : 1);
+    });
+    observer.observe(el);
+    // Initial measure
+    const width = el.clientWidth;
+    const perTrackIfTwo = (width - gapPx) / 2;
+    setSelectedGridCols(perTrackIfTwo >= minPerTrackPx ? 2 : 1);
+    return () => observer.disconnect();
+  }, [selectedChunk]);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -358,12 +388,22 @@ export default function BSAChunkEdit({
         </Box>
       </Box>
       <Box
-        flex={selectedChunk ? 0 : 1}
-        flexBasis={"565px"}
+        /*
+         * 청크 리스트 영역: 편집 화면이 열려 있을 때 비율(예: 40%)로 공간을 차지하고,
+         * 최소 2컬럼(184px * 2 + gap 12px) 보장. 편집 화면이 없을 때는 가용 영역을 모두 사용.
+         */
+        flexGrow={selectedChunk ? 3 : 1}
+        flexBasis={selectedChunk ? 0 : "auto"}
         p={2}
         borderRight={selectedChunk ? 1 : 0}
         borderColor={COLORS.blueGrey[100]}
-        sx={{ overflow: "auto", minHeight: 0 }}
+        sx={{
+          overflow: "auto",
+          minHeight: 0,
+          // 2컬럼(184*2) + gap(12) + 좌우 padding(16*2)
+          // minWidth: selectedChunk ? "calc(184px * 2 + 12px + 32px)" : undefined,
+          minWidth: "184px",
+        }}
       >
         <Box
           display={"flex"}
@@ -389,6 +429,7 @@ export default function BSAChunkEdit({
               }
               label="Drag & Drop"
               sx={{
+                mr: 0,
                 "& .MuiFormControlLabel-label": {
                   fontSize: 12,
                   fontWeight: 500,
@@ -414,9 +455,14 @@ export default function BSAChunkEdit({
         <Box
           mt={1.5}
           display={"grid"}
-          gridTemplateColumns={"repeat(auto-fill, minmax(252px, 1fr))"}
           gap={1.5}
           aria-label="Chunks"
+          ref={selectedGridRef}
+          sx={{
+            gridTemplateColumns: selectedChunk
+              ? `repeat(${selectedGridCols}, minmax(0, 1fr))`
+              : "repeat(auto-fit, minmax(252px, 1fr))",
+          }}
         >
           <Box
             display={"flex"}
@@ -483,7 +529,15 @@ export default function BSAChunkEdit({
         </Box>
       </Box>
       {selectedChunk && (
-        <Box flex={1} display={"flex"} p={2} gap={2} sx={{ minHeight: 0 }}>
+        <Box
+          /* 편집 화면: 청크 리스트 대비 비율(예: 70%)로 공간 차지 */
+          flexGrow={7}
+          flexBasis={0}
+          display={"flex"}
+          p={2}
+          gap={2}
+          sx={{ minHeight: 0 }}
+        >
           <Box flex={1} display={"flex"} flexDirection={"column"} gap={1}>
             <Box
               display={"flex"}
@@ -775,13 +829,14 @@ export default function BSAChunkEdit({
                     {previewUrls.map((url, idx) =>
                       selectedData?.fileName.includes(".pdf") ? (
                         <AttachmentPreviewForDocument
-                          key={`${url}-${idx}`}
+                          key={`attachment-edit-${idx}`}
                           url={url}
                           index={idx}
                           mode="edit"
                           description={
                             draftChunk?.attachedFile?.[idx]?.description ?? ""
                           }
+                          fileName={draftChunk?.attachedFile?.[idx]?.file?.name}
                           onChangeDescription={(value) => {
                             if (!draftChunk) return;
                             const updated: ChunkProps = {
@@ -808,13 +863,14 @@ export default function BSAChunkEdit({
                         />
                       ) : (
                         <AttachmentPreviewForUI
-                          key={`${url}-${idx}`}
+                          key={`attachment-ui-edit-${idx}`}
                           url={url}
                           index={idx}
                           mode="edit"
                           description={
                             draftChunk?.attachedFile?.[idx]?.description ?? ""
                           }
+                          fileName={draftChunk?.attachedFile?.[idx]?.file?.name}
                           onRemove={() => {
                             if (!draftChunk) return;
                             const updated: ChunkProps = {
@@ -951,6 +1007,18 @@ export default function BSAChunkEdit({
                           chunks.find(
                             (c) => c.progressId === selectedChunk.progressId
                           )?.attachedFile?.[idx]?.description ?? ""
+                        }
+                        fileName={
+                          chunks.find(
+                            (c) => c.progressId === selectedChunk.progressId
+                          )?.attachedFile?.[idx]?.file instanceof File
+                            ? (
+                                chunks.find(
+                                  (c) =>
+                                    c.progressId === selectedChunk.progressId
+                                )?.attachedFile?.[idx]?.file as File
+                              ).name
+                            : undefined
                         }
                       />
                     ))}
