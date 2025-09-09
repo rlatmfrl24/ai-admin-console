@@ -997,31 +997,51 @@ export default function BSAChunkEdit({
                     flexDirection={"column"}
                     mt={0.5}
                   >
-                    {savedPreviewUrls.map((url, idx) => (
-                      <AttachmentPreviewForDocument
-                        key={`saved-${url}-${idx}`}
-                        url={url}
-                        index={idx}
-                        mode="read"
-                        description={
-                          chunks.find(
-                            (c) => c.progressId === selectedChunk.progressId
-                          )?.attachedFile?.[idx]?.description ?? ""
-                        }
-                        fileName={
-                          chunks.find(
-                            (c) => c.progressId === selectedChunk.progressId
-                          )?.attachedFile?.[idx]?.file instanceof File
-                            ? (
-                                chunks.find(
-                                  (c) =>
-                                    c.progressId === selectedChunk.progressId
-                                )?.attachedFile?.[idx]?.file as File
-                              ).name
-                            : undefined
-                        }
-                      />
-                    ))}
+                    {savedPreviewUrls.map((url, idx) =>
+                      selectedData?.fileName.includes(".pdf") ? (
+                        <AttachmentPreviewForDocument
+                          key={`saved-${url}-${idx}`}
+                          url={url}
+                          index={idx}
+                          mode="read"
+                          description={
+                            chunks.find(
+                              (c) => c.progressId === selectedChunk.progressId
+                            )?.attachedFile?.[idx]?.description ?? ""
+                          }
+                          fileName={
+                            chunks.find(
+                              (c) => c.progressId === selectedChunk.progressId
+                            )?.attachedFile?.[idx]?.file instanceof File
+                              ? (
+                                  chunks.find(
+                                    (c) =>
+                                      c.progressId === selectedChunk.progressId
+                                  )?.attachedFile?.[idx]?.file as File
+                                ).name
+                              : undefined
+                          }
+                        />
+                      ) : (
+                        <AttachmentPreviewForUI
+                          key={`saved-ui-${url}-${idx}`}
+                          url={url}
+                          index={idx}
+                          fileName={
+                            chunks.find(
+                              (c) => c.progressId === selectedChunk.progressId
+                            )?.attachedFile?.[idx]?.file instanceof File
+                              ? (
+                                  chunks.find(
+                                    (c) =>
+                                      c.progressId === selectedChunk.progressId
+                                  )?.attachedFile?.[idx]?.file as File
+                                ).name
+                              : undefined
+                          }
+                        />
+                      )
+                    )}
                   </Box>
                 )}
               </Box>

@@ -29,6 +29,9 @@ type AttachmentPreviewItemProps = {
   fileName?: string;
 };
 
+type AttachmentUIPreviewProps = Partial<AttachmentPreviewItemProps> &
+  Pick<AttachmentPreviewItemProps, "url" | "index">;
+
 // removed: getMimeTypeFromDataUrl - no longer needed after removing type branches
 
 function extractFileNameFromUrl(url: string): string {
@@ -200,7 +203,7 @@ export function AttachmentPreviewForUI({
   index,
   onRemove,
   fileName,
-}: AttachmentPreviewItemProps) {
+}: AttachmentUIPreviewProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   return (
     <Box
@@ -230,13 +233,15 @@ export function AttachmentPreviewForUI({
         >
           <OpenInNew sx={{ fontSize: 16 }} />
         </IconButton>
-        <IconButton
-          size="small"
-          aria-label="Remove attachment"
-          onClick={onRemove}
-        >
-          <Close sx={{ fontSize: 16 }} />
-        </IconButton>
+        {onRemove && (
+          <IconButton
+            size="small"
+            aria-label="Remove attachment"
+            onClick={onRemove}
+          >
+            <Close sx={{ fontSize: 16 }} />
+          </IconButton>
+        )}
       </Box>
       <Image
         src={url}
