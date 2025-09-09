@@ -63,7 +63,7 @@ export function ChunkCard({
         border: 1,
         borderColor: selected ? COLORS.primary.main : COLORS.blueGrey[100],
         borderRadius: 2,
-        minWidth: 252,
+        minWidth: 0,
         width: "100%",
         cursor: disableClick ? "grab" : "pointer",
       }}
@@ -133,7 +133,7 @@ export function ChunkCard({
             </MenuItem>
           </Popover>
         </Box>
-        <Typography mt="10px" fontSize={14} fontWeight={400}>
+        <Typography mt="10px" fontSize={14} fontWeight={400} lineHeight={1.2}>
           {chunk.title}
         </Typography>
         {showProgressId && (

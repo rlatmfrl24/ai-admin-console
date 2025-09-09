@@ -14,10 +14,10 @@ import {
   Modal,
   CircularProgress,
 } from "@mui/material";
-import { Close, OpenInNew } from "@mui/icons-material";
+import { Close, OpenInNew, Image as ImageIcon } from "@mui/icons-material";
 import Image from "next/image";
 import { COLORS } from "@/lib/theme";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 type AttachmentPreviewItemProps = {
   url: string;
@@ -26,18 +26,61 @@ type AttachmentPreviewItemProps = {
   description: string;
   onChangeDescription?: (value: string) => void;
   onRemove?: () => void;
+  fileName?: string;
 };
 
 // removed: getMimeTypeFromDataUrl - no longer needed after removing type branches
 
-export function AttachmentPreviewForUI({
+function extractFileNameFromUrl(url: string): string {
+  try {
+    if (!url) return "";
+    if (url.startsWith("data:")) return "image";
+    const u = new URL(
+      url,
+      typeof window !== "undefined" ? window.location.href : undefined
+    );
+    const pathname = u.pathname || "";
+    const last = pathname.split("/").filter(Boolean).pop();
+    if (last) return decodeURIComponent(last);
+  } catch {
+    // Fallback for relative or invalid URLs
+  }
+  try {
+    const clean = url.split("?#")[0].split("#")[0].split("?")[0];
+    const last = clean.split("/").filter(Boolean).pop();
+    if (last) return decodeURIComponent(last);
+  } catch {
+    // ignore
+  }
+  return "image";
+}
+
+type ImagePreviewModalProps = {
+  open: boolean;
+  onClose: () => void;
+  url: string;
+  index: number;
+  ariaLabelledbyId: string;
+  fileName?: string;
+  headerLeftSlot?: ReactNode;
+};
+
+function ImagePreviewModal({
+  open,
+  onClose,
   url,
   index,
-  onRemove,
-}: AttachmentPreviewItemProps) {
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  ariaLabelledbyId,
+  fileName,
+  headerLeftSlot,
+}: ImagePreviewModalProps) {
   const [naturalWidth, setNaturalWidth] = useState<number | null>(null);
   const [naturalHeight, setNaturalHeight] = useState<number | null>(null);
+
+  const displayedFileName = useMemo(
+    () => fileName ?? extractFileNameFromUrl(url),
+    [fileName, url]
+  );
 
   const { displayWidth, displayHeight } = useMemo(() => {
     if (
@@ -62,7 +105,7 @@ export function AttachmentPreviewForUI({
 
   useEffect(() => {
     if (
-      isPreviewOpen &&
+      open &&
       (naturalWidth == null || naturalHeight == null) &&
       typeof window !== "undefined"
     ) {
@@ -73,7 +116,92 @@ export function AttachmentPreviewForUI({
         setNaturalHeight(preload.naturalHeight);
       };
     }
-  }, [isPreviewOpen, naturalWidth, naturalHeight, url]);
+  }, [open, naturalWidth, naturalHeight, url]);
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      aria-labelledby={ariaLabelledbyId}
+      sx={{
+        "& .MuiModal-backdrop": {
+          backgroundColor: "rgba(0, 0, 0, 0.8)",
+        },
+      }}
+    >
+      <Box>
+        <Box
+          sx={{
+            position: "fixed",
+            top: 16,
+            left: 16,
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            zIndex: 1301,
+          }}
+        >
+          <IconButton
+            aria-label="Close preview"
+            autoFocus
+            onClick={onClose}
+            sx={{ color: COLORS.common.white, p: 1 }}
+          >
+            <Close />
+          </IconButton>
+          {headerLeftSlot}
+          <Typography
+            fontSize={13}
+            noWrap
+            sx={{ color: COLORS.common.white, maxWidth: "60vw" }}
+          >
+            {displayedFileName}
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          {displayWidth > 0 && displayHeight > 0 ? (
+            <Image
+              src={url}
+              alt={`attachment-preview-${index}-full`}
+              width={displayWidth}
+              height={displayHeight}
+              style={{ display: "block", borderRadius: 4 }}
+              unoptimized
+            />
+          ) : (
+            <Box
+              sx={{
+                width: "80vw",
+                maxWidth: "80vw",
+                maxHeight: "80vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <CircularProgress size={28} />
+            </Box>
+          )}
+        </Box>
+      </Box>
+    </Modal>
+  );
+}
+
+export function AttachmentPreviewForUI({
+  url,
+  index,
+  onRemove,
+  fileName,
+}: AttachmentPreviewItemProps) {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   return (
     <Box
       bgcolor={"white"}
@@ -124,60 +252,17 @@ export function AttachmentPreviewForUI({
           objectFit: "cover",
         }}
         loading="lazy"
-        onLoadingComplete={(img) => {
-          if (naturalWidth == null || naturalHeight == null) {
-            setNaturalWidth(img.naturalWidth);
-            setNaturalHeight(img.naturalHeight);
-          }
-        }}
       />
 
-      <Modal
+      <ImagePreviewModal
         open={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
-        aria-labelledby={`attachment-ui-screen-title-${index}`}
-      >
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        >
-          <IconButton
-            aria-label="Close preview"
-            autoFocus
-            onClick={() => setIsPreviewOpen(false)}
-            sx={{ position: "absolute", top: -36, right: -36 }}
-          >
-            <Close />
-          </IconButton>
-          {displayWidth > 0 && displayHeight > 0 ? (
-            <Image
-              src={url}
-              alt={`attachment-preview-${index}-full`}
-              width={displayWidth}
-              height={displayHeight}
-              style={{ display: "block", borderRadius: 4 }}
-              unoptimized
-            />
-          ) : (
-            <Box
-              sx={{
-                width: "80vw",
-                maxWidth: "80vw",
-                maxHeight: "80vh",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <CircularProgress size={28} />
-            </Box>
-          )}
-        </Box>
-      </Modal>
+        url={url}
+        index={index}
+        ariaLabelledbyId={`attachment-ui-screen-title-${index}`}
+        fileName={fileName}
+        headerLeftSlot={<ImageIcon sx={{ color: COLORS.error.main }} />}
+      />
     </Box>
   );
 }
@@ -189,46 +274,9 @@ export function AttachmentPreviewForDocument({
   description,
   onChangeDescription,
   onRemove,
+  fileName,
 }: AttachmentPreviewItemProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [naturalWidth, setNaturalWidth] = useState<number | null>(null);
-  const [naturalHeight, setNaturalHeight] = useState<number | null>(null);
-
-  const { displayWidth, displayHeight } = useMemo(() => {
-    if (
-      typeof window === "undefined" ||
-      naturalWidth == null ||
-      naturalHeight == null
-    ) {
-      return { displayWidth: 0, displayHeight: 0 };
-    }
-    const maxWidth = window.innerWidth * 0.8;
-    const maxHeight = window.innerHeight * 0.8;
-    const scale = Math.min(
-      1,
-      maxWidth / naturalWidth,
-      maxHeight / naturalHeight
-    );
-    return {
-      displayWidth: Math.round(naturalWidth * scale),
-      displayHeight: Math.round(naturalHeight * scale),
-    };
-  }, [naturalWidth, naturalHeight]);
-
-  useEffect(() => {
-    if (
-      isPreviewOpen &&
-      (naturalWidth == null || naturalHeight == null) &&
-      typeof window !== "undefined"
-    ) {
-      const preload = new window.Image();
-      preload.src = url;
-      preload.onload = () => {
-        setNaturalWidth(preload.naturalWidth);
-        setNaturalHeight(preload.naturalHeight);
-      };
-    }
-  }, [isPreviewOpen, naturalWidth, naturalHeight, url]);
 
   return (
     <Box
@@ -256,12 +304,6 @@ export function AttachmentPreviewForDocument({
         }}
         loading="lazy"
         onClick={() => setIsPreviewOpen(true)}
-        onLoadingComplete={(img) => {
-          if (naturalWidth == null || naturalHeight == null) {
-            setNaturalWidth(img.naturalWidth);
-            setNaturalHeight(img.naturalHeight);
-          }
-        }}
       />
 
       {mode === "edit" ? (
@@ -293,52 +335,15 @@ export function AttachmentPreviewForDocument({
         </IconButton>
       )}
 
-      <Modal
+      <ImagePreviewModal
         open={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
-        aria-labelledby={`attachment-document-title-${index}`}
-      >
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        >
-          <IconButton
-            aria-label="Close preview"
-            autoFocus
-            onClick={() => setIsPreviewOpen(false)}
-            sx={{ position: "absolute", top: -36, right: -36 }}
-          >
-            <Close />
-          </IconButton>
-          {displayWidth > 0 && displayHeight > 0 ? (
-            <Image
-              src={url}
-              alt={`attachment-preview-${index}-full`}
-              width={displayWidth}
-              height={displayHeight}
-              style={{ display: "block", borderRadius: 4 }}
-              unoptimized
-            />
-          ) : (
-            <Box
-              sx={{
-                width: "80vw",
-                maxWidth: "80vw",
-                maxHeight: "80vh",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <CircularProgress size={28} />
-            </Box>
-          )}
-        </Box>
-      </Modal>
+        url={url}
+        index={index}
+        ariaLabelledbyId={`attachment-document-title-${index}`}
+        fileName={fileName}
+        headerLeftSlot={<ImageIcon sx={{ color: COLORS.error.main }} />}
+      />
     </Box>
   );
 }

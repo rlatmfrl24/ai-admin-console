@@ -248,6 +248,28 @@ export default function BSAChunkEdit({
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
+  // Keep selected grid to max 2 cols, collapse to 1 if too narrow
+  const selectedGridRef = useRef<HTMLDivElement | null>(null);
+  const [selectedGridCols, setSelectedGridCols] = useState<number>(2);
+  useEffect(() => {
+    if (!selectedChunk) return;
+    const el = selectedGridRef.current;
+    if (!el) return;
+    const gapPx = 12; // gap={1.5} → theme.spacing(1.5)=12px
+    const minPerTrackPx = 140; // 2컬럼일 때 각 트랙 최소 허용 폭
+    const observer = new ResizeObserver(() => {
+      const width = el.clientWidth;
+      const perTrackIfTwo = (width - gapPx) / 2;
+      setSelectedGridCols(perTrackIfTwo >= minPerTrackPx ? 2 : 1);
+    });
+    observer.observe(el);
+    // Initial measure
+    const width = el.clientWidth;
+    const perTrackIfTwo = (width - gapPx) / 2;
+    setSelectedGridCols(perTrackIfTwo >= minPerTrackPx ? 2 : 1);
+    return () => observer.disconnect();
+  }, [selectedChunk]);
+
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event;
@@ -366,12 +388,22 @@ export default function BSAChunkEdit({
         </Box>
       </Box>
       <Box
-        flex={selectedChunk ? 0 : 1}
-        flexBasis={"565px"}
+        /*
+         * 청크 리스트 영역: 편집 화면이 열려 있을 때 비율(예: 40%)로 공간을 차지하고,
+         * 최소 2컬럼(184px * 2 + gap 12px) 보장. 편집 화면이 없을 때는 가용 영역을 모두 사용.
+         */
+        flexGrow={selectedChunk ? 3 : 1}
+        flexBasis={selectedChunk ? 0 : "auto"}
         p={2}
         borderRight={selectedChunk ? 1 : 0}
         borderColor={COLORS.blueGrey[100]}
-        sx={{ overflow: "auto", minHeight: 0 }}
+        sx={{
+          overflow: "auto",
+          minHeight: 0,
+          // 2컬럼(184*2) + gap(12) + 좌우 padding(16*2)
+          // minWidth: selectedChunk ? "calc(184px * 2 + 12px + 32px)" : undefined,
+          minWidth: "184px",
+        }}
       >
         <Box
           display={"flex"}
@@ -397,6 +429,7 @@ export default function BSAChunkEdit({
               }
               label="Drag & Drop"
               sx={{
+                mr: 0,
                 "& .MuiFormControlLabel-label": {
                   fontSize: 12,
                   fontWeight: 500,
@@ -422,9 +455,14 @@ export default function BSAChunkEdit({
         <Box
           mt={1.5}
           display={"grid"}
-          gridTemplateColumns={"repeat(auto-fill, minmax(252px, 1fr))"}
           gap={1.5}
           aria-label="Chunks"
+          ref={selectedGridRef}
+          sx={{
+            gridTemplateColumns: selectedChunk
+              ? `repeat(${selectedGridCols}, minmax(0, 1fr))`
+              : "repeat(auto-fit, minmax(252px, 1fr))",
+          }}
         >
           <Box
             display={"flex"}
@@ -491,7 +529,15 @@ export default function BSAChunkEdit({
         </Box>
       </Box>
       {selectedChunk && (
-        <Box flex={1} display={"flex"} p={2} gap={2} sx={{ minHeight: 0 }}>
+        <Box
+          /* 편집 화면: 청크 리스트 대비 비율(예: 70%)로 공간 차지 */
+          flexGrow={7}
+          flexBasis={0}
+          display={"flex"}
+          p={2}
+          gap={2}
+          sx={{ minHeight: 0 }}
+        >
           <Box flex={1} display={"flex"} flexDirection={"column"} gap={1}>
             <Box
               display={"flex"}
@@ -790,6 +836,7 @@ export default function BSAChunkEdit({
                           description={
                             draftChunk?.attachedFile?.[idx]?.description ?? ""
                           }
+                          fileName={draftChunk?.attachedFile?.[idx]?.file?.name}
                           onChangeDescription={(value) => {
                             if (!draftChunk) return;
                             const updated: ChunkProps = {
@@ -823,6 +870,7 @@ export default function BSAChunkEdit({
                           description={
                             draftChunk?.attachedFile?.[idx]?.description ?? ""
                           }
+                          fileName={draftChunk?.attachedFile?.[idx]?.file?.name}
                           onRemove={() => {
                             if (!draftChunk) return;
                             const updated: ChunkProps = {
@@ -959,6 +1007,18 @@ export default function BSAChunkEdit({
                           chunks.find(
                             (c) => c.progressId === selectedChunk.progressId
                           )?.attachedFile?.[idx]?.description ?? ""
+                        }
+                        fileName={
+                          chunks.find(
+                            (c) => c.progressId === selectedChunk.progressId
+                          )?.attachedFile?.[idx]?.file instanceof File
+                            ? (
+                                chunks.find(
+                                  (c) =>
+                                    c.progressId === selectedChunk.progressId
+                                )?.attachedFile?.[idx]?.file as File
+                              ).name
+                            : undefined
                         }
                       />
                     ))}
