@@ -1,5 +1,10 @@
 import { COLORS } from "@/lib/theme";
 import { ChunkProps } from "@/lib/types/bsa";
+// [인수인계 메모]
+// - 역할: 단일 Chunk 카드 UI(상태칩/제목/진행ID/액션)
+// - API 연동 시 onDelete, onSelect는 상위에서 서버 호출 후 상태를 동기화하세요.
+// - 선택/삭제/드래그 상태에서 이벤트 버블링 제어 주의.
+// - 접근성: 버튼에 적절한 aria-label 적용(이미 반영), 카드 선택 시 키보드 접근 고려.
 import {
   Box,
   Card,
@@ -58,7 +63,7 @@ export function ChunkCard({
         border: 1,
         borderColor: selected ? COLORS.primary.main : COLORS.blueGrey[100],
         borderRadius: 2,
-        minWidth: 252,
+        minWidth: 0,
         width: "100%",
         cursor: disableClick ? "grab" : "pointer",
       }}
@@ -115,11 +120,20 @@ export function ChunkCard({
                 },
               }}
             >
-              <ListItemText>Delete</ListItemText>
+              <ListItemText
+                sx={{
+                  "& .MuiListItemText-primary": {
+                    fontSize: 12,
+                    lineHeight: "16px",
+                  },
+                }}
+              >
+                Delete
+              </ListItemText>
             </MenuItem>
           </Popover>
         </Box>
-        <Typography mt="10px" fontSize={14} fontWeight={400}>
+        <Typography mt="10px" fontSize={14} fontWeight={400} lineHeight={1.2}>
           {chunk.title}
         </Typography>
         {showProgressId && (
@@ -140,10 +154,12 @@ export function CheckableChunkCard({
   chunk,
   selected = false,
   onSelect,
+  showProgressId = false,
 }: {
   chunk: ChunkProps;
   selected?: boolean;
   onSelect?: (chunk: ChunkProps) => void;
+  showProgressId?: boolean;
 }) {
   return (
     <Card
@@ -167,6 +183,15 @@ export function CheckableChunkCard({
           />
         </Box>
         <Typography mt="10px">{chunk.title}</Typography>
+        {showProgressId && (
+          <Typography
+            color={COLORS.blueGrey[300]}
+            fontSize={12}
+            fontWeight={500}
+          >
+            {chunk.progressId}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   );

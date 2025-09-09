@@ -3,6 +3,12 @@ import { List, ListItemButton, ListItemText, Box } from "@mui/material";
 import type { BSAMenuTreeItemProps } from "@/lib/types/bsa";
 import { COLORS } from "@/lib/theme";
 
+// [인수인계 메모]
+// - 역할: 좌측 BSA 메뉴 트리(섹션/하위 섹션) 렌더링.
+// - API 연동 시: 항목 선택(onSelect) → 해당 섹션의 chunk 목록 API 재조회.
+// - 유의: 정렬은 index 기반, prefix는 "1.2." 형태로 계산해 표시.
+// - 성능: 리스트 규모가 커질 경우 가상 스크롤 고려. 현재는 단순 리스트 렌더링.
+
 type MenuTreeProps = {
   items: BSAMenuTreeItemProps[];
   selectedId?: string;

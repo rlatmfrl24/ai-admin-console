@@ -3,6 +3,7 @@ import { Box, TextField, TextFieldProps } from "@mui/material";
 import { Typography } from "@mui/material";
 import { SxProps } from "@mui/system";
 import type { Theme } from "@mui/material/styles";
+import { COLORS } from "@/lib/theme";
 
 export interface InputWithLabelProps extends Omit<TextFieldProps, "size"> {
   label?: string;
@@ -40,11 +41,15 @@ const InputWithLabel = forwardRef<HTMLInputElement, InputWithLabelProps>(
               display: "flex",
               alignItems: "center",
               fontSize: size === "small" ? "12px" : "13px",
-              backgroundColor: "white",
+              backgroundColor: props.disabled ? COLORS.grey[100] : "white",
             },
             "& .MuiOutlinedInput-input": {
               padding: "0px 12px",
             },
+            "& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline":
+              {
+                borderColor: "rgba(0, 0, 0, 0.23)",
+              },
             ...(sx as SxProps),
           }}
         />
