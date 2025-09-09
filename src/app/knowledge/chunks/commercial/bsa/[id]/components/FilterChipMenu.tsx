@@ -103,6 +103,7 @@ export default function FilterChipMenu({
         borderColor={"rgba(0, 0, 0, 0.42)"}
         borderRadius={2}
         p={"3px 4px 3px 8px"}
+        ml={1}
         sx={{
           cursor: "pointer",
           backgroundColor:
