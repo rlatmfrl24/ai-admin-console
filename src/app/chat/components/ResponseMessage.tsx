@@ -2,7 +2,7 @@ import { ChatAnswer, ChatAnswerSource } from "@/lib/types/chat";
 import { Box, Divider, Paper, Typography } from "@mui/material";
 import { COLORS } from "@/lib/theme";
 import { format } from "date-fns";
-import { AccessTime } from "@mui/icons-material";
+import { AccessTime, ChevronRight } from "@mui/icons-material";
 import { AgentChip } from "./Chips";
 import RetrievalIcon from "@/assets/icon-agent-retrieval.svg";
 import PimIcon from "@/assets/icon-agent-pim.svg";
@@ -135,7 +135,11 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
 
 const SourceMessage = ({ source }: { source: ChatAnswerSource }) => {
   return (
-    <Box>
+    <Box
+      sx={{
+        cursor: "pointer",
+      }}
+    >
       <Box display={"flex"} alignItems={"center"} gap={0.5}>
         <Box
           bgcolor={COLORS.agent[source.sourceType].background}
@@ -174,8 +178,14 @@ const SourceMessage = ({ source }: { source: ChatAnswerSource }) => {
         >
           {formatDuration(source.duration)}
         </Typography>
+        <ChevronRight sx={{ fontSize: 20, color: COLORS.blueGrey[200] }} />
       </Box>
-      <Typography fontSize={12} color={COLORS.blueGrey[300]}>
+      <Typography
+        fontSize={14}
+        color={COLORS.blueGrey[900]}
+        whiteSpace={"pre-wrap"}
+        mt={1}
+      >
         {source.sourceMessage}
       </Typography>
     </Box>

@@ -11,7 +11,7 @@ function makeMockResponseMessage(): ChatAnswer {
       title: faker.lorem.sentence(),
       name: faker.lorem.sentence(),
     },
-    sourceMessage: faker.lorem.paragraph(),
+    sourceMessage: faker.lorem.paragraphs(),
     duration: faker.number.int({ min: 1000, max: 10000 }),
     sourceRank: index + 1,
   }));
