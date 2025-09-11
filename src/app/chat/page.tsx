@@ -9,6 +9,8 @@ import { useChatStore } from "@/lib/store/chatStore";
 import UserMessage from "./components/UserMessage";
 import ResponseMessage from "./components/ResponseMessage";
 import { ChatAnswer } from "@/lib/types/chat";
+import { useEffect, useRef } from "react";
+import Source from "./source";
 
 export default function Chat() {
   const currentThread = useChatStore((s) =>
@@ -18,6 +20,12 @@ export default function Chat() {
   );
   const messages = currentThread?.messages ?? [];
   const isAwaiting = useChatStore((s) => s.isAwaitingResponse);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const selectedAnswer = useChatStore((s) => s.selectedAnswer);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages.length, isAwaiting]);
 
   return (
     <Box display="flex" height="100%" position="relative">
@@ -73,10 +81,12 @@ export default function Chat() {
                 대기중...
               </Typography>
             )}
+            <div ref={bottomRef} />
           </Box>
         </Box>
         <ChatInput />
       </Box>
+      {selectedAnswer && <Source />}
     </Box>
   );
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import { ChatAnswer, ChatAnswerSource } from "@/lib/types/chat";
 import { Box, Divider, Paper, Typography } from "@mui/material";
 import { COLORS } from "@/lib/theme";
@@ -8,6 +10,7 @@ import RetrievalIcon from "@/assets/icon-agent-retrieval.svg";
 import PimIcon from "@/assets/icon-agent-pim.svg";
 import ApiIcon from "@/assets/icon-agent-api.svg";
 import ChatIcon from "@/assets/icon-agent-chat.svg";
+import { useChatStore } from "@/lib/store/chatStore";
 
 function formatDuration(duration: number) {
   const seconds = Math.floor(duration / 1000);
@@ -16,6 +19,8 @@ function formatDuration(duration: number) {
 }
 
 export default function ResponseMessage({ message }: { message: ChatAnswer }) {
+  const selectedAnswer = useChatStore((s) => s.selectedAnswer);
+  const setSelectedAnswer = useChatStore((s) => s.setSelectedAnswer);
   const topRankedSources = (() => {
     const map = new Map<string, (typeof message.sources)[number]>();
     for (const s of message?.sources ?? []) {
@@ -57,8 +62,12 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
           py: 1.5,
           lineHeight: 1.4,
           borderRadius: 1.5,
+          border:
+            selectedAnswer?.chatId === message.chatId ? "2px solid" : "none",
+          borderColor: COLORS.primary.main,
         }}
         elevation={2}
+        onClick={() => setSelectedAnswer(message)}
       >
         <Box
           display={"flex"}
@@ -134,10 +143,14 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
 }
 
 const SourceMessage = ({ source }: { source: ChatAnswerSource }) => {
+  const setSelectedSourceType = useChatStore((s) => s.setSelectedSourceType);
   return (
     <Box
       sx={{
         cursor: "pointer",
+      }}
+      onClick={() => {
+        setSelectedSourceType(source.sourceType);
       }}
     >
       <Box display={"flex"} alignItems={"center"} gap={0.5}>

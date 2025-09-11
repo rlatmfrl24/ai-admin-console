@@ -1,4 +1,9 @@
-import { ChatMessage, Thread } from "../types/chat";
+import {
+  ChatMessage,
+  Thread,
+  ChatAnswer,
+  ChatAnswerSource,
+} from "../types/chat";
 import { create } from "zustand";
 
 interface ChatStoreState {
@@ -20,6 +25,12 @@ interface ChatStoreState {
   // UI/Async state
   isAwaitingResponse: boolean;
   setAwaitingResponse: (awaiting: boolean) => void;
+
+  // Selection state
+  selectedAnswer: ChatAnswer | null;
+  selectedSourceType: ChatAnswerSource["sourceType"] | null;
+  setSelectedAnswer: (answer: ChatAnswer | null) => void;
+  setSelectedSourceType: (type: ChatAnswerSource["sourceType"] | null) => void;
 }
 
 function generateThreadId(): string {
@@ -31,6 +42,8 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
   threadHistory: [],
   currentThreadId: null,
   isAwaitingResponse: false,
+  selectedAnswer: null,
+  selectedSourceType: null,
 
   getCurrentThread: () => {
     const { currentThreadId, threadHistory } = get();
@@ -126,6 +139,12 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
 
   setAwaitingResponse: (awaiting: boolean) =>
     set(() => ({ isAwaitingResponse: awaiting })),
+
+  setSelectedAnswer: (answer: ChatAnswer | null) =>
+    set(() => ({ selectedAnswer: answer })),
+
+  setSelectedSourceType: (type: ChatAnswerSource["sourceType"] | null) =>
+    set(() => ({ selectedSourceType: type })),
 
   clear: () => set({ threadHistory: [], currentThreadId: null }),
 }));
