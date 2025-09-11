@@ -21,6 +21,8 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
     defaultValues: { message: "" },
   });
   const addMessage = useChatStore((s) => s.addMessage);
+  const isAwaitingResponse = useChatStore((s) => s.isAwaitingResponse);
+  const setAwaitingResponse = useChatStore((s) => s.setAwaitingResponse);
 
   const messageValue = watch("message");
 
@@ -29,7 +31,7 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
     return `msg_${Date.now()}_${randomSuffix}`;
   }
 
-  const onLocalSubmit = (values: FormValues) => {
+  const onLocalSubmit = async (values: FormValues) => {
     const trimmed = values.message?.trim();
     if (!trimmed) return;
 
@@ -45,6 +47,41 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
     // Optional external handler
     onSubmit?.(trimmed);
     reset();
+
+    // Call backend and append assistant response
+    try {
+      setAwaitingResponse(true);
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: trimmed }),
+      });
+      if (!res.ok) {
+        throw new Error(`Request failed: ${res.status}`);
+      }
+      const data = await res.json();
+      const assistant = data?.message;
+      if (assistant) {
+        // Normalize createdAt as Date instance
+        const assistantMessage: ChatMessage = {
+          ...assistant,
+          createdAt: assistant?.createdAt
+            ? new Date(assistant.createdAt)
+            : new Date(),
+        };
+        addMessage(assistantMessage);
+      }
+    } catch {
+      const errorMessage: ChatMessage = {
+        chatId: generateChatId(),
+        message: "요청 처리 중 오류가 발생했습니다.",
+        role: "assistant",
+        createdAt: new Date(),
+      };
+      addMessage(errorMessage);
+    } finally {
+      setAwaitingResponse(false);
+    }
   };
 
   return (
@@ -105,7 +142,7 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
           py: 1.5,
         }}
         type="submit"
-        disabled={!messageValue?.trim()}
+        disabled={!messageValue?.trim() || isAwaitingResponse}
       >
         SUBMIT
       </Button>

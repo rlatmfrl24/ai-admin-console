@@ -16,6 +16,10 @@ interface ChatStoreState {
   setCurrentThread: (threadId: string) => void;
   addMessage: (message: ChatMessage) => void; // add to current thread
   clear: () => void;
+
+  // UI/Async state
+  isAwaitingResponse: boolean;
+  setAwaitingResponse: (awaiting: boolean) => void;
 }
 
 function generateThreadId(): string {
@@ -26,6 +30,7 @@ function generateThreadId(): string {
 export const useChatStore = create<ChatStoreState>((set, get) => ({
   threadHistory: [],
   currentThreadId: null,
+  isAwaitingResponse: false,
 
   getCurrentThread: () => {
     const { currentThreadId, threadHistory } = get();
@@ -118,6 +123,9 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
         currentThreadId,
       };
     }),
+
+  setAwaitingResponse: (awaiting: boolean) =>
+    set(() => ({ isAwaitingResponse: awaiting })),
 
   clear: () => set({ threadHistory: [], currentThreadId: null }),
 }));

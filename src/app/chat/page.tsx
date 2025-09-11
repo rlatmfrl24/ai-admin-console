@@ -7,6 +7,8 @@ import { COLORS } from "@/lib/theme";
 import ChatInput from "./input";
 import { useChatStore } from "@/lib/store/chatStore";
 import UserMessage from "./UserMessage";
+import ResponseMessage from "./ResponseMessage";
+import { ChatAnswer } from "@/lib/types/chat";
 
 export default function Chat() {
   const currentThread = useChatStore((s) =>
@@ -15,6 +17,8 @@ export default function Chat() {
       : null
   );
   const messages = currentThread?.messages ?? [];
+  const isAwaiting = useChatStore((s) => s.isAwaitingResponse);
+
   return (
     <Box display="flex" height="100%" position="relative">
       <ChatSidebar />
@@ -54,7 +58,20 @@ export default function Chat() {
                 메시지가 없습니다.
               </Typography>
             ) : (
-              messages.map((m) => <UserMessage key={m.chatId} message={m} />)
+              messages.map((m) => {
+                if (m.role === "user") {
+                  return <UserMessage key={m.chatId} message={m} />;
+                } else {
+                  return (
+                    <ResponseMessage key={m.chatId} message={m as ChatAnswer} />
+                  );
+                }
+              })
+            )}
+            {isAwaiting && (
+              <Typography variant="body2" color="text.secondary">
+                대기중...
+              </Typography>
             )}
           </Box>
         </Box>

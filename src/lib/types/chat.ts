@@ -1,7 +1,6 @@
 interface ChatMessage {
   chatId: string;
   message: string | ChatAnswer;
-  isLoading?: boolean;
   attachedFiles?: File[];
   role: "user" | "assistant";
   createdAt: Date;
@@ -9,7 +8,6 @@ interface ChatMessage {
 
 interface ChatAnswer extends ChatMessage {
   intent: string;
-  agents: string[];
   duration: number;
   sources: ChatAnswerSource[];
 }
@@ -21,7 +19,7 @@ interface ChatAnswerSource {
     title: string;
     name: string;
   };
-  sourceDescription: string;
+  sourceMessage: string;
   duration: number;
 }
 
