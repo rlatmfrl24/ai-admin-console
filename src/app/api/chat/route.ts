@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 function makeMockResponseMessage(): ChatAnswer {
   const sourceCount = faker.number.int({ min: 1, max: 10 });
-  const sources = Array.from({ length: sourceCount }, () => ({
+  const sources = Array.from({ length: sourceCount }, (_, index) => ({
     sourceType: faker.helpers.arrayElement(["retrieval", "api", "chat", "pim"]),
     sourceId: faker.string.uuid(),
     sourceName: {
@@ -13,6 +13,7 @@ function makeMockResponseMessage(): ChatAnswer {
     },
     sourceMessage: faker.lorem.paragraph(),
     duration: faker.number.int({ min: 1000, max: 10000 }),
+    sourceRank: index + 1,
   }));
 
   return {

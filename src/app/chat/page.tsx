@@ -6,8 +6,8 @@ import ChatSidebar from "./sidebar";
 import { COLORS } from "@/lib/theme";
 import ChatInput from "./input";
 import { useChatStore } from "@/lib/store/chatStore";
-import UserMessage from "./UserMessage";
-import ResponseMessage from "./ResponseMessage";
+import UserMessage from "./components/UserMessage";
+import ResponseMessage from "./components/ResponseMessage";
 import { ChatAnswer } from "@/lib/types/chat";
 
 export default function Chat() {

@@ -13,6 +13,7 @@ interface ChatAnswer extends ChatMessage {
 }
 
 interface ChatAnswerSource {
+  sourceRank: number;
   sourceType: "retrieval" | "api" | "chat" | "pim";
   sourceId: string;
   sourceName: {
