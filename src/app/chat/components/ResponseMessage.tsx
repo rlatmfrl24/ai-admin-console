@@ -1,9 +1,19 @@
-import { ChatAnswer } from "@/lib/types/chat";
+import { ChatAnswer, ChatAnswerSource } from "@/lib/types/chat";
 import { Box, Divider, Paper, Typography } from "@mui/material";
 import { COLORS } from "@/lib/theme";
 import { format } from "date-fns";
 import { AccessTime } from "@mui/icons-material";
 import { AgentChip } from "./Chips";
+import RetrievalIcon from "@/assets/icon-agent-retrieval.svg";
+import PimIcon from "@/assets/icon-agent-pim.svg";
+import ApiIcon from "@/assets/icon-agent-api.svg";
+import ChatIcon from "@/assets/icon-agent-chat.svg";
+
+function formatDuration(duration: number) {
+  const seconds = Math.floor(duration / 1000);
+  const milliseconds = duration % 1000;
+  return `${seconds}.${milliseconds.toString().padStart(3, "0")}s`;
+}
 
 export default function ResponseMessage({ message }: { message: ChatAnswer }) {
   const topRankedSources = (() => {
@@ -48,8 +58,17 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
           lineHeight: 1.4,
           borderRadius: 1.5,
         }}
+        elevation={2}
       >
-        <Box display={"flex"} flexDirection={"column"}>
+        <Box
+          display={"flex"}
+          flexDirection={"column"}
+          gap={1}
+          p={2}
+          border={1}
+          borderColor={COLORS.blueGrey[50]}
+          borderRadius={1}
+        >
           <Box display={"flex"} alignItems={"center"} gap={0.5}>
             <Typography fontSize={12} color={COLORS.blueGrey[300]} width={48}>
               Intent
@@ -63,27 +82,40 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
             {AgentChips.map((chip) => (
               <AgentChip
                 key={chip.type}
-                type={chip.type as "agent" | "retrieval" | "api" | "pim"}
+                type={chip.type as "api" | "pim" | "retrieval" | "chat"}
                 count={chip.count}
               />
             ))}
           </Box>
-        </Box>
-        {message?.message as string}
-        {topRankedSources.map((source) => (
-          <Box key={source.sourceType}>
-            {source.sourceType}
-            {source.sourceRank}
-            <Typography
-              fontSize={12}
-              fontWeight={400}
-              color={COLORS.blueGrey[300]}
-            >
-              {source.sourceName.title}
-            </Typography>
-            <Divider />
+          <Box display={"flex"} alignItems={"center"} gap={1.5}>
+            <Box display={"flex"} alignItems={"center"} gap={0.5}>
+              <Typography fontSize={12} color={COLORS.blueGrey[300]} width={48}>
+                Duration
+              </Typography>
+              <Typography fontSize={12}>
+                {formatDuration(message?.duration)}
+              </Typography>
+            </Box>
+            <Divider orientation="vertical" sx={{ height: 12 }} />
+            <Box display={"flex"} alignItems={"center"} gap={1}>
+              <Typography fontSize={12} color={COLORS.blueGrey[300]}>
+                Source
+              </Typography>
+              <Typography fontSize={12}>{message?.sources.length}</Typography>
+            </Box>
           </Box>
-        ))}
+        </Box>
+        <Box ml={0.5} mt={1.5}>
+          <Typography fontSize={14}>{message?.message as string}</Typography>
+          {topRankedSources.map((source, index) => (
+            <Box key={source.sourceType} mt={1.5}>
+              <SourceMessage source={source} />
+              {index !== topRankedSources.length - 1 && (
+                <Divider sx={{ my: 1.5 }} />
+              )}
+            </Box>
+          ))}
+        </Box>
       </Paper>
       <Typography
         fontSize={12}
@@ -100,3 +132,52 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
     </Box>
   );
 }
+
+const SourceMessage = ({ source }: { source: ChatAnswerSource }) => {
+  return (
+    <Box>
+      <Box display={"flex"} alignItems={"center"} gap={0.5}>
+        <Box
+          bgcolor={COLORS.agent[source.sourceType].background}
+          borderRadius={99}
+          p={0.5}
+          width={24}
+          height={24}
+          display={"flex"}
+          alignItems={"center"}
+          justifyContent={"center"}
+          gap={1}
+        >
+          {(() => {
+            switch (source.sourceType) {
+              case "retrieval":
+                return <RetrievalIcon />;
+              case "pim":
+                return <PimIcon />;
+              case "api":
+                return <ApiIcon />;
+              case "chat":
+                return <ChatIcon />;
+            }
+          })()}
+        </Box>
+        <Typography fontSize={16} fontWeight={600} flex={1}>
+          {source.sourceName.title}
+        </Typography>
+        <Typography fontSize={12} color={COLORS.blueGrey[300]}>
+          {source.sourceName.name}
+        </Typography>
+        <Typography
+          fontSize={12}
+          fontWeight={500}
+          color={COLORS.agent[source.sourceType].main}
+        >
+          {formatDuration(source.duration)}
+        </Typography>
+      </Box>
+      <Typography fontSize={12} color={COLORS.blueGrey[300]}>
+        {source.sourceMessage}
+      </Typography>
+    </Box>
+  );
+};

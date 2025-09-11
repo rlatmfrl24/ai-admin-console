@@ -94,6 +94,24 @@ export const COLORS = {
       standard: { enabledBorder: "#0000006b" },
     },
   },
+  agent: {
+    api: {
+      main: "#2E7D32",
+      background: "#E8F5E9",
+    },
+    pim: {
+      main: "#2684FF",
+      background: "#E3F2FD",
+    },
+    retrieval: {
+      main: "#673AB7",
+      background: "#EDE7F6",
+    },
+    chat: {
+      main: "#FF6F00",
+      background: "#FFF3E0",
+    },
+  },
 } as const;
 
 export type Colors = typeof COLORS;
