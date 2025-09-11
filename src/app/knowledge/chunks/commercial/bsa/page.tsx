@@ -23,7 +23,7 @@ import { BSAFilter, BSATableProps } from "@/lib/types/bsa";
 // 목 데이터 전용(faker) - API 연동 시 제거
 import { faker } from "@faker-js/faker";
 import { useRouter } from "next/navigation";
-import { useBSAStore } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaStore";
+import { useBSAStore } from "@/lib/store/bsaStore";
 
 const STREAM_OPTIONS = [
   { label: "All", value: "all" },

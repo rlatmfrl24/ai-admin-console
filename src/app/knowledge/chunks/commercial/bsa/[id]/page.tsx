@@ -30,12 +30,12 @@ import { COLORS } from "@/lib/theme";
 import {
   getBsaMenuTree,
   makeRandomChunk,
-} from "@/app/knowledge/chunks/commercial/bsa/utils/bsaUtil";
+} from "@/app/knowledge/chunks/commercial/bsa/bsaUtil";
 import SegmentedTabs from "@/components/common/SegmentedTabs";
 import BSAChunkEdit from "./edit";
 import BSAChunkEmbedding from "./embedding";
-import { useBSAStore } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaStore";
-import { getBsaRowById } from "../utils/bsaUtil";
+import { useBSAStore } from "@/lib/store/bsaStore";
+import { getBsaRowById } from "../bsaUtil";
 
 function getInitialSelection(items: BSAMenuTreeItemProps[]): {
   selected: BSAMenuTreeItemProps | null;

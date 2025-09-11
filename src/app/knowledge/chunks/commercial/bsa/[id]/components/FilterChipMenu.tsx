@@ -8,7 +8,7 @@
 
 import { Box, Checkbox, Divider, Typography, Menu } from "@mui/material";
 import { ArrowDropDown } from "@mui/icons-material";
-import { useBSAStore } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaStore";
+import { useBSAStore } from "@/lib/store/bsaStore";
 import type { ChunkProps } from "@/lib/types/bsa";
 import { COLORS } from "@/lib/theme";
 import {
