@@ -10,6 +10,7 @@ export const COLORS = {
       selected: "#5e5adb14",
       focus: "#5e5adb1f",
       focusVisible: "#5e5adb4d",
+      outlineBorder: "rgba(94, 90, 219, 0.5)",
     },
   },
   error: {
