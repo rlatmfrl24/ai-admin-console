@@ -6,6 +6,7 @@ import ChatSidebar from "./sidebar";
 import { COLORS } from "@/lib/theme";
 import ChatInput from "./input";
 import { useChatStore } from "@/lib/store/chatStore";
+import UserMessage from "./UserMessage";
 
 export default function Chat() {
   const currentThread = useChatStore((s) =>
@@ -47,36 +48,13 @@ export default function Chat() {
           display="flex"
           flexDirection="column"
         >
-          <Box p={2} display="flex" flexDirection="column" gap={1}>
+          <Box p={2} display="flex" flexDirection="column" gap={2.5}>
             {messages.length === 0 ? (
               <Typography variant="body2" color="text.secondary">
                 메시지가 없습니다.
               </Typography>
             ) : (
-              messages.map((m) => (
-                <Box
-                  key={m.chatId}
-                  display="flex"
-                  gap={1}
-                  alignItems="baseline"
-                >
-                  <Typography variant="caption" sx={{ minWidth: 72 }}>
-                    {m.role}
-                  </Typography>
-                  <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
-                    {typeof m.message === "string"
-                      ? m.message
-                      : JSON.stringify(m.message)}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    sx={{ marginLeft: "auto" }}
-                  >
-                    {new Date(m.createdAt).toLocaleTimeString()}
-                  </Typography>
-                </Box>
-              ))
+              messages.map((m) => <UserMessage key={m.chatId} message={m} />)
             )}
           </Box>
         </Box>
