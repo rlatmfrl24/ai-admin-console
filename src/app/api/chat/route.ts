@@ -20,7 +20,14 @@ function makeMockResponseMessage(): ChatAnswer {
     chatId: faker.string.uuid(),
     message: faker.lorem.paragraph(),
     role: "assistant",
-    intent: faker.lorem.sentence(),
+    intent: {
+      title: faker.lorem.sentence(),
+      description: faker.lorem.paragraph(),
+      keywords: Array.from(
+        { length: faker.number.int({ min: 1, max: 5 }) },
+        () => faker.lorem.word()
+      ),
+    },
     createdAt: new Date(),
     duration: faker.number.int({ min: 1000, max: 10000 }),
     sources: sources,

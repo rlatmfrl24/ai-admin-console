@@ -7,7 +7,11 @@ interface ChatMessage {
 }
 
 interface ChatAnswer extends ChatMessage {
-  intent: string;
+  intent: {
+    title: string;
+    description: string;
+    keywords: string[];
+  };
   duration: number;
   sources: ChatAnswerSource[];
 }

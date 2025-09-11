@@ -5,6 +5,7 @@ import { COLORS } from "@/lib/theme";
 import { Close } from "@mui/icons-material";
 import { useChatStore } from "@/lib/store/chatStore";
 import { AgentFilterChip } from "./components/Chips";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
 export default function Source() {
   const setSelectedAnswer = useChatStore((s) => s.setSelectedAnswer);
@@ -29,6 +30,7 @@ export default function Source() {
       borderLeft={1}
       borderColor={COLORS.blueGrey[100]}
       minWidth={488 + 16 + 16}
+      maxWidth={488 + 16 + 16}
       px={2}
       display={"flex"}
       flexDirection={"column"}
@@ -46,7 +48,7 @@ export default function Source() {
           <Close sx={{ fontSize: 20 }} />
         </IconButton>
       </Box>
-      <Box display={"flex"} alignItems={"center"} gap={0.5}>
+      <Box display={"flex"} alignItems={"center"} gap={0.5} mt={1.5}>
         {AgentChips.map((chip) => (
           <AgentFilterChip
             key={chip.type}
@@ -55,6 +57,58 @@ export default function Source() {
             checked={selectedSourceType === chip.type}
           />
         ))}
+      </Box>
+      <Box
+        display={"flex"}
+        flexDirection={"column"}
+        gap={1}
+        border={1}
+        borderColor={COLORS.blueGrey[100]}
+        borderRadius={1}
+        px={2}
+        py={1.5}
+        mt={1}
+        mb={2}
+      >
+        <Typography fontSize={16} fontWeight={500}>
+          Intent
+        </Typography>
+        <Box display={"flex"} flexDirection={"row"} gap={1.5}>
+          <Typography
+            fontSize={12}
+            color={COLORS.blueGrey[300]}
+            display={"flex"}
+            alignItems={"center"}
+            gap={0.5}
+          >
+            <LocalOfferIcon sx={{ fontSize: 16 }} />
+            Keywords
+          </Typography>
+          <Box
+            display={"flex"}
+            flexDirection={"row"}
+            gap={0.5}
+            flex={1}
+            flexWrap={"wrap"}
+          >
+            {selectedAnswer?.intent.keywords.map((keyword) => (
+              <Typography
+                fontSize={12}
+                key={keyword}
+                px={1}
+                py={0.5}
+                width={"fit-content"}
+                borderRadius={2}
+                bgcolor={COLORS.grey[200]}
+              >
+                {keyword}
+              </Typography>
+            ))}
+          </Box>
+        </Box>
+        <Typography fontSize={12} color={COLORS.blueGrey[300]}>
+          {selectedAnswer?.intent.description}
+        </Typography>
       </Box>
     </Box>
   );

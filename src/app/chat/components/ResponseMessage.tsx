@@ -82,7 +82,7 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
             <Typography fontSize={12} color={COLORS.blueGrey[300]} width={48}>
               Intent
             </Typography>
-            <Typography fontSize={12}>{message?.intent}</Typography>
+            <Typography fontSize={12}>{message?.intent.title}</Typography>
           </Box>
           <Box display={"flex"} alignItems={"center"} gap={0.5}>
             <Typography fontSize={12} color={COLORS.blueGrey[300]} width={48}>
