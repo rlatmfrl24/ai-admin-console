@@ -39,8 +39,16 @@ export default function Chat() {
           <ChatIcon />
           <Typography variant="h6">AI Chat</Typography>
         </Box>
-        <Box aria-label="chat-content" flex={1}>
-          Content
+        <Box
+          aria-label="chat-content"
+          flexGrow={1}
+          height={0}
+          minHeight={0}
+          overflow="auto"
+          display="flex"
+          flexDirection="column"
+        >
+          <Typography>Content</Typography>
         </Box>
         <Box
           aria-label="chat-input-container"
