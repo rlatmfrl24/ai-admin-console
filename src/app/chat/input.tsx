@@ -5,6 +5,8 @@ import { Add } from "@mui/icons-material";
 import SendIcon from "@/assets/icon-send.svg";
 import { COLORS } from "@/lib/theme";
 import { Controller, useForm } from "react-hook-form";
+import { useChatStore } from "@/lib/store/chatStore";
+import type { ChatMessage } from "@/lib/types/chat";
 
 type ChatInputProps = {
   onSubmit?: (message: string) => void;
@@ -18,14 +20,30 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
   const { control, handleSubmit, reset, watch } = useForm<FormValues>({
     defaultValues: { message: "" },
   });
+  const addMessage = useChatStore((s) => s.addMessage);
 
   const messageValue = watch("message");
 
+  function generateChatId(): string {
+    const randomSuffix = Math.random().toString(36).slice(2, 10);
+    return `msg_${Date.now()}_${randomSuffix}`;
+  }
+
   const onLocalSubmit = (values: FormValues) => {
-    onSubmit?.(values.message);
-    if (!onSubmit) {
-      console.log("submit message:", values.message);
-    }
+    const trimmed = values.message?.trim();
+    if (!trimmed) return;
+
+    // Add user message to current thread (creates a new one if none exists)
+    const userMessage: ChatMessage = {
+      chatId: generateChatId(),
+      message: trimmed,
+      role: "user",
+      createdAt: new Date(),
+    };
+    addMessage(userMessage);
+
+    // Optional external handler
+    onSubmit?.(trimmed);
     reset();
   };
 

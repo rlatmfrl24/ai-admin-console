@@ -1,6 +1,8 @@
 interface ChatMessage {
   chatId: string;
   message: string | ChatAnswer;
+  isLoading?: boolean;
+  attachedFiles?: File[];
   role: "user" | "assistant";
   createdAt: Date;
 }
