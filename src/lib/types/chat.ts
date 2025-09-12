@@ -29,24 +29,24 @@ interface AnswerSource {
   duration: number;
 }
 
-interface RetrievalAnswerSource {
+interface RetrievalAnswerSource extends AnswerSource {
   fileName: string;
   previewFiles: File[];
   keywords: string[];
 }
 
-interface ApiAnswerSource {
+interface ApiAnswerSource extends AnswerSource {
   specificFields: {
     [key: string]: string;
     json: string;
   };
 }
 
-interface PimAnswerSource {
+interface PimAnswerSource extends AnswerSource {
   keywords: string[];
 }
 
-interface ChatAnswerSource {
+interface ChatAnswerSource extends AnswerSource {
   context: string[];
 }
 
