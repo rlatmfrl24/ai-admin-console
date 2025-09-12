@@ -77,7 +77,7 @@ function makeMockResponseMessage(): ChatAnswer {
           sourceType: "chat" as const,
           context: Array.from(
             { length: faker.number.int({ min: 1, max: 4 }) },
-            () => faker.lorem.sentence()
+            () => faker.lorem.word()
           ),
         };
     }

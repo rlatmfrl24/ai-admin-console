@@ -5,7 +5,7 @@ import {
   RetrievalAnswerSource,
   ApiAnswerSource,
 } from "@/lib/types/chat";
-import { ExpandMore, LocalOffer } from "@mui/icons-material";
+import { ArrowDropDown, ExpandMore, LocalOffer } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -15,6 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import APIIcon from "@/assets/icon-agent-api.svg";
 
 function getRankSuffix(rank: number) {
   return rank === 1 ? "st" : rank === 2 ? "nd" : rank === 3 ? "rd" : "th";
@@ -65,8 +66,8 @@ export const RetrievalSource = ({
 }: {
   source: RetrievalAnswerSource;
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isKeywordsExpanded, setIsKeywordsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [isKeywordsExpanded, setIsKeywordsExpanded] = useState(true);
 
   return (
     <Box
@@ -83,7 +84,7 @@ export const RetrievalSource = ({
         gap={1.5}
         px={2}
         pt={1.5}
-        pb={2}
+        pb={1.5}
       >
         <RankBadge rank={source.sourceRank} />
         <Box flexGrow={1}>
@@ -178,31 +179,253 @@ export const RetrievalSource = ({
 };
 
 export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [isSpecificFieldsExpanded, setIsSpecificFieldsExpanded] =
+    useState(true);
+
   return (
-    <Box>
-      <Typography>
-        {source.sourceName + " " + source.sourceRank + " " + source.sourceType}
-      </Typography>
+    <Box
+      border={1}
+      borderColor={COLORS.blueGrey[200]}
+      borderRadius={1}
+      display={"flex"}
+      flexDirection={"column"}
+    >
+      <Box
+        display={"flex"}
+        flexDirection={"row"}
+        alignItems={"center"}
+        gap={1.5}
+        px={2}
+        pt={1.5}
+        pb={1.5}
+      >
+        <RankBadge rank={source.sourceRank} />
+        <Typography fontSize={16} fontWeight={500} flex={1}>
+          {source.sourceName}
+        </Typography>
+        <IconButton
+          size="small"
+          sx={{ alignSelf: "flex-start" }}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <ExpandMore
+            sx={{
+              fontSize: 20,
+              transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+            }}
+          />
+        </IconButton>
+      </Box>
+      <Collapse in={isExpanded}>
+        <Box p={2} pt={0} display={"flex"} flexDirection={"column"} gap={1.5}>
+          <Typography
+            fontSize={14}
+            lineHeight={"20px"}
+            letterSpacing={0.14}
+            color={COLORS.blueGrey[700]}
+          >
+            {source.sourceDescription}
+          </Typography>
+          <Box
+            border={1}
+            borderColor={COLORS.blueGrey[50]}
+            borderRadius={1}
+            px={1.5}
+            py={1}
+            display={"flex"}
+            flexDirection={"column"}
+          >
+            <Box
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"center"}
+              gap={1}
+            >
+              <Box
+                bgcolor={COLORS.agent.api.background}
+                borderRadius={99}
+                p={0.5}
+                width={24}
+                height={24}
+                display={"flex"}
+                alignItems={"center"}
+                justifyContent={"center"}
+                gap={1}
+              >
+                <APIIcon />
+              </Box>
+              <Typography
+                fontSize={14}
+                color={COLORS.text.primary}
+                fontWeight={600}
+                flex={1}
+              >
+                API Call
+              </Typography>
+              <IconButton
+                size="small"
+                onClick={() =>
+                  setIsSpecificFieldsExpanded(!isSpecificFieldsExpanded)
+                }
+              >
+                <ArrowDropDown
+                  sx={{
+                    fontSize: 20,
+                    transform: isSpecificFieldsExpanded
+                      ? "rotate(180deg)"
+                      : "rotate(0deg)",
+                  }}
+                />
+              </IconButton>
+            </Box>
+            <Collapse in={isSpecificFieldsExpanded}>
+              <Typography fontSize={14} color={COLORS.blueGrey[700]}>
+                {`Method: ${source.specificFields.method}`}
+              </Typography>
+              <Typography fontSize={14} color={COLORS.blueGrey[700]}>
+                {`Endpoint: ${source.specificFields.endpoint}`}
+              </Typography>
+              <Typography fontSize={14} color={COLORS.blueGrey[700]}>
+                {`Status: ${source.specificFields.status}`}
+              </Typography>
+            </Collapse>
+          </Box>
+          <Box display={"flex"} flexDirection={"row"} gap={1}>
+            <Button variant="contained" size="small" fullWidth>
+              EDIT API
+            </Button>
+            <Button variant="outlined" size="small" fullWidth>
+              JSON DATA
+            </Button>
+          </Box>
+        </Box>
+      </Collapse>
     </Box>
   );
 };
 
 export const PimSource = ({ source }: { source: PimAnswerSource }) => {
+  const [isExpanded, setIsExpanded] = useState(true);
+
   return (
-    <Box>
-      <Typography>
-        {source.sourceName + " " + source.sourceRank + " " + source.sourceType}
-      </Typography>
+    <Box
+      border={1}
+      borderColor={COLORS.blueGrey[200]}
+      borderRadius={1}
+      display={"flex"}
+      flexDirection={"column"}
+    >
+      <Box
+        display={"flex"}
+        flexDirection={"row"}
+        alignItems={"center"}
+        gap={1.5}
+        px={2}
+        pt={1.5}
+        pb={1.5}
+      >
+        <RankBadge rank={source.sourceRank} />
+        <Typography fontSize={16} fontWeight={500} flex={1}>
+          {source.sourceName}
+        </Typography>
+        <IconButton
+          size="small"
+          sx={{ alignSelf: "flex-start" }}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <ExpandMore
+            sx={{
+              fontSize: 20,
+              transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+            }}
+          />
+        </IconButton>
+      </Box>
+      <Collapse in={isExpanded}>
+        <Box p={2} pt={0} display={"flex"} flexDirection={"column"} gap={1.5}>
+          <Typography fontSize={14} color={COLORS.blueGrey[700]}>
+            {source.sourceDescription}
+          </Typography>
+        </Box>
+      </Collapse>
     </Box>
   );
 };
 
 export const ChatSource = ({ source }: { source: ChatAnswerSource }) => {
+  const [isExpanded, setIsExpanded] = useState(true);
+
   return (
-    <Box>
-      <Typography>
-        {source.sourceName + " " + source.sourceRank + " " + source.sourceType}
-      </Typography>
+    <Box
+      border={1}
+      borderColor={COLORS.blueGrey[200]}
+      borderRadius={1}
+      display={"flex"}
+      flexDirection={"column"}
+    >
+      <Box
+        display={"flex"}
+        flexDirection={"row"}
+        alignItems={"center"}
+        gap={1.5}
+        px={2}
+        pt={1.5}
+        pb={1.5}
+      >
+        <RankBadge rank={source.sourceRank} />
+        <Typography fontSize={16} fontWeight={500} flex={1}>
+          {source.sourceName}
+        </Typography>
+        <IconButton
+          size="small"
+          sx={{ alignSelf: "flex-start" }}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <ExpandMore
+            sx={{
+              fontSize: 20,
+              transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+            }}
+          />
+        </IconButton>
+      </Box>
+      <Collapse in={isExpanded}>
+        <Box
+          display={"flex"}
+          flexDirection={"row"}
+          gap={1.5}
+          px={2}
+          alignItems={"center"}
+        >
+          <Typography
+            fontSize={12}
+            color={COLORS.blueGrey[300]}
+            display={"flex"}
+            alignItems={"center"}
+            gap={0.5}
+          >
+            <LocalOffer sx={{ fontSize: 16 }} />
+            Chat Context
+          </Typography>
+          {source.context.map((context) => (
+            <KeywordChip key={context} keyword={context} />
+          ))}
+        </Box>
+        <Box p={2} pt={1.5} display={"flex"} flexDirection={"column"} gap={1.5}>
+          <Typography
+            fontSize={14}
+            lineHeight={"20px"}
+            letterSpacing={0.14}
+            color={COLORS.blueGrey[700]}
+          >
+            {source.sourceDescription}
+          </Typography>
+          <Button variant="contained" size="small" fullWidth>
+            EDIT PROCESS
+          </Button>
+        </Box>
+      </Collapse>
     </Box>
   );
 };
