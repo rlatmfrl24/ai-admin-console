@@ -1,6 +1,6 @@
 "use client";
 
-import { ChatAnswer, ChatAnswerSource } from "@/lib/types/chat";
+import { AnswerSource, ChatAnswer } from "@/lib/types/chat";
 import { Box, Divider, Paper, Typography } from "@mui/material";
 import { COLORS } from "@/lib/theme";
 import { format } from "date-fns";
@@ -142,7 +142,7 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
   );
 }
 
-const SourceMessage = ({ source }: { source: ChatAnswerSource }) => {
+const SourceMessage = ({ source }: { source: AnswerSource }) => {
   const setSelectedSourceType = useChatStore((s) => s.setSelectedSourceType);
   return (
     <Box
@@ -179,10 +179,10 @@ const SourceMessage = ({ source }: { source: ChatAnswerSource }) => {
           })()}
         </Box>
         <Typography fontSize={16} fontWeight={600} flex={1}>
-          {source.sourceName.title}
+          {source.sourceMessage.title}
         </Typography>
         <Typography fontSize={12} color={COLORS.blueGrey[300]}>
-          {source.sourceName.name}
+          {source.sourceName}
         </Typography>
         <Typography
           fontSize={12}
@@ -199,7 +199,7 @@ const SourceMessage = ({ source }: { source: ChatAnswerSource }) => {
         whiteSpace={"pre-wrap"}
         mt={1}
       >
-        {source.sourceMessage}
+        {source.sourceMessage.content}
       </Typography>
     </Box>
   );

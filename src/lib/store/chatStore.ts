@@ -1,9 +1,4 @@
-import {
-  ChatMessage,
-  Thread,
-  ChatAnswer,
-  ChatAnswerSource,
-} from "../types/chat";
+import { ChatMessage, Thread, ChatAnswer, AnswerSource } from "../types/chat";
 import { create } from "zustand";
 
 interface ChatStoreState {
@@ -28,9 +23,9 @@ interface ChatStoreState {
 
   // Selection state
   selectedAnswer: ChatAnswer | null;
-  selectedSourceType: ChatAnswerSource["sourceType"] | null;
+  selectedSourceType: AnswerSource["sourceType"] | null;
   setSelectedAnswer: (answer: ChatAnswer | null) => void;
-  setSelectedSourceType: (type: ChatAnswerSource["sourceType"] | null) => void;
+  setSelectedSourceType: (type: AnswerSource["sourceType"] | null) => void;
 }
 
 function generateThreadId(): string {
@@ -143,7 +138,7 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
   setSelectedAnswer: (answer: ChatAnswer | null) =>
     set(() => ({ selectedAnswer: answer })),
 
-  setSelectedSourceType: (type: ChatAnswerSource["sourceType"] | null) =>
+  setSelectedSourceType: (type: AnswerSource["sourceType"] | null) =>
     set(() => ({ selectedSourceType: type })),
 
   clear: () => set({ threadHistory: [], currentThreadId: null }),

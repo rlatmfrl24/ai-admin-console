@@ -7,11 +7,12 @@ function makeMockResponseMessage(): ChatAnswer {
   const sources = Array.from({ length: sourceCount }, (_, index) => ({
     sourceType: faker.helpers.arrayElement(["retrieval", "api", "chat", "pim"]),
     sourceId: faker.string.uuid(),
-    sourceName: {
+    sourceName: faker.lorem.sentence(),
+    sourceMessage: {
       title: faker.lorem.sentence(),
-      name: faker.lorem.sentence(),
+      content: faker.lorem.paragraphs(),
     },
-    sourceMessage: faker.lorem.paragraphs(),
+    sourceDescription: faker.lorem.paragraph(),
     duration: faker.number.int({ min: 1000, max: 10000 }),
     sourceRank: index + 1,
   }));

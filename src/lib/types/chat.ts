@@ -13,19 +13,41 @@ interface ChatAnswer extends ChatMessage {
     keywords: string[];
   };
   duration: number;
-  sources: ChatAnswerSource[];
+  sources: AnswerSource[];
 }
 
-interface ChatAnswerSource {
+interface AnswerSource {
   sourceRank: number;
   sourceType: "retrieval" | "api" | "chat" | "pim";
   sourceId: string;
-  sourceName: {
+  sourceName: string;
+  sourceMessage: {
     title: string;
-    name: string;
+    content: string;
   };
-  sourceMessage: string;
+  sourceDescription: string;
   duration: number;
+}
+
+interface RetrievalAnswerSource {
+  fileName: string;
+  previewFiles: File[];
+  keywords: string[];
+}
+
+interface ApiAnswerSource {
+  specificFields: {
+    [key: string]: string;
+    json: string;
+  };
+}
+
+interface PimAnswerSource {
+  keywords: string[];
+}
+
+interface ChatAnswerSource {
+  context: string[];
 }
 
 interface Thread {
@@ -37,4 +59,13 @@ interface Thread {
   messages: ChatMessage[];
 }
 
-export type { ChatMessage, ChatAnswer, ChatAnswerSource, Thread };
+export type {
+  ChatMessage,
+  ChatAnswer,
+  Thread,
+  AnswerSource,
+  RetrievalAnswerSource,
+  ApiAnswerSource,
+  PimAnswerSource,
+  ChatAnswerSource,
+};
