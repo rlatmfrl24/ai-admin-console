@@ -103,10 +103,15 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
           p: 1,
           borderRadius: 6,
           gap: 1.5,
-          border: "1px solid transparent",
-          transition: "border-color 0.2s ease",
+          "&:hover": {
+            outline: "1px solid",
+            outlineColor: COLORS.text.primary,
+            border: "none",
+          },
           "&:focus-within": {
-            borderColor: COLORS.primary.main,
+            outline: "2px solid",
+            outlineColor: COLORS.primary.main,
+            border: "none",
           },
         }}
       >

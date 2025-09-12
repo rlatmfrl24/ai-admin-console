@@ -36,7 +36,7 @@ function makeMockResponseMessage(): ChatAnswer {
 
 export async function POST(request: Request) {
   const { message } = await request.json();
-  console.log(message);
+  console.log("message::", message);
   await new Promise((resolve) => setTimeout(resolve, 3000));
   return NextResponse.json({ message: makeMockResponseMessage() });
 }

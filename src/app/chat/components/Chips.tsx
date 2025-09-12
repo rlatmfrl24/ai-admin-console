@@ -53,7 +53,7 @@ export const AgentFilterChip = ({
       }}
     >
       {checked && <Check sx={{ fontSize: 16 }} />}
-      <Typography fontSize={13} fontWeight={500}>
+      <Typography fontSize={13} fontWeight={500} lineHeight={"18px"}>
         {getAgentText(type)}
       </Typography>
       <Typography
