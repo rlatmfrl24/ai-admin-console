@@ -29,7 +29,7 @@ function makeMockResponseMessage(): ChatAnswer {
         return {
           ...base,
           sourceType: "retrieval" as const,
-          fileName: faker.system.fileName(),
+          chunkName: faker.system.fileName(),
           previewFiles: Array.from(
             { length: faker.number.int({ min: 0, max: 3 }) },
             () =>

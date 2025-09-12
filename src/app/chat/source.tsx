@@ -6,7 +6,19 @@ import { Close } from "@mui/icons-material";
 import { useChatStore } from "@/lib/store/chatStore";
 import { AgentFilterChip } from "./components/Chips";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import { AnswerSource } from "@/lib/types/chat";
+import {
+  AnswerSource,
+  ChatAnswerSource,
+  PimAnswerSource,
+  RetrievalAnswerSource,
+  ApiAnswerSource,
+} from "@/lib/types/chat";
+import {
+  ApiSource,
+  PimSource,
+  RetrievalSource,
+  ChatSource,
+} from "./components/Sources";
 
 export default function Source() {
   const setSelectedAnswer = useChatStore((s) => s.setSelectedAnswer);
@@ -36,6 +48,7 @@ export default function Source() {
       px={2}
       display={"flex"}
       flexDirection={"column"}
+      overflow={"auto"}
     >
       <Box
         display={"flex"}
@@ -119,6 +132,34 @@ export default function Source() {
         <Typography fontSize={12} color={COLORS.blueGrey[300]}>
           {selectedAnswer?.intent.description}
         </Typography>
+      </Box>
+      <Box display={"flex"} flexDirection={"column"} gap={1}>
+        {selectedAnswer?.sources
+          .slice()
+          .sort((a, b) => a.sourceRank - b.sourceRank)
+          .map((source) =>
+            source.sourceType === "retrieval" ? (
+              <RetrievalSource
+                key={source.sourceId}
+                source={source as RetrievalAnswerSource}
+              />
+            ) : source.sourceType === "api" ? (
+              <ApiSource
+                key={source.sourceId}
+                source={source as ApiAnswerSource}
+              />
+            ) : source.sourceType === "pim" ? (
+              <PimSource
+                key={source.sourceId}
+                source={source as PimAnswerSource}
+              />
+            ) : source.sourceType === "chat" ? (
+              <ChatSource
+                key={source.sourceId}
+                source={source as ChatAnswerSource}
+              />
+            ) : null
+          )}
       </Box>
     </Box>
   );

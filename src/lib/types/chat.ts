@@ -30,7 +30,7 @@ interface AnswerSource {
 }
 
 interface RetrievalAnswerSource extends AnswerSource {
-  fileName: string;
+  chunkName: string;
   previewFiles: File[];
   keywords: string[];
 }
