@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import LeftPanelOpenIcon from "@/assets/icon-left-panel-open.svg";
 import LeftPanelCloseIcon from "@/assets/icon-left-panel-close.svg";
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, memo } from "react";
 import { COLORS } from "@/lib/constants/color";
 import {
   Add,
@@ -120,7 +120,9 @@ export default function ChatSidebar() {
             }}
           >
             <Add />
-            NEW CHAT
+            <Typography fontSize={13} fontWeight={500}>
+              NEW CHAT
+            </Typography>
           </Box>
           <Typography
             fontSize={12}
@@ -147,12 +149,12 @@ export default function ChatSidebar() {
   );
 }
 
-const ChatSidebarItem = ({
+const ChatSidebarItemComponent = ({
   isSelected = false,
   thread,
 }: {
   isSelected?: boolean;
-  thread: Thread | null;
+  thread: Thread;
 }) => {
   const setCurrentThread = useChatStore((s) => s.setCurrentThread);
   const removeThread = useChatStore((s) => s.removeThread);
@@ -161,6 +163,10 @@ const ChatSidebarItem = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const open = Boolean(anchorEl);
+  const menuButtonId = useMemo(
+    () => `thread-menu-button-${thread.threadId}`,
+    [thread.threadId]
+  );
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
@@ -178,16 +184,12 @@ const ChatSidebarItem = ({
       setDeleteDialogOpen(true);
     } else if (action === "rename") {
       setIsRenaming(true);
-    } else {
-      console.log(`${action} clicked for thread:`, thread?.threadId);
     }
     handleMenuClose();
   };
 
   const handleDeleteConfirm = () => {
-    if (thread?.threadId) {
-      removeThread(thread.threadId);
-    }
+    removeThread(thread.threadId);
     setDeleteDialogOpen(false);
   };
 
@@ -196,24 +198,28 @@ const ChatSidebarItem = ({
   };
 
   const [isRenaming, setIsRenaming] = useState(false);
-  const [renameValue, setRenameValue] = useState(thread?.name || "");
+  const [renameValue, setRenameValue] = useState(thread.name);
   const renameInputRef = useRef<HTMLInputElement>(null);
 
   const handleRenameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       setIsRenaming(false);
-      renameThread(thread?.threadId || "", renameValue);
+      renameThread(thread.threadId, renameValue);
+    }
+    if (e.key === "Escape") {
+      setIsRenaming(false);
+      setRenameValue(thread.name);
     }
   };
 
   // 포커스 효과를 위한 useEffect
   useEffect(() => {
     if (isRenaming && renameInputRef.current) {
-      // 약간의 지연을 두어 DOM이 업데이트된 후 포커스
-      setTimeout(() => {
+      const rafId = requestAnimationFrame(() => {
         renameInputRef.current?.focus();
-        renameInputRef.current?.select(); // 텍스트 전체 선택
-      }, 0);
+        renameInputRef.current?.select();
+      });
+      return () => cancelAnimationFrame(rafId);
     }
   }, [isRenaming]);
 
@@ -227,6 +233,9 @@ const ChatSidebarItem = ({
           value={renameValue}
           onChange={(e) => setRenameValue(e.target.value)}
           onKeyDown={handleRenameKeyDown}
+          onBlur={() => {
+            setIsRenaming(false);
+          }}
         />
       ) : (
         <Box
@@ -238,7 +247,7 @@ const ChatSidebarItem = ({
             cursor: "pointer",
             "&:hover": { backgroundColor: COLORS.grey[100] },
           }}
-          onClick={() => setCurrentThread(thread?.threadId || "")}
+          onClick={() => setCurrentThread(thread.threadId)}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => {
             if (!open) {
@@ -249,13 +258,14 @@ const ChatSidebarItem = ({
           alignItems={"center"}
           justifyContent={"space-between"}
         >
-          <Typography fontSize={14}>{thread?.name || "New Chat"}</Typography>
+          <Typography fontSize={14}>{thread.name || "New Chat"}</Typography>
           {isHovered && (
             <IconButton
               size="small"
               onClick={handleMenuClick}
+              id={menuButtonId}
               aria-controls={open ? "thread-menu" : undefined}
-              aria-haspopup="true"
+              aria-haspopup={true}
               aria-expanded={open ? "true" : undefined}
             >
               <MoreVert sx={{ fontSize: 20 }} />
@@ -267,10 +277,10 @@ const ChatSidebarItem = ({
             open={open}
             onClose={handleMenuClose}
             keepMounted={false}
+            disablePortal
             slotProps={{
               list: {
-                "aria-labelledby": "thread-menu-button",
-                disablePadding: false,
+                "aria-labelledby": menuButtonId,
               },
               paper: {
                 sx: {
@@ -281,25 +291,19 @@ const ChatSidebarItem = ({
             transformOrigin={{ horizontal: "right", vertical: "top" }}
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             disableAutoFocusItem
-            sx={{
-              "& .MuiListItemIcon-root": {
-                minWidth: 0,
-                mr: 1,
-              },
-            }}
           >
             <MenuItem onClick={() => handleMenuItemClick("rename")}>
-              <ListItemIcon>
-                <EditOutlined sx={{ fontSize: 20 }} />
-              </ListItemIcon>
+              <EditOutlined
+                sx={{ fontSize: 20, color: COLORS.action.active, mr: 1 }}
+              />
               <ListItemText slotProps={{ primary: { fontSize: 12 } }}>
                 Name Edit
               </ListItemText>
             </MenuItem>
             <MenuItem onClick={() => handleMenuItemClick("delete")}>
-              <ListItemIcon>
-                <DeleteOutline sx={{ fontSize: 20 }} />
-              </ListItemIcon>
+              <DeleteOutline
+                sx={{ fontSize: 20, color: COLORS.action.active, mr: 1 }}
+              />
               <ListItemText slotProps={{ primary: { fontSize: 12 } }}>
                 Delete
               </ListItemText>
@@ -335,7 +339,7 @@ const ChatSidebarItem = ({
               }}
             >
               <DialogContentText id="delete-dialog-description">
-                This action will delete &ldquo;{thread?.name || "New Chat"}
+                This action will delete &ldquo;{thread.name || "New Chat"}
                 &rdquo;
               </DialogContentText>
             </DialogContent>
@@ -367,3 +371,9 @@ const ChatSidebarItem = ({
     </>
   );
 };
+
+const ChatSidebarItem = memo(
+  ChatSidebarItemComponent,
+  (prev, next) =>
+    prev.isSelected === next.isSelected && prev.thread === next.thread
+);
