@@ -143,14 +143,14 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
 }
 
 const SourceMessage = ({ source }: { source: AnswerSource }) => {
-  const setSelectedSourceType = useChatStore((s) => s.setSelectedSourceType);
+  const selectOnlySourceType = useChatStore((s) => s.selectOnlySourceType);
   return (
     <Box
       sx={{
         cursor: "pointer",
       }}
       onClick={() => {
-        setSelectedSourceType(source.sourceType);
+        selectOnlySourceType(source.sourceType);
       }}
     >
       <Box display={"flex"} alignItems={"center"} gap={0.5}>

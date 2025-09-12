@@ -23,9 +23,11 @@ interface ChatStoreState {
 
   // Selection state
   selectedAnswer: ChatAnswer | null;
-  selectedSourceType: AnswerSource["sourceType"] | null;
+  selectedSourceTypes: AnswerSource["sourceType"][];
   setSelectedAnswer: (answer: ChatAnswer | null) => void;
-  setSelectedSourceType: (type: AnswerSource["sourceType"] | null) => void;
+  toggleSelectedSourceType: (type: AnswerSource["sourceType"]) => void;
+  setSelectedSourceTypes: (types: AnswerSource["sourceType"][]) => void;
+  selectOnlySourceType: (type: AnswerSource["sourceType"]) => void;
 }
 
 function generateThreadId(): string {
@@ -38,7 +40,7 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
   currentThreadId: null,
   isAwaitingResponse: false,
   selectedAnswer: null,
-  selectedSourceType: null,
+  selectedSourceTypes: [],
 
   getCurrentThread: () => {
     const { currentThreadId, threadHistory } = get();
@@ -138,8 +140,21 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
   setSelectedAnswer: (answer: ChatAnswer | null) =>
     set(() => ({ selectedAnswer: answer })),
 
-  setSelectedSourceType: (type: AnswerSource["sourceType"] | null) =>
-    set(() => ({ selectedSourceType: type })),
+  toggleSelectedSourceType: (type: AnswerSource["sourceType"]) =>
+    set((state) => {
+      const hasType = state.selectedSourceTypes.includes(type);
+      return {
+        selectedSourceTypes: hasType
+          ? state.selectedSourceTypes.filter((t) => t !== type)
+          : [...state.selectedSourceTypes, type],
+      };
+    }),
+
+  setSelectedSourceTypes: (types: AnswerSource["sourceType"][]) =>
+    set(() => ({ selectedSourceTypes: Array.from(new Set(types)) })),
+
+  selectOnlySourceType: (type: AnswerSource["sourceType"]) =>
+    set(() => ({ selectedSourceTypes: [type] })),
 
   clear: () => set({ threadHistory: [], currentThreadId: null }),
 }));

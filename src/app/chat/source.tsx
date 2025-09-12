@@ -6,11 +6,13 @@ import { Close } from "@mui/icons-material";
 import { useChatStore } from "@/lib/store/chatStore";
 import { AgentFilterChip } from "./components/Chips";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import { AnswerSource } from "@/lib/types/chat";
 
 export default function Source() {
   const setSelectedAnswer = useChatStore((s) => s.setSelectedAnswer);
   const selectedAnswer = useChatStore((s) => s.selectedAnswer);
-  const selectedSourceType = useChatStore((s) => s.selectedSourceType);
+  const selectedSourceTypes = useChatStore((s) => s.selectedSourceTypes);
+  const setSelectedSourceTypes = useChatStore((s) => s.setSelectedSourceTypes);
 
   const AgentChips = (() => {
     const map = new Map<string, number>();
@@ -44,7 +46,13 @@ export default function Source() {
         <Typography fontSize={20} fontWeight={500}>
           Source
         </Typography>
-        <IconButton size="small" onClick={() => setSelectedAnswer(null)}>
+        <IconButton
+          size="small"
+          onClick={() => {
+            setSelectedSourceTypes([]);
+            setSelectedAnswer(null);
+          }}
+        >
           <Close sx={{ fontSize: 20 }} />
         </IconButton>
       </Box>
@@ -54,7 +62,9 @@ export default function Source() {
             key={chip.type}
             type={chip.type as "api" | "pim" | "retrieval" | "chat"}
             count={chip.count}
-            checked={selectedSourceType === chip.type}
+            checked={selectedSourceTypes.includes(
+              chip.type as AnswerSource["sourceType"]
+            )}
           />
         ))}
       </Box>

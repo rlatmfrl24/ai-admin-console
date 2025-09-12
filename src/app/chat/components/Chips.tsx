@@ -33,7 +33,9 @@ export const AgentFilterChip = ({
   count: number;
   checked?: boolean;
 }) => {
-  const setSelectedSourceType = useChatStore((s) => s.setSelectedSourceType);
+  const toggleSelectedSourceType = useChatStore(
+    (s) => s.toggleSelectedSourceType
+  );
   return (
     <Box
       display={"flex"}
@@ -49,7 +51,7 @@ export const AgentFilterChip = ({
         cursor: "pointer",
       }}
       onClick={() => {
-        setSelectedSourceType(type);
+        toggleSelectedSourceType(type);
       }}
     >
       {checked && <Check sx={{ fontSize: 16 }} />}
