@@ -6,7 +6,6 @@ import {
   ClickAwayListener,
   Menu,
   MenuItem,
-  ListItemIcon,
   ListItemText,
   Dialog,
   DialogTitle,

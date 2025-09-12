@@ -34,6 +34,7 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
   const onLocalSubmit = async (values: FormValues) => {
     const trimmed = values.message?.trim();
     if (!trimmed) return;
+    if (isAwaitingResponse) return;
 
     // Add user message to current thread (creates a new one if none exists)
     const userMessage: ChatMessage = {
@@ -71,7 +72,8 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
         };
         addMessage(assistantMessage);
       }
-    } catch {
+    } catch (error) {
+      console.error("/api/chat 요청 실패:", error);
       const errorMessage: ChatMessage = {
         chatId: generateChatId(),
         message: "요청 처리 중 오류가 발생했습니다.",
@@ -121,6 +123,8 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
             height: 32,
             border: "1px solid #0000003b",
           }}
+          aria-label="add-attachment"
+          title="Add attachment"
         >
           <Add sx={{ fontSize: 20 }} />
         </IconButton>
@@ -133,7 +137,12 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
               {...field}
               fullWidth
               multiline
+              minRows={1}
               placeholder="Please enter your question.."
+              inputProps={{
+                "aria-label": "chat-message-input",
+                enterKeyHint: "send",
+              }}
             />
           )}
         />
@@ -148,6 +157,7 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
         }}
         type="submit"
         disabled={!messageValue?.trim() || isAwaitingResponse}
+        aria-label="submit-message"
       >
         SUBMIT
       </Button>

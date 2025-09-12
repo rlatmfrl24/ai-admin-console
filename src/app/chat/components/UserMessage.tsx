@@ -37,6 +37,7 @@ export default function UserMessage({ message }: { message: ChatMessage }) {
         py={1.5}
         lineHeight={1.4}
         borderRadius={1.5}
+        whiteSpace={"pre-wrap"}
       >
         {message?.message as string}
       </Typography>
