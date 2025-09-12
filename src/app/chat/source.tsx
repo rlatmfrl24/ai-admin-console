@@ -114,10 +114,10 @@ export default function Source() {
             flex={1}
             flexWrap={"wrap"}
           >
-            {selectedAnswer?.intent.keywords.map((keyword) => (
+            {selectedAnswer?.intent.keywords.map((keyword, index) => (
               <Typography
                 fontSize={12}
-                key={keyword}
+                key={`${keyword}-${index}`}
                 px={1}
                 py={0.5}
                 width={"fit-content"}
@@ -133,10 +133,11 @@ export default function Source() {
           {selectedAnswer?.intent.description}
         </Typography>
       </Box>
-      <Box display={"flex"} flexDirection={"column"} gap={1}>
+      <Box display={"flex"} flexDirection={"column"} gap={1} mb={2}>
         {selectedAnswer?.sources
           .slice()
           .sort((a, b) => a.sourceRank - b.sourceRank)
+          .filter((source) => selectedSourceTypes.includes(source.sourceType))
           .map((source) =>
             source.sourceType === "retrieval" ? (
               <RetrievalSource

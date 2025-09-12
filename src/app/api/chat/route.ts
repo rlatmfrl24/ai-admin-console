@@ -30,13 +30,19 @@ function makeMockResponseMessage(): ChatAnswer {
           ...base,
           sourceType: "retrieval" as const,
           chunkName: faker.system.fileName(),
-          previewFiles: Array.from(
-            { length: faker.number.int({ min: 0, max: 3 }) },
-            () =>
-              new File([faker.lorem.paragraph()], faker.system.fileName(), {
-                type: "text/plain",
-              })
-          ),
+          previewFiles: [
+            "/0430231ea47fe9e4f4797fee3ed8f8d7e5085cf6.png",
+            ...Array.from(
+              { length: faker.number.int({ min: 0, max: 3 }) },
+              (_, i) => {
+                const svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"200\" viewBox=\"0 0 200 200\"><rect width=\"200\" height=\"200\" fill=\"${faker.color.rgb()}\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"14\" fill=\"#ffffff\">Mock ${
+                  i + 1
+                }</text></svg>`;
+                const base64 = Buffer.from(svg).toString("base64");
+                return `data:image/svg+xml;base64,${base64}`;
+              }
+            ),
+          ],
           keywords: Array.from(
             { length: faker.number.int({ min: 1, max: 5 }) },
             () => faker.lorem.word()

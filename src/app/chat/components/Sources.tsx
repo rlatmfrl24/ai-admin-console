@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import APIIcon from "@/assets/icon-agent-api.svg";
+import Image from "next/image";
 
 function getRankSuffix(rank: number) {
   return rank === 1 ? "st" : rank === 2 ? "nd" : rank === 3 ? "rd" : "th";
@@ -68,6 +69,7 @@ export const RetrievalSource = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isKeywordsExpanded, setIsKeywordsExpanded] = useState(true);
+  const previewUrl = source.previewFiles?.[0] ?? null;
 
   return (
     <Box
@@ -109,6 +111,37 @@ export const RetrievalSource = ({
         </IconButton>
       </Box>
       <Collapse in={isExpanded}>
+        <Box p={2} pt={0} display={"flex"} flexDirection={"column"} gap={1.5}>
+          {previewUrl ? (
+            <Image
+              src={previewUrl}
+              alt={source.chunkName}
+              width={200}
+              height={200}
+              style={{
+                width: "100%",
+                height: "auto",
+                borderRadius: "4px",
+                objectFit: "cover",
+              }}
+            />
+          ) : (
+            <Box
+              height={200}
+              borderRadius={1}
+              border={1}
+              borderColor={COLORS.blueGrey[100]}
+              bgcolor={COLORS.blueGrey[50]}
+              display={"flex"}
+              alignItems={"center"}
+              justifyContent={"center"}
+            >
+              <Typography fontSize={12} color={COLORS.blueGrey[300]}>
+                No Preview
+              </Typography>
+            </Box>
+          )}
+        </Box>
         <Box p={2} pt={0} display={"flex"} flexDirection={"column"} gap={1.5}>
           <Typography
             fontSize={14}
@@ -159,8 +192,8 @@ export const RetrievalSource = ({
               gap={1}
               flexWrap={"wrap"}
             >
-              {source.keywords.map((keyword) => (
-                <KeywordChip key={keyword} keyword={keyword} />
+              {source.keywords.map((keyword, index) => (
+                <KeywordChip key={`${keyword}-${index}`} keyword={keyword} />
               ))}
             </Box>
             <Button
@@ -408,8 +441,8 @@ export const ChatSource = ({ source }: { source: ChatAnswerSource }) => {
             <LocalOffer sx={{ fontSize: 16 }} />
             Chat Context
           </Typography>
-          {source.context.map((context) => (
-            <KeywordChip key={context} keyword={context} />
+          {source.context.map((context, index) => (
+            <KeywordChip key={`${context}-${index}`} keyword={context} />
           ))}
         </Box>
         <Box p={2} pt={1.5} display={"flex"} flexDirection={"column"} gap={1.5}>
