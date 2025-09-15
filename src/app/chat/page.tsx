@@ -10,6 +10,7 @@ import UserMessage from "./components/UserMessage";
 import ResponseMessage from "./components/ResponseMessage";
 import { ChatAnswer } from "@/lib/types/chat";
 import { useEffect, useRef } from "react";
+import EmptyChatLayer from "@/assets/img-empty-chat.svg";
 import Source from "./source";
 
 export default function Chat() {
@@ -56,15 +57,13 @@ export default function Chat() {
           flexGrow={1}
           height={0}
           minHeight={0}
-          overflow="auto"
+          overflow={messages.length === 0 ? "hidden" : "auto"}
           display="flex"
           flexDirection="column"
         >
           <Box p={2} display="flex" flexDirection="column" gap={2.5}>
             {messages.length === 0 ? (
-              <Typography variant="body2" color="text.secondary">
-                메시지가 없습니다.
-              </Typography>
+              <EmptyChat />
             ) : (
               messages.map((m) => {
                 if (m.role === "user") {
@@ -90,3 +89,29 @@ export default function Chat() {
     </Box>
   );
 }
+
+const EmptyChat = () => {
+  return (
+    <Box
+      display="flex"
+      flexDirection="column"
+      gap={2}
+      alignItems="center"
+      justifyContent="center"
+      height="100%"
+      minHeight="calc(100vh - 200px)"
+    >
+      <EmptyChatLayer />
+      <Typography
+        fontSize={24}
+        fontWeight={400}
+        lineHeight={"116%"}
+        textAlign="center"
+        color={COLORS.primary.states.focusVisible}
+      >
+        Everything You Want to Know
+        <br /> about Allegro NX
+      </Typography>
+    </Box>
+  );
+};

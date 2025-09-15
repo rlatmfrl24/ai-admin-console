@@ -17,6 +17,7 @@ import {
 import { useState } from "react";
 import APIIcon from "@/assets/icon-agent-api.svg";
 import Image from "next/image";
+import { ImagePreviewModal } from "@/components/common/ImagePreviewModal";
 
 function getRankSuffix(rank: number) {
   return rank === 1 ? "st" : rank === 2 ? "nd" : rank === 3 ? "rd" : "th";
@@ -69,6 +70,7 @@ export const RetrievalSource = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isKeywordsExpanded, setIsKeywordsExpanded] = useState(true);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const previewUrl = source.previewFiles?.[0] ?? null;
 
   return (
@@ -90,7 +92,11 @@ export const RetrievalSource = ({
       >
         <RankBadge rank={source.sourceRank} />
         <Box flexGrow={1}>
-          <Typography fontSize={16} fontWeight={500}>
+          <Typography
+            id={`retrieval-source-title-${source.sourceRank}`}
+            fontSize={16}
+            fontWeight={500}
+          >
             {source.chunkName}
           </Typography>
           <Typography fontSize={14} color={COLORS.blueGrey[400]}>
@@ -113,18 +119,30 @@ export const RetrievalSource = ({
       <Collapse in={isExpanded}>
         <Box p={2} pt={0} display={"flex"} flexDirection={"column"} gap={1.5}>
           {previewUrl ? (
-            <Image
-              src={previewUrl}
-              alt={source.chunkName}
-              width={200}
-              height={200}
-              style={{
-                width: "100%",
-                height: "auto",
-                borderRadius: "4px",
-                objectFit: "cover",
-              }}
-            />
+            <>
+              <Image
+                src={previewUrl}
+                alt={source.chunkName}
+                width={200}
+                height={200}
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "4px",
+                  objectFit: "cover",
+                  cursor: "zoom-in",
+                }}
+                onClick={() => setIsPreviewOpen(true)}
+              />
+              <ImagePreviewModal
+                open={isPreviewOpen}
+                onClose={() => setIsPreviewOpen(false)}
+                url={previewUrl}
+                index={source.sourceRank}
+                ariaLabelledbyId={`retrieval-source-title-${source.sourceRank}`}
+                fileName={source.chunkName}
+              />
+            </>
           ) : (
             <Box
               height={200}

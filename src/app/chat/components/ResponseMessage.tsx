@@ -10,6 +10,7 @@ import RetrievalIcon from "@/assets/icon-agent-retrieval.svg";
 import PimIcon from "@/assets/icon-agent-pim.svg";
 import ApiIcon from "@/assets/icon-agent-api.svg";
 import ChatIcon from "@/assets/icon-agent-chat.svg";
+import AIProfileIcon from "@/assets/icon-ai-profile.svg";
 import { useChatStore } from "@/lib/store/chatStore";
 
 function formatDuration(duration: number) {
@@ -54,6 +55,7 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
       alignItems={"flex-end"}
       gap={1.5}
     >
+      <AIProfileIcon style={{ alignSelf: "flex-start", marginTop: 8 }} />
       <Paper
         aria-label="response-message-content"
         sx={{
