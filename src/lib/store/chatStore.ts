@@ -70,6 +70,11 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
     set((state) => ({
       threadHistory: [...state.threadHistory, newThread],
       currentThreadId: threadId,
+      // Reset selection/JSON viewer when a new chat is created
+      selectedAnswer: null,
+      selectedSourceTypes: [],
+      isJsonViewerOpen: false,
+      jsonViewerData: null,
     }));
     return threadId;
   },
@@ -78,6 +83,11 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
     set((state) => ({
       threadHistory: [...state.threadHistory, thread],
       currentThreadId: thread.threadId,
+      // Reset selection/JSON viewer when a new chat is added/opened
+      selectedAnswer: null,
+      selectedSourceTypes: [],
+      isJsonViewerOpen: false,
+      jsonViewerData: null,
     })),
 
   renameThread: (threadId: string, name: string) =>
@@ -108,11 +118,17 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
       currentThreadId: state.threadHistory.some((t) => t.threadId === threadId)
         ? threadId
         : state.currentThreadId,
+      // Reset selection/JSON viewer when switching to another thread
+      selectedAnswer: null,
+      selectedSourceTypes: [],
+      isJsonViewerOpen: false,
+      jsonViewerData: null,
     })),
 
   addMessage: (message: ChatMessage) =>
     set((state) => {
       let { currentThreadId, threadHistory } = state;
+      const didBootstrap = !currentThreadId;
 
       // Ensure there's a current thread to append to
       if (!currentThreadId) {
@@ -139,6 +155,15 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
       return {
         threadHistory: updatedHistory,
         currentThreadId,
+        ...(didBootstrap
+          ? {
+              // Reset selection/JSON viewer when a chat is bootstrapped implicitly
+              selectedAnswer: null,
+              selectedSourceTypes: [],
+              isJsonViewerOpen: false,
+              jsonViewerData: null,
+            }
+          : {}),
       };
     }),
 

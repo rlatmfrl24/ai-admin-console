@@ -8,7 +8,8 @@ import ChatInput from "./input";
 import UserMessage from "./components/UserMessage";
 import ResponseMessage from "./components/ResponseMessage";
 import { ChatAnswer } from "@/lib/types/chat";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import EmptyChatLayer from "@/assets/img-empty-chat.svg";
 import Source from "./source";
 import JsonViewer from "./components/JsonViewer";
@@ -21,15 +22,38 @@ export default function Chat() {
       ? s.threadHistory.find((t) => t.threadId === s.currentThreadId) ?? null
       : null
   );
-  const messages = currentThread?.messages ?? [];
+  const messages = useMemo(
+    () => currentThread?.messages ?? [],
+    [currentThread?.messages]
+  );
   const isAwaiting = useChatStore((s) => s.isAwaitingResponse);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const selectedAnswer = useChatStore((s) => s.selectedAnswer);
   const isJsonViewerOpen = useChatStore((s) => s.isJsonViewerOpen);
 
+  // Avoid flicker by controlling scroll behavior based on change type
+  const prevIsAwaitingRef = useRef(isAwaiting);
+  const prevMsgLenRef = useRef(messages.length);
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const prevIsAwaiting = prevIsAwaitingRef.current;
+    const prevMsgLen = prevMsgLenRef.current;
+
+    if (messages.length > prevMsgLen) {
+      // New message appended → smooth scroll
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    } else if (isAwaiting && !prevIsAwaiting) {
+      // Waiting bubble appeared → smooth scroll
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    } else if (!isAwaiting && prevIsAwaiting) {
+      // Waiting bubble removed → jump instantly to avoid flicker
+      bottomRef.current?.scrollIntoView({ behavior: "auto" });
+    }
+
+    prevIsAwaitingRef.current = isAwaiting;
+    prevMsgLenRef.current = messages.length;
   }, [messages.length, isAwaiting]);
+
+  // unified animations only; no additional delay logic
 
   return (
     <Box display="flex" height="100%" position="relative">
@@ -63,22 +87,46 @@ export default function Chat() {
           overflow={messages.length === 0 ? "hidden" : "auto"}
           display="flex"
           flexDirection="column"
+          sx={{ overflowAnchor: "none", scrollbarGutter: "stable" }}
         >
           <Box p={2} display="flex" flexDirection="column" gap={2.5}>
             {messages.length === 0 ? (
               <EmptyChat />
             ) : (
-              messages.map((m) => {
-                if (m.role === "user") {
-                  return <UserMessage key={m.chatId} message={m} />;
-                } else {
-                  return (
-                    <ResponseMessage key={m.chatId} message={m as ChatAnswer} />
-                  );
-                }
-              })
+              <AnimatePresence initial={false}>
+                {messages.map((m) => (
+                  <motion.div
+                    key={m.chatId}
+                    style={{
+                      alignSelf: m.role === "user" ? "flex-end" : "flex-start",
+                      width: "fit-content",
+                    }}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.18, ease: "easeOut" }}
+                  >
+                    {m.role === "user" ? (
+                      <UserMessage message={m} />
+                    ) : (
+                      <ResponseMessage message={m as ChatAnswer} />
+                    )}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             )}
-            {isAwaiting && <WaitingMessage />}
+            <AnimatePresence initial={false}>
+              {isAwaiting && (
+                <motion.div
+                  key="waiting"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.12, ease: "easeOut" }}
+                >
+                  <WaitingMessage />
+                </motion.div>
+              )}
+            </AnimatePresence>
             <div ref={bottomRef} />
           </Box>
         </Box>
