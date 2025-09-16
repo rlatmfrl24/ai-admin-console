@@ -1,6 +1,13 @@
 import { ChatMessage, Thread, ChatAnswer, AnswerSource } from "../types/chat";
 import { create } from "zustand";
 
+type SearchMatch = {
+  chatId: string;
+  section: "body" | "source-title" | "source-content";
+  sourceKey?: string; // `${sourceType}:${sourceId}` when section starts with 'source-'
+  occurrence: number; // 1-based occurrence within the section text
+};
+
 interface ChatStoreState {
   threadHistory: Thread[];
   currentThreadId: string | null;
@@ -20,6 +27,20 @@ interface ChatStoreState {
   // UI/Async state
   isAwaitingResponse: boolean;
   setAwaitingResponse: (awaiting: boolean) => void;
+
+  // Search state
+  searchQuery: string;
+  setSearchQuery: (q: string) => void;
+  searchCaseSensitive: boolean;
+  setSearchCaseSensitive: (v: boolean) => void;
+  searchUseRegex: boolean;
+  setSearchUseRegex: (v: boolean) => void;
+
+  // Search navigation state
+  searchMatches: SearchMatch[]; // flattened occurrences in render order
+  setSearchMatches: (matches: SearchMatch[]) => void;
+  searchCurrentMatchIndex: number;
+  setSearchCurrentMatchIndex: (idx: number) => void;
 
   // Selection state
   selectedAnswer: ChatAnswer | null;
@@ -49,6 +70,11 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
   selectedSourceTypes: [],
   isJsonViewerOpen: false,
   jsonViewerData: null,
+  searchQuery: "",
+  searchCaseSensitive: false,
+  searchUseRegex: false,
+  searchMatches: [],
+  searchCurrentMatchIndex: 0,
 
   getCurrentThread: () => {
     const { currentThreadId, threadHistory } = get();
@@ -169,6 +195,15 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
 
   setAwaitingResponse: (awaiting: boolean) =>
     set(() => ({ isAwaitingResponse: awaiting })),
+
+  setSearchQuery: (q: string) => set(() => ({ searchQuery: q })),
+  setSearchCaseSensitive: (v: boolean) =>
+    set(() => ({ searchCaseSensitive: v })),
+  setSearchUseRegex: (v: boolean) => set(() => ({ searchUseRegex: v })),
+  setSearchMatches: (matches: SearchMatch[]) =>
+    set(() => ({ searchMatches: matches })),
+  setSearchCurrentMatchIndex: (idx: number) =>
+    set(() => ({ searchCurrentMatchIndex: idx })),
 
   setSelectedAnswer: (answer: ChatAnswer | null) =>
     set(() => ({ selectedAnswer: answer })),

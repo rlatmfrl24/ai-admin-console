@@ -1,10 +1,30 @@
 import { ChatMessage } from "@/lib/types/chat";
 import { Box, Typography } from "@mui/material";
 import { COLORS } from "@/lib/theme";
+import { useChatStore } from "@/lib/store/chatStore";
+import { renderHighlightedText } from "@/lib/utils/highlight";
 import { format } from "date-fns";
 import { AccessTime } from "@mui/icons-material";
 
 export default function UserMessage({ message }: { message: ChatMessage }) {
+  const query = useChatStore((s) => s.searchQuery);
+  const caseSensitive = useChatStore((s) => s.searchCaseSensitive);
+  const useRegex = useChatStore((s) => s.searchUseRegex);
+  const matches = useChatStore((s) => s.searchMatches);
+  const currentIndex = useChatStore((s) => s.searchCurrentMatchIndex);
+  const active = matches[currentIndex];
+  const activeOccurrence =
+    active && active.chatId === message.chatId && active.section === "body"
+      ? active.occurrence
+      : undefined;
+  if (activeOccurrence != null) {
+    console.debug("[Highlight] UserMessage", {
+      chatId: message.chatId,
+      activeOccurrence,
+      matchesLen: matches.length,
+      currentIndex,
+    });
+  }
   return (
     <Box
       aria-label="user-message"
@@ -39,7 +59,11 @@ export default function UserMessage({ message }: { message: ChatMessage }) {
         borderRadius={1.5}
         whiteSpace={"pre-wrap"}
       >
-        {message?.message as string}
+        {renderHighlightedText((message?.message as string) ?? "", query, {
+          caseSensitive,
+          useRegex,
+          activeOccurrence,
+        })}
       </Typography>
     </Box>
   );

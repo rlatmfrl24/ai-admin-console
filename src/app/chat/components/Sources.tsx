@@ -19,6 +19,7 @@ import APIIcon from "@/assets/icon-agent-api.svg";
 import Image from "next/image";
 import { ImagePreviewModal } from "@/components/common/ImagePreviewModal";
 import { useChatStore } from "@/lib/store/chatStore";
+import { renderHighlightedText } from "@/lib/utils/highlight";
 
 function getRankSuffix(rank: number) {
   return rank === 1 ? "st" : rank === 2 ? "nd" : rank === 3 ? "rd" : "th";
@@ -73,6 +74,9 @@ export const RetrievalSource = ({
   const [isKeywordsExpanded, setIsKeywordsExpanded] = useState(true);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const previewUrl = source.previewFiles?.[0] ?? null;
+  const query = useChatStore((s) => s.searchQuery);
+  const caseSensitive = useChatStore((s) => s.searchCaseSensitive);
+  const useRegex = useChatStore((s) => s.searchUseRegex);
 
   return (
     <Box
@@ -98,10 +102,16 @@ export const RetrievalSource = ({
             fontSize={16}
             fontWeight={500}
           >
-            {source.chunkName}
+            {renderHighlightedText(source.chunkName, query, {
+              caseSensitive,
+              useRegex,
+            })}
           </Typography>
           <Typography fontSize={14} color={COLORS.blueGrey[400]}>
-            {source.sourceName}
+            {renderHighlightedText(source.sourceName, query, {
+              caseSensitive,
+              useRegex,
+            })}
           </Typography>
         </Box>
         <IconButton
@@ -168,7 +178,10 @@ export const RetrievalSource = ({
             letterSpacing={0.14}
             color={COLORS.blueGrey[700]}
           >
-            {source.sourceDescription}
+            {renderHighlightedText(source.sourceDescription, query, {
+              caseSensitive,
+              useRegex,
+            })}
           </Typography>
           <Button size="small" variant="contained">
             EDIT CHUNK
@@ -235,6 +248,9 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
   const [isSpecificFieldsExpanded, setIsSpecificFieldsExpanded] =
     useState(true);
   const openJsonViewer = useChatStore((s) => s.openJsonViewer);
+  const query = useChatStore((s) => s.searchQuery);
+  const caseSensitive = useChatStore((s) => s.searchCaseSensitive);
+  const useRegex = useChatStore((s) => s.searchUseRegex);
 
   return (
     <Box
@@ -255,7 +271,10 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
       >
         <RankBadge rank={source.sourceRank} />
         <Typography fontSize={16} fontWeight={500} flex={1}>
-          {source.sourceName}
+          {renderHighlightedText(source.sourceName, query, {
+            caseSensitive,
+            useRegex,
+          })}
         </Typography>
         <IconButton
           size="small"
@@ -278,7 +297,10 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
             letterSpacing={0.14}
             color={COLORS.blueGrey[700]}
           >
-            {source.sourceDescription}
+            {renderHighlightedText(source.sourceDescription, query, {
+              caseSensitive,
+              useRegex,
+            })}
           </Typography>
           <Box
             border={1}
@@ -334,13 +356,25 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
             </Box>
             <Collapse in={isSpecificFieldsExpanded}>
               <Typography fontSize={14} color={COLORS.blueGrey[700]}>
-                {`Method: ${source.specificFields.method}`}
+                {renderHighlightedText(
+                  `Method: ${source.specificFields.method}`,
+                  query,
+                  { caseSensitive, useRegex }
+                )}
               </Typography>
               <Typography fontSize={14} color={COLORS.blueGrey[700]}>
-                {`Endpoint: ${source.specificFields.endpoint}`}
+                {renderHighlightedText(
+                  `Endpoint: ${source.specificFields.endpoint}`,
+                  query,
+                  { caseSensitive, useRegex }
+                )}
               </Typography>
               <Typography fontSize={14} color={COLORS.blueGrey[700]}>
-                {`Status: ${source.specificFields.status}`}
+                {renderHighlightedText(
+                  `Status: ${source.specificFields.status}`,
+                  query,
+                  { caseSensitive, useRegex }
+                )}
               </Typography>
             </Collapse>
           </Box>
@@ -365,6 +399,9 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
 
 export const PimSource = ({ source }: { source: PimAnswerSource }) => {
   const [isExpanded, setIsExpanded] = useState(true);
+  const query = useChatStore((s) => s.searchQuery);
+  const caseSensitive = useChatStore((s) => s.searchCaseSensitive);
+  const useRegex = useChatStore((s) => s.searchUseRegex);
 
   return (
     <Box
@@ -385,7 +422,10 @@ export const PimSource = ({ source }: { source: PimAnswerSource }) => {
       >
         <RankBadge rank={source.sourceRank} />
         <Typography fontSize={16} fontWeight={500} flex={1}>
-          {source.sourceName}
+          {renderHighlightedText(source.sourceName, query, {
+            caseSensitive,
+            useRegex,
+          })}
         </Typography>
         <IconButton
           size="small"
@@ -403,7 +443,10 @@ export const PimSource = ({ source }: { source: PimAnswerSource }) => {
       <Collapse in={isExpanded}>
         <Box p={2} pt={0} display={"flex"} flexDirection={"column"} gap={1.5}>
           <Typography fontSize={14} color={COLORS.blueGrey[700]}>
-            {source.sourceDescription}
+            {renderHighlightedText(source.sourceDescription, query, {
+              caseSensitive,
+              useRegex,
+            })}
           </Typography>
         </Box>
       </Collapse>
@@ -413,6 +456,9 @@ export const PimSource = ({ source }: { source: PimAnswerSource }) => {
 
 export const ChatSource = ({ source }: { source: ChatAnswerSource }) => {
   const [isExpanded, setIsExpanded] = useState(true);
+  const query = useChatStore((s) => s.searchQuery);
+  const caseSensitive = useChatStore((s) => s.searchCaseSensitive);
+  const useRegex = useChatStore((s) => s.searchUseRegex);
 
   return (
     <Box
@@ -433,7 +479,10 @@ export const ChatSource = ({ source }: { source: ChatAnswerSource }) => {
       >
         <RankBadge rank={source.sourceRank} />
         <Typography fontSize={16} fontWeight={500} flex={1}>
-          {source.sourceName}
+          {renderHighlightedText(source.sourceName, query, {
+            caseSensitive,
+            useRegex,
+          })}
         </Typography>
         <IconButton
           size="small"
@@ -477,7 +526,10 @@ export const ChatSource = ({ source }: { source: ChatAnswerSource }) => {
             letterSpacing={0.14}
             color={COLORS.blueGrey[700]}
           >
-            {source.sourceDescription}
+            {renderHighlightedText(source.sourceDescription, query, {
+              caseSensitive,
+              useRegex,
+            })}
           </Typography>
           <Button variant="contained" size="small" fullWidth>
             EDIT PROCESS

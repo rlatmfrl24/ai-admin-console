@@ -12,6 +12,7 @@ import ApiIcon from "@/assets/icon-agent-api.svg";
 import ChatIcon from "@/assets/icon-agent-chat.svg";
 import AIProfileIcon from "@/assets/icon-ai-profile.svg";
 import { useChatStore } from "@/lib/store/chatStore";
+import { renderHighlightedText } from "@/lib/utils/highlight";
 
 function formatDuration(duration: number) {
   const seconds = Math.floor(duration / 1000);
@@ -22,6 +23,24 @@ function formatDuration(duration: number) {
 export default function ResponseMessage({ message }: { message: ChatAnswer }) {
   const selectedAnswer = useChatStore((s) => s.selectedAnswer);
   const setSelectedAnswer = useChatStore((s) => s.setSelectedAnswer);
+  const query = useChatStore((s) => s.searchQuery);
+  const caseSensitive = useChatStore((s) => s.searchCaseSensitive);
+  const useRegex = useChatStore((s) => s.searchUseRegex);
+  const matches = useChatStore((s) => s.searchMatches);
+  const currentIndex = useChatStore((s) => s.searchCurrentMatchIndex);
+  const active = matches[currentIndex];
+  const activeOccurrenceGlobal =
+    active && active.chatId === message.chatId && active.section === "body"
+      ? active.occurrence
+      : undefined;
+  if (activeOccurrenceGlobal != null) {
+    console.debug("[Highlight] ResponseMessage", {
+      chatId: message.chatId,
+      activeOccurrenceGlobal,
+      matchesLen: matches.length,
+      currentIndex,
+    });
+  }
   const topRankedSources = (() => {
     const map = new Map<string, (typeof message.sources)[number]>();
     for (const s of message?.sources ?? []) {
@@ -125,10 +144,28 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
           </Box>
         </Box>
         <Box ml={0.5} mt={1.5}>
-          <Typography fontSize={14}>{message?.message as string}</Typography>
+          <Typography fontSize={14}>
+            {renderHighlightedText((message?.message as string) ?? "", query, {
+              caseSensitive,
+              useRegex,
+              activeOccurrence: activeOccurrenceGlobal,
+            })}
+          </Typography>
           {topRankedSources.map((source, index) => (
             <Box key={source.sourceType} mt={1.5}>
-              <SourceMessage source={source} />
+              <SourceMessage
+                source={source}
+                activeMatch={
+                  active && active.chatId === message.chatId
+                    ? {
+                        section: active.section,
+                        occurrence: active.occurrence,
+                        sourceKey: active.sourceKey,
+                      }
+                    : undefined
+                }
+                parentChatId={message.chatId}
+              />
               {index !== topRankedSources.length - 1 && (
                 <Divider sx={{ my: 1.5 }} />
               )}
@@ -152,8 +189,56 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
   );
 }
 
-const SourceMessage = ({ source }: { source: AnswerSource }) => {
+const SourceMessage = ({
+  source,
+  activeMatch,
+  parentChatId,
+}: {
+  source: AnswerSource;
+  activeMatch?: {
+    section: "body" | "source-title" | "source-content";
+    occurrence: number;
+    sourceKey?: string;
+  };
+  parentChatId: string;
+}) => {
   const selectOnlySourceType = useChatStore((s) => s.selectOnlySourceType);
+  const query = useChatStore((s) => s.searchQuery);
+  const caseSensitive = useChatStore((s) => s.searchCaseSensitive);
+  const useRegex = useChatStore((s) => s.searchUseRegex);
+  const countOccurrences = (text: string, q: string): number => {
+    if (!q || !q.trim() || !text) return 0;
+    const pattern = q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(pattern, "gi");
+    let c = 0;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(text)) !== null) {
+      c += 1;
+      if (re.lastIndex === m.index) re.lastIndex++;
+    }
+    return c;
+  };
+
+  let activeTitleOccurrence: number | undefined = undefined;
+  let activeContentOccurrence: number | undefined = undefined;
+  if (
+    activeMatch &&
+    activeMatch.sourceKey === `${source.sourceType}:${source.sourceId}`
+  ) {
+    if (activeMatch.section === "source-title") {
+      activeTitleOccurrence = activeMatch.occurrence;
+    } else if (activeMatch.section === "source-content") {
+      activeContentOccurrence = activeMatch.occurrence;
+    }
+  }
+  if (activeTitleOccurrence != null || activeContentOccurrence != null) {
+    console.debug("[Highlight] SourceMessage split", {
+      chatId: parentChatId,
+      sourceType: source.sourceType,
+      activeTitleOccurrence,
+      activeContentOccurrence,
+    });
+  }
   return (
     <Box
       sx={{
@@ -189,7 +274,11 @@ const SourceMessage = ({ source }: { source: AnswerSource }) => {
           })()}
         </Box>
         <Typography fontSize={16} fontWeight={600} flex={1}>
-          {source.sourceMessage.title}
+          {renderHighlightedText(source.sourceMessage.title, query, {
+            caseSensitive,
+            useRegex,
+            activeOccurrence: activeTitleOccurrence,
+          })}
         </Typography>
         <Typography fontSize={12} color={COLORS.blueGrey[300]}>
           {source.sourceName}
@@ -209,7 +298,11 @@ const SourceMessage = ({ source }: { source: AnswerSource }) => {
         whiteSpace={"pre-wrap"}
         mt={1}
       >
-        {source.sourceMessage.content}
+        {renderHighlightedText(source.sourceMessage.content, query, {
+          caseSensitive,
+          useRegex,
+          activeOccurrence: activeContentOccurrence,
+        })}
       </Typography>
     </Box>
   );

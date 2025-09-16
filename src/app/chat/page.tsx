@@ -15,6 +15,7 @@ import Source from "./source";
 import JsonViewer from "./components/JsonViewer";
 import { useChatStore } from "@/lib/store/chatStore";
 import AIProfileIcon from "@/assets/icon-ai-profile.svg";
+import SearchField from "./components/SearchField";
 
 export default function Chat() {
   const currentThread = useChatStore((s) =>
@@ -77,7 +78,10 @@ export default function Chat() {
           py={1.5}
         >
           <ChatIcon />
-          <Typography variant="h6">AI Chat</Typography>
+          <Typography variant="h6" flex={1}>
+            AI Chat
+          </Typography>
+          <SearchField />
         </Box>
         <Box
           aria-label="chat-content"
@@ -97,6 +101,7 @@ export default function Chat() {
                 {messages.map((m) => (
                   <motion.div
                     key={m.chatId}
+                    data-chat-id={m.chatId}
                     style={{
                       alignSelf: m.role === "user" ? "flex-end" : "flex-start",
                       width: "fit-content",
