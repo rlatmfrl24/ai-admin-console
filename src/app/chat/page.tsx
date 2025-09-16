@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Typography } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 import ChatIcon from "@/assets/icon-ai-chat.svg";
 import ChatSidebar from "./sidebar";
 import { COLORS } from "@/lib/theme";
@@ -13,6 +13,7 @@ import EmptyChatLayer from "@/assets/img-empty-chat.svg";
 import Source from "./source";
 import JsonViewer from "./components/JsonViewer";
 import { useChatStore } from "@/lib/store/chatStore";
+import AIProfileIcon from "@/assets/icon-ai-profile.svg";
 
 export default function Chat() {
   const currentThread = useChatStore((s) =>
@@ -77,11 +78,7 @@ export default function Chat() {
                 }
               })
             )}
-            {isAwaiting && (
-              <Typography variant="body2" color="text.secondary">
-                대기중...
-              </Typography>
-            )}
+            {isAwaiting && <WaitingMessage />}
             <div ref={bottomRef} />
           </Box>
         </Box>
@@ -92,6 +89,39 @@ export default function Chat() {
     </Box>
   );
 }
+
+const WaitingMessage = () => {
+  return (
+    <Box display="flex" alignItems="center" gap={1.5}>
+      <AIProfileIcon sx={{ marginTop: 8 }} />
+      <Paper sx={{ p: 2, borderRadius: 1.5 }}>
+        <Box display="flex" alignItems="center" gap={0.5}>
+          {[0, 1, 2].map((index) => (
+            <Box
+              key={index}
+              sx={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                backgroundColor: "#B5BED7",
+                animation: `bounce 1.4s ease-in-out infinite`,
+                animationDelay: `${index * 0.2}s`,
+                "@keyframes bounce": {
+                  "0%, 60%, 100%": {
+                    transform: "translateY(0)",
+                  },
+                  "30%": {
+                    transform: "translateY(-4px)",
+                  },
+                },
+              }}
+            />
+          ))}
+        </Box>
+      </Paper>
+    </Box>
+  );
+};
 
 const EmptyChat = () => {
   return (
