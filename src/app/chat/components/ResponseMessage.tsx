@@ -55,7 +55,15 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
       alignItems={"flex-end"}
       gap={1.5}
     >
-      <AIProfileIcon style={{ alignSelf: "flex-start", marginTop: 8 }} />
+      <AIProfileIcon
+        style={{
+          alignSelf: "flex-start",
+          marginTop: 8,
+          flexShrink: 0,
+          minWidth: 32,
+          minHeight: 32,
+        }}
+      />
       <Paper
         aria-label="response-message-content"
         sx={{

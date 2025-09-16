@@ -1,13 +1,15 @@
 import { Box, IconButton, Typography } from "@mui/material";
 import { COLORS } from "@/lib/theme";
-import { Close } from "@mui/icons-material";
+import { Close, ContentCopy, Check } from "@mui/icons-material";
 import { useChatStore } from "@/lib/store/chatStore";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 export default function JsonViewer() {
   const isOpen = useChatStore((s) => s.isJsonViewerOpen);
   const jsonData = useChatStore((s) => s.jsonViewerData);
   const close = useChatStore((s) => s.closeJsonViewer);
+
+  const [isCopied, setIsCopied] = useState(false);
 
   const formatted = useMemo(() => {
     if (!jsonData) return "";
@@ -52,8 +54,33 @@ export default function JsonViewer() {
         flex={1}
         mt={1.5}
         bgcolor={COLORS.grey[100]}
-        sx={{ overflow: "auto" }}
+        position="relative"
+        overflow="auto"
       >
+        <IconButton
+          sx={{
+            position: "sticky",
+            top: 0,
+            left: "calc(100%)",
+            border: 1,
+            borderColor: COLORS.blueGrey[100],
+            zIndex: 1,
+          }}
+          size="small"
+          onClick={() => {
+            navigator.clipboard.writeText(formatted);
+            setIsCopied(true);
+            setTimeout(() => {
+              setIsCopied(false);
+            }, 1000);
+          }}
+        >
+          {isCopied ? (
+            <Check sx={{ fontSize: 20 }} />
+          ) : (
+            <ContentCopy sx={{ fontSize: 20 }} />
+          )}
+        </IconButton>
         <pre
           style={{ margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word" }}
         >
