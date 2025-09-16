@@ -5,13 +5,14 @@ import ChatIcon from "@/assets/icon-ai-chat.svg";
 import ChatSidebar from "./sidebar";
 import { COLORS } from "@/lib/theme";
 import ChatInput from "./input";
-import { useChatStore } from "@/lib/store/chatStore";
 import UserMessage from "./components/UserMessage";
 import ResponseMessage from "./components/ResponseMessage";
 import { ChatAnswer } from "@/lib/types/chat";
 import { useEffect, useRef } from "react";
 import EmptyChatLayer from "@/assets/img-empty-chat.svg";
 import Source from "./source";
+import JsonViewer from "./components/JsonViewer";
+import { useChatStore } from "@/lib/store/chatStore";
 
 export default function Chat() {
   const currentThread = useChatStore((s) =>
@@ -23,6 +24,7 @@ export default function Chat() {
   const isAwaiting = useChatStore((s) => s.isAwaitingResponse);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const selectedAnswer = useChatStore((s) => s.selectedAnswer);
+  const isJsonViewerOpen = useChatStore((s) => s.isJsonViewerOpen);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -86,6 +88,7 @@ export default function Chat() {
         <ChatInput />
       </Box>
       {selectedAnswer && <Source />}
+      {isJsonViewerOpen && <JsonViewer />}
     </Box>
   );
 }

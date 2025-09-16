@@ -18,6 +18,7 @@ import { useState } from "react";
 import APIIcon from "@/assets/icon-agent-api.svg";
 import Image from "next/image";
 import { ImagePreviewModal } from "@/components/common/ImagePreviewModal";
+import { useChatStore } from "@/lib/store/chatStore";
 
 function getRankSuffix(rank: number) {
   return rank === 1 ? "st" : rank === 2 ? "nd" : rank === 3 ? "rd" : "th";
@@ -233,6 +234,7 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isSpecificFieldsExpanded, setIsSpecificFieldsExpanded] =
     useState(true);
+  const openJsonViewer = useChatStore((s) => s.openJsonViewer);
 
   return (
     <Box
@@ -346,7 +348,12 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
             <Button variant="contained" size="small" fullWidth>
               EDIT API
             </Button>
-            <Button variant="outlined" size="small" fullWidth>
+            <Button
+              variant="outlined"
+              size="small"
+              fullWidth
+              onClick={() => openJsonViewer(source.specificFields.json)}
+            >
               JSON DATA
             </Button>
           </Box>

@@ -28,6 +28,12 @@ interface ChatStoreState {
   toggleSelectedSourceType: (type: AnswerSource["sourceType"]) => void;
   setSelectedSourceTypes: (types: AnswerSource["sourceType"][]) => void;
   selectOnlySourceType: (type: AnswerSource["sourceType"]) => void;
+
+  // JSON Viewer state
+  isJsonViewerOpen: boolean;
+  jsonViewerData: string | null;
+  openJsonViewer: (data: string) => void;
+  closeJsonViewer: () => void;
 }
 
 function generateThreadId(): string {
@@ -41,6 +47,8 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
   isAwaitingResponse: false,
   selectedAnswer: null,
   selectedSourceTypes: [],
+  isJsonViewerOpen: false,
+  jsonViewerData: null,
 
   getCurrentThread: () => {
     const { currentThreadId, threadHistory } = get();
@@ -155,6 +163,12 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
 
   selectOnlySourceType: (type: AnswerSource["sourceType"]) =>
     set(() => ({ selectedSourceTypes: [type] })),
+
+  openJsonViewer: (data: string) =>
+    set(() => ({ isJsonViewerOpen: true, jsonViewerData: data })),
+
+  closeJsonViewer: () =>
+    set(() => ({ isJsonViewerOpen: false, jsonViewerData: null })),
 
   clear: () => set({ threadHistory: [], currentThreadId: null }),
 }));
