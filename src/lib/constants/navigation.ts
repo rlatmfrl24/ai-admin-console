@@ -96,11 +96,22 @@ const NAV_ITEMS: NavigationItem[] = [
     ],
   },
   {
-    label: "챗봇 설정",
-    id: "chatbot-settings",
-    description:
-      "Configures and manages chatbot behavior patterns and response settings",
+    label: "답변 관리",
+    id: "response-management",
+    description: "Configures and manages chatbot response settings",
     children: [
+      {
+        label: "답변 도출 과정",
+        id: "response-extraction-process",
+        description: "Manages chatbot response extraction process",
+        children: [
+          {
+            label: "AI Chatbot Test",
+            id: "ai-chatbot-test",
+            description: "Views and manages all registered AI Chatbot Test",
+          },
+        ],
+      },
       {
         label: "시나리오 관리",
         id: "scenario-management",

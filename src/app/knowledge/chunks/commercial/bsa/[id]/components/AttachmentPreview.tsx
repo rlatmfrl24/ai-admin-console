@@ -6,18 +6,12 @@
 // - 유의: Next/Image 최적화와 모달 프리로드 로직으로 초기 깜빡임 최소화.
 // - 접근성: 모달 열림 시 포커스 트랩/esc 닫기, aria-labelledby 제공(이미 반영).
 
-import {
-  Box,
-  IconButton,
-  InputBase,
-  Typography,
-  Modal,
-  CircularProgress,
-} from "@mui/material";
-import { Close, OpenInNew, Image as ImageIcon } from "@mui/icons-material";
+import { Box, IconButton, InputBase, Typography } from "@mui/material";
+import { Close, OpenInNew } from "@mui/icons-material";
 import Image from "next/image";
 import { COLORS } from "@/lib/theme";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useState } from "react";
+import { ImagePreviewModal } from "@/components/common/ImagePreviewModal";
 
 type AttachmentPreviewItemProps = {
   url: string;
@@ -33,170 +27,6 @@ type AttachmentUIPreviewProps = Partial<AttachmentPreviewItemProps> &
   Pick<AttachmentPreviewItemProps, "url" | "index">;
 
 // removed: getMimeTypeFromDataUrl - no longer needed after removing type branches
-
-function extractFileNameFromUrl(url: string): string {
-  try {
-    if (!url) return "";
-    if (url.startsWith("data:")) return "image";
-    const u = new URL(
-      url,
-      typeof window !== "undefined" ? window.location.href : undefined
-    );
-    const pathname = u.pathname || "";
-    const last = pathname.split("/").filter(Boolean).pop();
-    if (last) return decodeURIComponent(last);
-  } catch {
-    // Fallback for relative or invalid URLs
-  }
-  try {
-    const clean = url.split("?#")[0].split("#")[0].split("?")[0];
-    const last = clean.split("/").filter(Boolean).pop();
-    if (last) return decodeURIComponent(last);
-  } catch {
-    // ignore
-  }
-  return "image";
-}
-
-type ImagePreviewModalProps = {
-  open: boolean;
-  onClose: () => void;
-  url: string;
-  index: number;
-  ariaLabelledbyId: string;
-  fileName?: string;
-  headerLeftSlot?: ReactNode;
-};
-
-function ImagePreviewModal({
-  open,
-  onClose,
-  url,
-  index,
-  ariaLabelledbyId,
-  fileName,
-  headerLeftSlot,
-}: ImagePreviewModalProps) {
-  const [naturalWidth, setNaturalWidth] = useState<number | null>(null);
-  const [naturalHeight, setNaturalHeight] = useState<number | null>(null);
-
-  const displayedFileName = useMemo(
-    () => fileName ?? extractFileNameFromUrl(url),
-    [fileName, url]
-  );
-
-  const { displayWidth, displayHeight } = useMemo(() => {
-    if (
-      typeof window === "undefined" ||
-      naturalWidth == null ||
-      naturalHeight == null
-    ) {
-      return { displayWidth: 0, displayHeight: 0 };
-    }
-    const maxWidth = window.innerWidth * 0.8;
-    const maxHeight = window.innerHeight * 0.8;
-    const scale = Math.min(
-      1,
-      maxWidth / naturalWidth,
-      maxHeight / naturalHeight
-    );
-    return {
-      displayWidth: Math.round(naturalWidth * scale),
-      displayHeight: Math.round(naturalHeight * scale),
-    };
-  }, [naturalWidth, naturalHeight]);
-
-  useEffect(() => {
-    if (
-      open &&
-      (naturalWidth == null || naturalHeight == null) &&
-      typeof window !== "undefined"
-    ) {
-      const preload = new window.Image();
-      preload.src = url;
-      preload.onload = () => {
-        setNaturalWidth(preload.naturalWidth);
-        setNaturalHeight(preload.naturalHeight);
-      };
-    }
-  }, [open, naturalWidth, naturalHeight, url]);
-
-  return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      aria-labelledby={ariaLabelledbyId}
-      sx={{
-        "& .MuiModal-backdrop": {
-          backgroundColor: "rgba(0, 0, 0, 0.8)",
-        },
-      }}
-    >
-      <Box>
-        <Box
-          sx={{
-            position: "fixed",
-            top: 16,
-            left: 16,
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            zIndex: 1301,
-          }}
-        >
-          <IconButton
-            aria-label="Close preview"
-            autoFocus
-            onClick={onClose}
-            sx={{ color: COLORS.common.white, p: 1 }}
-          >
-            <Close />
-          </IconButton>
-          {headerLeftSlot}
-          <Typography
-            fontSize={13}
-            noWrap
-            sx={{ color: COLORS.common.white, maxWidth: "60vw" }}
-          >
-            {displayedFileName}
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        >
-          {displayWidth > 0 && displayHeight > 0 ? (
-            <Image
-              src={url}
-              alt={`attachment-preview-${index}-full`}
-              width={displayWidth}
-              height={displayHeight}
-              style={{ display: "block", borderRadius: 4 }}
-              unoptimized
-            />
-          ) : (
-            <Box
-              sx={{
-                width: "80vw",
-                maxWidth: "80vw",
-                maxHeight: "80vh",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <CircularProgress size={28} />
-            </Box>
-          )}
-        </Box>
-      </Box>
-    </Modal>
-  );
-}
 
 export function AttachmentPreviewForUI({
   url,
@@ -266,7 +96,6 @@ export function AttachmentPreviewForUI({
         index={index}
         ariaLabelledbyId={`attachment-ui-screen-title-${index}`}
         fileName={fileName}
-        headerLeftSlot={<ImageIcon sx={{ color: COLORS.error.main }} />}
       />
     </Box>
   );
@@ -347,7 +176,6 @@ export function AttachmentPreviewForDocument({
         index={index}
         ariaLabelledbyId={`attachment-document-title-${index}`}
         fileName={fileName}
-        headerLeftSlot={<ImageIcon sx={{ color: COLORS.error.main }} />}
       />
     </Box>
   );

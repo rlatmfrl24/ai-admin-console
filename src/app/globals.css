@@ -36,6 +36,12 @@ body {
 
 }
 
+/* Chat content 전용 스크롤바 트랙 오버라이드 */
+[aria-label="chat-content"]::-webkit-scrollbar-track {
+  border-left: none;
+  background-color: transparent;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;

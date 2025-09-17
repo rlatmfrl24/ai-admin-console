@@ -6,7 +6,7 @@ import { Box, Breadcrumbs, Typography } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState, useRef, useCallback } from "react";
 import type React from "react";
-import { useHeaderStore } from "@/lib/headerStore";
+import { useHeaderStore } from "@/lib/store/headerStore";
 import {
   NestedDropdownMenu,
   MenuItemData,

@@ -28,7 +28,7 @@ import {
 } from "@mui/material";
 import { AddCircle, Cached, FileUploadOutlined } from "@mui/icons-material";
 import MenuTree from "@/app/knowledge/chunks/commercial/bsa/[id]/components/MenuTree";
-import { getBsaMenuTree } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaUtil";
+import { getBsaMenuTree } from "@/app/knowledge/chunks/commercial/bsa/bsaUtil";
 import { ChunkCard } from "./components/ChunkCard";
 import InputWithLabel from "@/components/common/Input";
 import { COLORS } from "@/lib/theme";
@@ -47,7 +47,7 @@ import type {
   BSATableProps,
   ChunkProps,
 } from "@/lib/types/bsa";
-import { useBSAStore } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaStore";
+import { useBSAStore } from "@/lib/store/bsaStore";
 import { faker } from "@faker-js/faker";
 import {
   AttachmentPreviewForDocument,

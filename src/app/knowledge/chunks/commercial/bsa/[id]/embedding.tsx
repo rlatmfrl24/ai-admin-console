@@ -3,7 +3,7 @@ import { COLORS } from "@/lib/theme";
 import { useMemo, useState, useCallback } from "react";
 import { ChunkProps } from "@/lib/types/bsa";
 import { CheckableChunkCard } from "./components/ChunkCard";
-import { useBSAStore } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaStore";
+import { useBSAStore } from "@/lib/store/bsaStore";
 import { UploadFile } from "@mui/icons-material";
 
 /**
