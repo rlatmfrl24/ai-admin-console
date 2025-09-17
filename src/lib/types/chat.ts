@@ -1,0 +1,72 @@
+interface ChatMessage {
+  chatId: string;
+  message: string | ChatAnswer;
+  attachedFiles?: File[];
+  role: "user" | "assistant";
+  createdAt: Date;
+}
+
+interface ChatAnswer extends ChatMessage {
+  intent: string;
+  duration: number;
+  sources: AnswerSource[];
+}
+
+interface AnswerSource {
+  sourceRank: number;
+  sourceType: "retrieval" | "api" | "chat" | "pim";
+  sourceId: string;
+  sourceName: string;
+  sourceMessage: {
+    title: string;
+    content: string;
+  };
+  sourceDescription: string;
+  duration: number;
+  originSource: string | null;
+  intent: {
+    description: string;
+    keywords: string[];
+  };
+}
+
+interface RetrievalAnswerSource extends AnswerSource {
+  chunkName: string;
+  previewFiles: string[];
+  keywords: string[];
+}
+
+interface ApiAnswerSource extends AnswerSource {
+  specificFields: {
+    [key: string]: string;
+    json: string;
+  };
+}
+
+interface PimAnswerSource extends AnswerSource {
+  keywords: string[];
+}
+
+interface ChatAnswerSource extends AnswerSource {
+  context: string[];
+}
+
+interface Thread {
+  threadId: string;
+  name: string;
+  description: string;
+  createdAt: Date;
+  updatedAt: Date;
+  messages: ChatMessage[];
+}
+
+export type {
+  ChatMessage,
+  ChatAnswer,
+  Thread,
+  AnswerSource,
+  RetrievalAnswerSource,
+  ApiAnswerSource,
+  PimAnswerSource,
+  ChatAnswerSource,
+};

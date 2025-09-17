@@ -28,7 +28,7 @@ import {
 } from "@mui/material";
 import { AddCircle, Cached, FileUploadOutlined } from "@mui/icons-material";
 import MenuTree from "@/app/knowledge/chunks/commercial/bsa/[id]/components/MenuTree";
-import { getBsaMenuTree } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaUtil";
+import { getBsaMenuTree } from "@/app/knowledge/chunks/commercial/bsa/bsaUtil";
 import { ChunkCard } from "./components/ChunkCard";
 import InputWithLabel from "@/components/common/Input";
 import { COLORS } from "@/lib/theme";
@@ -47,7 +47,7 @@ import type {
   BSATableProps,
   ChunkProps,
 } from "@/lib/types/bsa";
-import { useBSAStore } from "@/app/knowledge/chunks/commercial/bsa/utils/bsaStore";
+import { useBSAStore } from "@/lib/store/bsaStore";
 import { faker } from "@faker-js/faker";
 import {
   AttachmentPreviewForDocument,
@@ -388,10 +388,6 @@ export default function BSAChunkEdit({
         </Box>
       </Box>
       <Box
-        /*
-         * 청크 리스트 영역: 편집 화면이 열려 있을 때 비율(예: 40%)로 공간을 차지하고,
-         * 최소 2컬럼(184px * 2 + gap 12px) 보장. 편집 화면이 없을 때는 가용 영역을 모두 사용.
-         */
         flexGrow={selectedChunk ? 3 : 1}
         flexBasis={selectedChunk ? 0 : "auto"}
         p={2}
@@ -400,8 +396,6 @@ export default function BSAChunkEdit({
         sx={{
           overflow: "auto",
           minHeight: 0,
-          // 2컬럼(184*2) + gap(12) + 좌우 padding(16*2)
-          // minWidth: selectedChunk ? "calc(184px * 2 + 12px + 32px)" : undefined,
           minWidth: "184px",
         }}
       >

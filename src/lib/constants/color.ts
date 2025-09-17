@@ -10,6 +10,7 @@ export const COLORS = {
       selected: "#5e5adb14",
       focus: "#5e5adb1f",
       focusVisible: "#5e5adb4d",
+      outlineBorder: "rgba(94, 90, 219, 0.5)",
     },
   },
   error: {
@@ -79,6 +80,7 @@ export const COLORS = {
     300: "#90a4ae",
     400: "#78909c",
     700: "#455a64",
+    900: "#263238",
   },
   indigo: { 900: "#2c2a56", 800: "#3f3d77", 600: "#4a4891", 200: "#9fa8da" },
   cyan: { 100: "#b2ebf2" },
@@ -91,6 +93,24 @@ export const COLORS = {
     input: {
       outlined: { enabledBorder: "#0000003b", hoverBorder: "#000000" },
       standard: { enabledBorder: "#0000006b" },
+    },
+  },
+  agent: {
+    api: {
+      main: "#2E7D32",
+      background: "#E8F5E9",
+    },
+    pim: {
+      main: "#2684FF",
+      background: "#E3F2FD",
+    },
+    retrieval: {
+      main: "#673AB7",
+      background: "#EDE7F6",
+    },
+    chat: {
+      main: "#FF6F00",
+      background: "#FFF3E0",
     },
   },
 } as const;

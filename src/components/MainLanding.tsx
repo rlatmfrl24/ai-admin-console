@@ -6,6 +6,7 @@ import MainLayer2 from "@/assets/main-layer-2.svg";
 import { useEffect, useRef, useState, memo } from "react";
 import type { NavigationItem } from "@/lib/types/navigation";
 import { MainCard } from "@/components/MainCard";
+import FloatingChatButton from "./FloatingChatButton";
 
 export interface MainLandingProps {
   items: NavigationItem[];
@@ -43,6 +44,7 @@ function MainLandingImpl({ items }: MainLandingProps) {
         background: "linear-gradient(180deg, #FFF 0%, #F7F6FF 100%)",
       }}
     >
+      <FloatingChatButton />
       <Box position="absolute" top={0} right={0} zIndex={1}>
         <MainLayer1 />
       </Box>
