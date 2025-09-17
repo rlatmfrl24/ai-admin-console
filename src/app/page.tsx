@@ -4,7 +4,7 @@ import MainLanding from "@/components/MainLanding";
 
 const TARGET_NAV_ID = [
   "knowledge",
-  "chatbot-settings",
+  "response-management",
   "settings",
   "customer-support",
 ];

@@ -18,6 +18,7 @@ import NotificationIcon from "@/assets/icon-notification.svg";
 import UserIcon from "@/assets/icon-user-profile.svg";
 import BusinessIcon from "@/assets/icon-business.svg";
 import { COLORS } from "@/lib/theme";
+import Link from "next/link";
 
 type MainAppBarProps = {
   onMenuClick?: () => void;
@@ -42,7 +43,9 @@ export const MainAppBar = memo(function MainAppBar({
         >
           <Menu sx={{ color: "white" }} />
         </IconButton>
-        <NXLogo />
+        <Link href="/" style={{ display: "flex", alignItems: "center" }}>
+          <NXLogo />
+        </Link>
         <Box
           flexGrow={1}
           component="form"
