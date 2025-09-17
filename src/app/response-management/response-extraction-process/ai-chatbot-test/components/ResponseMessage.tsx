@@ -76,6 +76,15 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
     setSelectedSourceTypes(allSourceTypes);
   }, [setSelectedAnswer, setSelectedSourceTypes, message, allSourceTypes]);
 
+  const handleSelectSourceType = useCallback(
+    (type: AnswerSource["sourceType"]) => {
+      // 소스 클릭 시에도 답변과 소스 타입 선택이 함께 반영되도록 처리
+      setSelectedAnswer(message);
+      selectOnlySourceType(type);
+    },
+    [message, setSelectedAnswer, selectOnlySourceType]
+  );
+
   return (
     <Box
       aria-label="response-message"
@@ -184,7 +193,7 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
                   query={query}
                   activeTitleOccurrence={activeTitleOccurrence}
                   activeContentOccurrence={activeContentOccurrence}
-                  onSelectSourceType={selectOnlySourceType}
+                  onSelectSourceType={handleSelectSourceType}
                 />
                 {source.originSource !== null && (
                   <Typography
