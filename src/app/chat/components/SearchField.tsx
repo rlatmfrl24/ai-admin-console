@@ -9,9 +9,12 @@ import { Box, Divider, IconButton, InputBase, Typography } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useChatStore } from "@/lib/store/chatStore";
 import { ChatAnswer } from "@/lib/types/chat";
+import { buildSearchRegex } from "@/lib/utils/search";
 
 export default function SearchField() {
   const [query, setQuery] = useState("");
+  // 입력 디바운싱 결과(빠른 타이핑 시 불필요한 재계산 방지)
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [matches, setMatches] = useState<
     {
       chatId: string;
@@ -41,34 +44,51 @@ export default function SearchField() {
     [currentThread?.messages]
   );
 
+  // 외부 스토어 검색어와 동기화
   useEffect(() => {
-    // 외부에서 변경된 검색어와 동기화
     setQuery(storeQuery);
   }, [storeQuery]);
 
+  // 입력값 디바운싱(200ms)
   useEffect(() => {
-    const trimmed = query.trim();
+    const timer = setTimeout(() => setDebouncedQuery(query), 200);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  // 컴파일된 정규식 메모화(옵션 변경 또는 디바운스된 검색어 변경 시에만 갱신)
+  const compiled = useMemo(() => {
+    const trimmed = debouncedQuery.trim();
+    if (!trimmed)
+      return {
+        regex: null as RegExp | null,
+        pattern: trimmed,
+        error: null as unknown,
+      };
+    return buildSearchRegex(trimmed, { caseSensitive, useRegex });
+  }, [debouncedQuery, caseSensitive, useRegex]);
+
+  // 검색 결과와 인덱스를 한 번에 초기화하는 헬퍼
+  const clearSearchState = useCallback(() => {
+    setMatches([]);
+    setCurrentMatchIndex(0);
+    setStoreMatches([]);
+    setStoreMatchIndex(0);
+  }, [setStoreMatchIndex, setStoreMatches]);
+
+  useEffect(() => {
+    // 1) 공백만 입력된 경우 즉시 초기화
+    const trimmed = debouncedQuery.trim();
     if (!trimmed) {
-      setMatches([]);
-      setCurrentMatchIndex(0);
-      setStoreMatches([]);
-      setStoreMatchIndex(0);
+      clearSearchState();
       console.debug("[Search] cleared", { query: trimmed });
       return;
     }
 
-    const pattern = useRegex
-      ? trimmed
-      : trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    let regex: RegExp | null = null;
-    try {
-      regex = new RegExp(pattern, `g${caseSensitive ? "" : "i"}`);
-    } catch {
-      console.warn("[Search] invalid regex", { pattern });
-      setMatches([]);
-      setCurrentMatchIndex(0);
-      setStoreMatches([]);
-      setStoreMatchIndex(0);
+    // 2) 정규식이 유효하지 않으면 초기화
+    const { regex, pattern, error } = compiled;
+    if (!regex) {
+      console.warn("[Search] invalid regex", { pattern, error });
+      clearSearchState();
       return;
     }
 
@@ -79,6 +99,7 @@ export default function SearchField() {
       occurrence: number;
     }[] = [];
 
+    // 모든 메시지에 대해 본문과 출처에서 일치 항목을 수집
     for (const m of messages) {
       const re = regex; // reuse compiled regex with fresh lastIndex per call
 
@@ -113,7 +134,9 @@ export default function SearchField() {
           : (m as unknown as { message?: string })?.message) ?? "";
       addSectionMatches(body, "body", m.chatId, undefined, () => ++bodyOcc);
 
-      // Sources (assistant only) — top-ranked by sourceType
+      // Sources (assistant only)
+      // - 동일한 sourceType 내에서 가장 낮은 sourceRank(우선순위가 높은 항목)만 채택
+      // - 이렇게 축약하여 매칭 범위를 줄이고 성능과 가독성을 모두 확보
       if (m.role === "assistant") {
         const ans = m as unknown as ChatAnswer;
         const all = Array.isArray(ans.sources) ? ans.sources : [];
@@ -149,6 +172,7 @@ export default function SearchField() {
       }
     }
 
+    // 결과 반영 및 첫 번째 항목으로 포커스 이동 준비
     setMatches(flattened);
     setCurrentMatchIndex(0);
     setStoreMatches(flattened);
@@ -170,12 +194,14 @@ export default function SearchField() {
       });
     }
   }, [
-    query,
+    debouncedQuery,
     messages,
     setStoreMatches,
     setStoreMatchIndex,
     caseSensitive,
     useRegex,
+    compiled,
+    clearSearchState,
   ]);
 
   const scrollToMatch = useCallback(
@@ -190,6 +216,19 @@ export default function SearchField() {
       console.debug("[Search] navigate to match", { index, match: target });
     },
     [matches]
+  );
+
+  // 현재 인덱스 기준 상/하 이동 헬퍼(Enter / Shift+Enter 공통 처리)
+  const navigateRelative = useCallback(
+    (direction: 1 | -1) => {
+      if (matches.length === 0) return;
+      const next =
+        (currentMatchIndex + direction + matches.length) % matches.length;
+      scrollToMatch(next);
+      setCurrentMatchIndex(next);
+      setStoreMatchIndex(next);
+    },
+    [currentMatchIndex, matches.length, scrollToMatch, setStoreMatchIndex]
   );
 
   return (
@@ -239,20 +278,13 @@ export default function SearchField() {
           setStoreQuery(v);
         }}
         onKeyDown={(e) => {
+          // Enter: 다음, Shift+Enter: 이전, Escape: 검색 초기화
           if (e.key === "Enter") {
-            if (matches.length === 0) return;
-            if (e.shiftKey) {
-              const next =
-                (currentMatchIndex - 1 + matches.length) % matches.length;
-              scrollToMatch(next);
-              setCurrentMatchIndex(next);
-              setStoreMatchIndex(next);
-            } else {
-              const next = (currentMatchIndex + 1) % matches.length;
-              scrollToMatch(next);
-              setCurrentMatchIndex(next);
-              setStoreMatchIndex(next);
-            }
+            navigateRelative(e.shiftKey ? -1 : 1);
+          } else if (e.key === "Escape") {
+            setQuery("");
+            setStoreQuery("");
+            clearSearchState();
           }
         }}
         inputRef={inputRef}
@@ -265,18 +297,12 @@ export default function SearchField() {
             </Typography>
           )}
           <Divider orientation="vertical" sx={{ height: 12, mx: 0.5 }} />
-          <Divider orientation="vertical" sx={{ height: 12, mx: 0.5 }} />
           <IconButton
             aria-label="find-upwards"
             sx={{ width: 20, height: 20 }}
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => {
-              if (matches.length === 0) return;
-              const next =
-                (currentMatchIndex - 1 + matches.length) % matches.length;
-              scrollToMatch(next);
-              setCurrentMatchIndex(next);
-              setStoreMatchIndex(next);
+              navigateRelative(-1);
             }}
             disabled={matches.length === 0}
           >
@@ -289,11 +315,7 @@ export default function SearchField() {
             sx={{ width: 20, height: 20 }}
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => {
-              if (matches.length === 0) return;
-              const next = (currentMatchIndex + 1) % matches.length;
-              scrollToMatch(next);
-              setCurrentMatchIndex(next);
-              setStoreMatchIndex(next);
+              navigateRelative(1);
             }}
             disabled={matches.length === 0}
           >
@@ -308,10 +330,7 @@ export default function SearchField() {
             onClick={() => {
               setQuery("");
               setStoreQuery("");
-              setMatches([]);
-              setCurrentMatchIndex(0);
-              setStoreMatches([]);
-              setStoreMatchIndex(0);
+              clearSearchState();
               inputRef.current?.focus();
             }}
             disabled={query.length === 0}

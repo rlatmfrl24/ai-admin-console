@@ -13,6 +13,8 @@ import ChatIcon from "@/assets/icon-agent-chat.svg";
 import AIProfileIcon from "@/assets/icon-ai-profile.svg";
 import { useChatStore } from "@/lib/store/chatStore";
 import { renderHighlightedText } from "@/lib/utils/highlight";
+import React, { memo, useCallback, useMemo } from "react";
+import { useStore } from "zustand";
 
 function formatDuration(duration: number) {
   const seconds = Math.floor(duration / 1000);
@@ -21,49 +23,48 @@ function formatDuration(duration: number) {
 }
 
 export default function ResponseMessage({ message }: { message: ChatAnswer }) {
-  const selectedAnswer = useChatStore((s) => s.selectedAnswer);
-  const setSelectedAnswer = useChatStore((s) => s.setSelectedAnswer);
-  const query = useChatStore((s) => s.searchQuery);
-  const caseSensitive = useChatStore((s) => s.searchCaseSensitive);
-  const useRegex = useChatStore((s) => s.searchUseRegex);
-  const matches = useChatStore((s) => s.searchMatches);
-  const currentIndex = useChatStore((s) => s.searchCurrentMatchIndex);
+  const selectedAnswer = useStore(useChatStore, (s) => s.selectedAnswer);
+  const setSelectedAnswer = useStore(useChatStore, (s) => s.setSelectedAnswer);
+  const query = useStore(useChatStore, (s) => s.searchQuery);
+  const matches = useStore(useChatStore, (s) => s.searchMatches);
+  const currentIndex = useStore(useChatStore, (s) => s.searchCurrentMatchIndex);
+  const selectOnlySourceType = useStore(
+    useChatStore,
+    (s) => s.selectOnlySourceType
+  );
+
   const active = matches[currentIndex];
-  const activeOccurrenceGlobal =
-    active && active.chatId === message.chatId && active.section === "body"
-      ? active.occurrence
-      : undefined;
-  if (activeOccurrenceGlobal != null) {
-    console.debug("[Highlight] ResponseMessage", {
-      chatId: message.chatId,
-      activeOccurrenceGlobal,
-      matchesLen: matches.length,
-      currentIndex,
-    });
-  }
-  const topRankedSources = (() => {
-    const map = new Map<string, (typeof message.sources)[number]>();
-    for (const s of message?.sources ?? []) {
+  const chatId = message.chatId;
+  const sources = useMemo(() => message.sources ?? [], [message.sources]);
+  const activeOccurrenceGlobal = useMemo(() => {
+    if (!active || active.chatId !== chatId || active.section !== "body")
+      return undefined;
+    return active.occurrence;
+  }, [active, chatId]);
+
+  const topRankedSources = useMemo(() => {
+    const map = new Map<string, AnswerSource>();
+    for (const s of sources) {
       const existing = map.get(s.sourceType);
       if (!existing || s.sourceRank < existing.sourceRank) {
         map.set(s.sourceType, s);
       }
     }
     return Array.from(map.values()).sort((a, b) => a.sourceRank - b.sourceRank);
-  })();
+  }, [sources]);
 
-  const AgentChips = (() => {
+  const AgentChips = useMemo(() => {
     const map = new Map<string, number>();
-    for (const s of message?.sources ?? []) {
+    for (const s of sources) {
       const existing = map.get(s.sourceType);
       map.set(s.sourceType, (existing ?? 0) + 1);
     }
+    return Array.from(map.entries()).map(([type, count]) => ({ type, count }));
+  }, [sources]);
 
-    return Array.from(map.entries()).map(([type, count]) => ({
-      type,
-      count,
-    }));
-  })();
+  const handleSelectAnswer = useCallback(() => {
+    setSelectedAnswer(message);
+  }, [setSelectedAnswer, message]);
 
   return (
     <Box
@@ -96,7 +97,7 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
           borderColor: COLORS.primary.main,
         }}
         elevation={2}
-        onClick={() => setSelectedAnswer(message)}
+        onClick={handleSelectAnswer}
       >
         <Box
           display={"flex"}
@@ -146,31 +147,41 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
         <Box ml={0.5} mt={1.5}>
           <Typography fontSize={14}>
             {renderHighlightedText((message?.message as string) ?? "", query, {
-              caseSensitive,
-              useRegex,
               activeOccurrence: activeOccurrenceGlobal,
             })}
           </Typography>
-          {topRankedSources.map((source, index) => (
-            <Box key={source.sourceType} mt={1.5}>
-              <SourceMessage
-                source={source}
-                activeMatch={
-                  active && active.chatId === message.chatId
-                    ? {
-                        section: active.section,
-                        occurrence: active.occurrence,
-                        sourceKey: active.sourceKey,
-                      }
-                    : undefined
-                }
-                parentChatId={message.chatId}
-              />
-              {index !== topRankedSources.length - 1 && (
-                <Divider sx={{ my: 1.5 }} />
-              )}
-            </Box>
-          ))}
+          {topRankedSources.map((source, index) => {
+            const activeForThisMessage =
+              active && active.chatId === message.chatId ? active : undefined;
+            const sourceKey = `${source.sourceType}:${source.sourceId}`;
+            const activeTitleOccurrence =
+              activeForThisMessage &&
+              activeForThisMessage.sourceKey === sourceKey &&
+              activeForThisMessage.section === "source-title"
+                ? activeForThisMessage.occurrence
+                : undefined;
+            const activeContentOccurrence =
+              activeForThisMessage &&
+              activeForThisMessage.sourceKey === sourceKey &&
+              activeForThisMessage.section === "source-content"
+                ? activeForThisMessage.occurrence
+                : undefined;
+
+            return (
+              <Box key={source.sourceType} mt={1.5}>
+                <SourceMessage
+                  source={source}
+                  query={query}
+                  activeTitleOccurrence={activeTitleOccurrence}
+                  activeContentOccurrence={activeContentOccurrence}
+                  onSelectSourceType={selectOnlySourceType}
+                />
+                {index !== topRankedSources.length - 1 && (
+                  <Divider sx={{ my: 1.5 }} />
+                )}
+              </Box>
+            );
+          })}
         </Box>
       </Paper>
       <Typography
@@ -189,64 +200,44 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
   );
 }
 
-const SourceMessage = ({
+const SourceMessage = memo(function SourceMessage({
   source,
-  activeMatch,
-  parentChatId,
+  query,
+  activeTitleOccurrence,
+  activeContentOccurrence,
+  onSelectSourceType,
 }: {
   source: AnswerSource;
-  activeMatch?: {
-    section: "body" | "source-title" | "source-content";
-    occurrence: number;
-    sourceKey?: string;
-  };
-  parentChatId: string;
-}) => {
-  const selectOnlySourceType = useChatStore((s) => s.selectOnlySourceType);
-  const query = useChatStore((s) => s.searchQuery);
-  const caseSensitive = useChatStore((s) => s.searchCaseSensitive);
-  const useRegex = useChatStore((s) => s.searchUseRegex);
-  const countOccurrences = (text: string, q: string): number => {
-    if (!q || !q.trim() || !text) return 0;
-    const pattern = q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp(pattern, "gi");
-    let c = 0;
-    let m: RegExpExecArray | null;
-    while ((m = re.exec(text)) !== null) {
-      c += 1;
-      if (re.lastIndex === m.index) re.lastIndex++;
+  query: string;
+  activeTitleOccurrence?: number;
+  activeContentOccurrence?: number;
+  onSelectSourceType: (type: AnswerSource["sourceType"]) => void;
+}) {
+  const Icon = useMemo(() => {
+    switch (source.sourceType) {
+      case "retrieval":
+        return RetrievalIcon;
+      case "pim":
+        return PimIcon;
+      case "api":
+        return ApiIcon;
+      case "chat":
+        return ChatIcon;
+      default:
+        return RetrievalIcon;
     }
-    return c;
-  };
+  }, [source.sourceType]);
 
-  let activeTitleOccurrence: number | undefined = undefined;
-  let activeContentOccurrence: number | undefined = undefined;
-  if (
-    activeMatch &&
-    activeMatch.sourceKey === `${source.sourceType}:${source.sourceId}`
-  ) {
-    if (activeMatch.section === "source-title") {
-      activeTitleOccurrence = activeMatch.occurrence;
-    } else if (activeMatch.section === "source-content") {
-      activeContentOccurrence = activeMatch.occurrence;
-    }
-  }
-  if (activeTitleOccurrence != null || activeContentOccurrence != null) {
-    console.debug("[Highlight] SourceMessage split", {
-      chatId: parentChatId,
-      sourceType: source.sourceType,
-      activeTitleOccurrence,
-      activeContentOccurrence,
-    });
-  }
+  const handleClick = useCallback(() => {
+    onSelectSourceType(source.sourceType);
+  }, [onSelectSourceType, source.sourceType]);
+
   return (
     <Box
       sx={{
         cursor: "pointer",
       }}
-      onClick={() => {
-        selectOnlySourceType(source.sourceType);
-      }}
+      onClick={handleClick}
     >
       <Box display={"flex"} alignItems={"center"} gap={0.5}>
         <Box
@@ -260,23 +251,10 @@ const SourceMessage = ({
           justifyContent={"center"}
           gap={1}
         >
-          {(() => {
-            switch (source.sourceType) {
-              case "retrieval":
-                return <RetrievalIcon />;
-              case "pim":
-                return <PimIcon />;
-              case "api":
-                return <ApiIcon />;
-              case "chat":
-                return <ChatIcon />;
-            }
-          })()}
+          <Icon />
         </Box>
         <Typography fontSize={16} fontWeight={600} flex={1}>
           {renderHighlightedText(source.sourceMessage.title, query, {
-            caseSensitive,
-            useRegex,
             activeOccurrence: activeTitleOccurrence,
           })}
         </Typography>
@@ -299,11 +277,9 @@ const SourceMessage = ({
         mt={1}
       >
         {renderHighlightedText(source.sourceMessage.content, query, {
-          caseSensitive,
-          useRegex,
           activeOccurrence: activeContentOccurrence,
         })}
       </Typography>
     </Box>
   );
-};
+});

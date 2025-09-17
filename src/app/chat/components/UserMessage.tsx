@@ -8,8 +8,7 @@ import { AccessTime } from "@mui/icons-material";
 
 export default function UserMessage({ message }: { message: ChatMessage }) {
   const query = useChatStore((s) => s.searchQuery);
-  const caseSensitive = useChatStore((s) => s.searchCaseSensitive);
-  const useRegex = useChatStore((s) => s.searchUseRegex);
+  // 하이라이트 옵션(caseSensitive/useRegex)은 전역 스토어에서 내부적으로 읽습니다.
   const matches = useChatStore((s) => s.searchMatches);
   const currentIndex = useChatStore((s) => s.searchCurrentMatchIndex);
   const active = matches[currentIndex];
@@ -60,8 +59,6 @@ export default function UserMessage({ message }: { message: ChatMessage }) {
         whiteSpace={"pre-wrap"}
       >
         {renderHighlightedText((message?.message as string) ?? "", query, {
-          caseSensitive,
-          useRegex,
           activeOccurrence,
         })}
       </Typography>

@@ -1,13 +1,10 @@
 import React from "react";
 import { COLORS } from "@/lib/constants/color";
-
-function escapeRegExp(input: string): string {
-  return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
+import { buildSearchRegex } from "@/lib/utils/search";
+import { useChatStore } from "@/lib/store/chatStore";
 
 type HighlightOptions = {
-  caseSensitive?: boolean;
-  useRegex?: boolean;
+  // caseSensitive/useRegex는 전역 스토어를 사용합니다. 호출부에서 넘길 필요가 없습니다.
   activeOccurrence?: number; // 1-based index of active match within this text
 };
 
@@ -17,19 +14,11 @@ export function renderHighlightedText(
   options: HighlightOptions = {}
 ): React.ReactNode {
   if (!query || !query.trim()) return text;
-  const { caseSensitive = false, useRegex = false, activeOccurrence } = options;
-
-  let pattern = query.trim();
-  if (!useRegex) {
-    pattern = escapeRegExp(pattern);
-  }
-
-  let regex: RegExp | null = null;
-  try {
-    regex = new RegExp(pattern, `g${caseSensitive ? "" : "i"}`);
-  } catch {
-    return text;
-  }
+  const caseSensitive = useChatStore.getState().searchCaseSensitive;
+  const useRegex = useChatStore.getState().searchUseRegex;
+  const { activeOccurrence } = options;
+  const { regex } = buildSearchRegex(query, { caseSensitive, useRegex });
+  if (!regex) return text;
 
   const nodes: React.ReactNode[] = [];
   let lastIndex = 0;
