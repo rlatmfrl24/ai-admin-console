@@ -292,9 +292,24 @@ export default function SearchField() {
       {isSearching && (
         <>
           {matches.length > 0 && (
-            <Typography variant="caption" color={COLORS.blueGrey[100]}>
-              {currentMatchIndex + 1} / {matches.length}
-            </Typography>
+            <Box display={"flex"} alignItems={"center"}>
+              <Typography
+                fontSize={12}
+                fontWeight={500}
+                color={COLORS.primary.main}
+                lineHeight={1}
+              >
+                {currentMatchIndex + 1}
+              </Typography>
+              <Typography
+                fontSize={12}
+                fontWeight={500}
+                color={COLORS.blueGrey[200]}
+                lineHeight={1}
+              >
+                /{matches.length}
+              </Typography>
+            </Box>
           )}
           <Divider orientation="vertical" sx={{ height: 12, mx: 0.5 }} />
           <IconButton
@@ -307,7 +322,7 @@ export default function SearchField() {
             disabled={matches.length === 0}
           >
             <KeyboardArrowUp
-              sx={{ fontSize: 20, color: COLORS.blueGrey[100] }}
+              sx={{ fontSize: 20, color: COLORS.primary.main }}
             />
           </IconButton>
           <IconButton
@@ -320,7 +335,7 @@ export default function SearchField() {
             disabled={matches.length === 0}
           >
             <KeyboardArrowDown
-              sx={{ fontSize: 20, color: COLORS.blueGrey[100] }}
+              sx={{ fontSize: 20, color: COLORS.primary.main }}
             />
           </IconButton>
           <IconButton

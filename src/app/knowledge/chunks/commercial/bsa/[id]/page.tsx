@@ -21,7 +21,7 @@
 import { Box, Breadcrumbs, Typography } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { useHeaderStore } from "@/lib/headerStore";
+import { useHeaderStore } from "@/lib/store/headerStore";
 import { InsertDriveFileOutlined } from "@mui/icons-material";
 import { GridColDef, useGridApiRef } from "@mui/x-data-grid";
 import { BSATableProps, BSAMenuTreeItemProps } from "@/lib/types/bsa";

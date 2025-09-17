@@ -32,6 +32,10 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
     useChatStore,
     (s) => s.selectOnlySourceType
   );
+  const setSelectedSourceTypes = useStore(
+    useChatStore,
+    (s) => s.setSelectedSourceTypes
+  );
 
   const active = matches[currentIndex];
   const chatId = message.chatId;
@@ -53,6 +57,11 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
     return Array.from(map.values()).sort((a, b) => a.sourceRank - b.sourceRank);
   }, [sources]);
 
+  const allSourceTypes = useMemo(
+    () => Array.from(new Set(sources.map((s) => s.sourceType))),
+    [sources]
+  );
+
   const AgentChips = useMemo(() => {
     const map = new Map<string, number>();
     for (const s of sources) {
@@ -64,7 +73,8 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
 
   const handleSelectAnswer = useCallback(() => {
     setSelectedAnswer(message);
-  }, [setSelectedAnswer, message]);
+    setSelectedSourceTypes(allSourceTypes);
+  }, [setSelectedAnswer, setSelectedSourceTypes, message, allSourceTypes]);
 
   return (
     <Box
@@ -112,7 +122,7 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
             <Typography fontSize={12} color={COLORS.blueGrey[300]} width={48}>
               Intent
             </Typography>
-            <Typography fontSize={12}>{message?.intent.title}</Typography>
+            <Typography fontSize={12}>{message?.intent}</Typography>
           </Box>
           <Box display={"flex"} alignItems={"center"} gap={0.5}>
             <Typography fontSize={12} color={COLORS.blueGrey[300]} width={48}>
@@ -150,7 +160,7 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
               activeOccurrence: activeOccurrenceGlobal,
             })}
           </Typography>
-          {topRankedSources.map((source, index) => {
+          {topRankedSources.map((source) => {
             const activeForThisMessage =
               active && active.chatId === message.chatId ? active : undefined;
             const sourceKey = `${source.sourceType}:${source.sourceId}`;
@@ -176,8 +186,21 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
                   activeContentOccurrence={activeContentOccurrence}
                   onSelectSourceType={selectOnlySourceType}
                 />
-                {index !== topRankedSources.length - 1 && (
-                  <Divider sx={{ my: 1.5 }} />
+                {source.originSource !== null && (
+                  <Typography
+                    fontSize={12}
+                    color={COLORS.text.primary}
+                    border={1}
+                    borderColor={COLORS.grey[300]}
+                    borderRadius={2}
+                    px={1}
+                    py={0.5}
+                    lineHeight={1}
+                    width={"fit-content"}
+                    mt={1}
+                  >
+                    {`출처: ${source.originSource}`}
+                  </Typography>
                 )}
               </Box>
             );
@@ -228,9 +251,13 @@ const SourceMessage = memo(function SourceMessage({
     }
   }, [source.sourceType]);
 
-  const handleClick = useCallback(() => {
-    onSelectSourceType(source.sourceType);
-  }, [onSelectSourceType, source.sourceType]);
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onSelectSourceType(source.sourceType);
+    },
+    [onSelectSourceType, source.sourceType]
+  );
 
   return (
     <Box

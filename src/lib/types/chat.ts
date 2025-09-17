@@ -7,11 +7,7 @@ interface ChatMessage {
 }
 
 interface ChatAnswer extends ChatMessage {
-  intent: {
-    title: string;
-    description: string;
-    keywords: string[];
-  };
+  intent: string;
   duration: number;
   sources: AnswerSource[];
 }
@@ -27,6 +23,11 @@ interface AnswerSource {
   };
   sourceDescription: string;
   duration: number;
+  originSource: string | null;
+  intent: {
+    description: string;
+    keywords: string[];
+  };
 }
 
 interface RetrievalAnswerSource extends AnswerSource {

@@ -5,7 +5,6 @@ import { COLORS } from "@/lib/theme";
 import { Close } from "@mui/icons-material";
 import { useChatStore } from "@/lib/store/chatStore";
 import { AgentFilterChip } from "./components/Chips";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import {
   AnswerSource,
   ChatAnswerSource,
@@ -81,59 +80,7 @@ export default function Source() {
           />
         ))}
       </Box>
-      <Box
-        display={"flex"}
-        flexDirection={"column"}
-        gap={1}
-        border={1}
-        borderColor={COLORS.blueGrey[100]}
-        borderRadius={1}
-        px={2}
-        py={1.5}
-        mt={1}
-        mb={2}
-      >
-        <Typography fontSize={16} fontWeight={500}>
-          Intent
-        </Typography>
-        <Box display={"flex"} flexDirection={"row"} gap={1.5}>
-          <Typography
-            fontSize={12}
-            color={COLORS.blueGrey[300]}
-            display={"flex"}
-            alignItems={"center"}
-            gap={0.5}
-          >
-            <LocalOfferIcon sx={{ fontSize: 16 }} />
-            Keywords
-          </Typography>
-          <Box
-            display={"flex"}
-            flexDirection={"row"}
-            gap={0.5}
-            flex={1}
-            flexWrap={"wrap"}
-          >
-            {selectedAnswer?.intent.keywords.map((keyword, index) => (
-              <Typography
-                fontSize={12}
-                key={`${keyword}-${index}`}
-                px={1}
-                py={0.5}
-                width={"fit-content"}
-                borderRadius={2}
-                bgcolor={COLORS.grey[200]}
-              >
-                {keyword}
-              </Typography>
-            ))}
-          </Box>
-        </Box>
-        <Typography fontSize={12} color={COLORS.blueGrey[300]}>
-          {selectedAnswer?.intent.description}
-        </Typography>
-      </Box>
-      <Box display={"flex"} flexDirection={"column"} gap={1} mb={2}>
+      <Box display={"flex"} flexDirection={"column"} gap={1} my={2}>
         {selectedAnswer?.sources
           .slice()
           .sort((a, b) => a.sourceRank - b.sourceRank)

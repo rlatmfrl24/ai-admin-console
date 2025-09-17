@@ -5,7 +5,12 @@ import {
   RetrievalAnswerSource,
   ApiAnswerSource,
 } from "@/lib/types/chat";
-import { ArrowDropDown, ExpandMore, LocalOffer } from "@mui/icons-material";
+import {
+  ArrowDropDown,
+  ExpandMore,
+  LocalOffer,
+  OpenInNew,
+} from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -19,7 +24,6 @@ import APIIcon from "@/assets/icon-agent-api.svg";
 import Image from "next/image";
 import { ImagePreviewModal } from "@/components/common/ImagePreviewModal";
 import { useChatStore } from "@/lib/store/chatStore";
-import { renderHighlightedText } from "@/lib/utils/highlight";
 
 function getRankSuffix(rank: number) {
   return rank === 1 ? "st" : rank === 2 ? "nd" : rank === 3 ? "rd" : "th";
@@ -58,7 +62,9 @@ const KeywordChip = ({ keyword }: { keyword: string }) => {
       py={0.5}
       width={"fit-content"}
       borderRadius={2}
-      bgcolor={COLORS.grey[200]}
+      bgcolor={COLORS.blueGrey[50]}
+      lineHeight={1}
+      letterSpacing={0.14}
     >
       {keyword}
     </Typography>
@@ -74,8 +80,6 @@ export const RetrievalSource = ({
   const [isKeywordsExpanded, setIsKeywordsExpanded] = useState(true);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const previewUrl = source.previewFiles?.[0] ?? null;
-  const query = useChatStore((s) => s.searchQuery);
-  // 하이라이트 옵션(caseSensitive/useRegex)은 전역 스토어에서 내부적으로 읽습니다.
 
   return (
     <Box
@@ -101,10 +105,10 @@ export const RetrievalSource = ({
             fontSize={16}
             fontWeight={500}
           >
-            {renderHighlightedText(source.chunkName, query)}
+            {source.chunkName}
           </Typography>
           <Typography fontSize={14} color={COLORS.blueGrey[400]}>
-            {renderHighlightedText(source.sourceName, query)}
+            {source.sourceName}
           </Typography>
         </Box>
         <IconButton
@@ -171,14 +175,40 @@ export const RetrievalSource = ({
             letterSpacing={0.14}
             color={COLORS.blueGrey[700]}
           >
-            {renderHighlightedText(source.sourceDescription, query)}
+            {source.sourceDescription}
           </Typography>
           <Button size="small" variant="contained">
             EDIT CHUNK
+            <OpenInNew sx={{ fontSize: 20, ml: 1 }} />
           </Button>
         </Box>
         <Divider />
         <Box p={2} pt={1} pb={1} display={"flex"} flexDirection={"column"}>
+          <Box
+            display={"flex"}
+            alignItems={"center"}
+            gap={0.5}
+            bgcolor={COLORS.grey[100]}
+            px={2}
+            py={1}
+            mb={1}
+            borderRadius={"6px"}
+          >
+            <Typography
+              fontSize={12}
+              color={COLORS.blueGrey[300]}
+              display={"flex"}
+              alignItems={"center"}
+              gap={0.5}
+              mr={1}
+            >
+              <LocalOffer sx={{ fontSize: 16 }} />
+              Keywords
+            </Typography>
+            {source.intent.keywords.map((keyword, index) => (
+              <KeywordChip key={`${keyword}-${index}`} keyword={keyword} />
+            ))}
+          </Box>
           <Box display={"flex"} flexDirection={"row"} alignItems={"center"}>
             <Typography
               fontSize={12}
@@ -197,7 +227,7 @@ export const RetrievalSource = ({
               size="small"
               onClick={() => setIsKeywordsExpanded(!isKeywordsExpanded)}
             >
-              <ExpandMore
+              <ArrowDropDown
                 sx={{
                   fontSize: 20,
                   transform: isKeywordsExpanded
@@ -238,8 +268,6 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
   const [isSpecificFieldsExpanded, setIsSpecificFieldsExpanded] =
     useState(true);
   const openJsonViewer = useChatStore((s) => s.openJsonViewer);
-  const query = useChatStore((s) => s.searchQuery);
-  // 하이라이트 옵션(caseSensitive/useRegex)은 전역 스토어에서 내부적으로 읽습니다.
 
   return (
     <Box
@@ -260,7 +288,7 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
       >
         <RankBadge rank={source.sourceRank} />
         <Typography fontSize={16} fontWeight={500} flex={1}>
-          {renderHighlightedText(source.sourceName, query)}
+          {source.sourceName}
         </Typography>
         <IconButton
           size="small"
@@ -283,7 +311,7 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
             letterSpacing={0.14}
             color={COLORS.blueGrey[700]}
           >
-            {renderHighlightedText(source.sourceDescription, query)}
+            {source.sourceDescription}
           </Typography>
           <Box
             border={1}
@@ -339,36 +367,68 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
             </Box>
             <Collapse in={isSpecificFieldsExpanded}>
               <Typography fontSize={14} color={COLORS.blueGrey[700]}>
-                {renderHighlightedText(
-                  `Method: ${source.specificFields.method}`,
-                  query
-                )}
+                {`Method: ${source.specificFields.method}`}
               </Typography>
               <Typography fontSize={14} color={COLORS.blueGrey[700]}>
-                {renderHighlightedText(
-                  `Endpoint: ${source.specificFields.endpoint}`,
-                  query
-                )}
+                {`Endpoint: ${source.specificFields.endpoint}`}
               </Typography>
               <Typography fontSize={14} color={COLORS.blueGrey[700]}>
-                {renderHighlightedText(
-                  `Status: ${source.specificFields.status}`,
-                  query
-                )}
+                {`Status: ${source.specificFields.status}`}
               </Typography>
+              <Box
+                display={"flex"}
+                bgcolor={COLORS.grey[100]}
+                px={2}
+                py={1.5}
+                gap={1}
+                mt={1}
+                borderRadius={"6px"}
+                flexDirection={"column"}
+              >
+                <Typography fontSize={16} fontWeight={500}>
+                  Intent
+                </Typography>
+                <Box
+                  display={"flex"}
+                  flexDirection={"row"}
+                  gap={1}
+                  flexWrap={"wrap"}
+                >
+                  <Typography
+                    fontSize={12}
+                    color={COLORS.blueGrey[300]}
+                    display={"flex"}
+                    alignItems={"center"}
+                    gap={0.5}
+                  >
+                    <LocalOffer sx={{ fontSize: 16 }} />
+                    Keywords
+                  </Typography>
+                  {source.intent.keywords.map((keyword, index) => (
+                    <KeywordChip
+                      key={`${keyword}-${index}`}
+                      keyword={keyword}
+                    />
+                  ))}
+                </Box>
+                <Typography fontSize={14} color={COLORS.blueGrey[700]}>
+                  {source.intent.description}
+                </Typography>
+              </Box>
             </Collapse>
           </Box>
           <Box display={"flex"} flexDirection={"row"} gap={1}>
-            <Button variant="contained" size="small" fullWidth>
-              EDIT API
-            </Button>
             <Button
               variant="outlined"
               size="small"
               fullWidth
               onClick={() => openJsonViewer(source.specificFields.json)}
             >
-              JSON DATA
+              VIEW JSON DATA
+            </Button>
+            <Button variant="contained" size="small" fullWidth>
+              EDIT API
+              <OpenInNew sx={{ fontSize: 20, ml: 1 }} />
             </Button>
           </Box>
         </Box>
@@ -379,8 +439,6 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
 
 export const PimSource = ({ source }: { source: PimAnswerSource }) => {
   const [isExpanded, setIsExpanded] = useState(true);
-  const query = useChatStore((s) => s.searchQuery);
-  // 하이라이트 옵션(caseSensitive/useRegex)은 전역 스토어에서 내부적으로 읽습니다.
 
   return (
     <Box
@@ -401,7 +459,7 @@ export const PimSource = ({ source }: { source: PimAnswerSource }) => {
       >
         <RankBadge rank={source.sourceRank} />
         <Typography fontSize={16} fontWeight={500} flex={1}>
-          {renderHighlightedText(source.sourceName, query)}
+          {source.sourceName}
         </Typography>
         <IconButton
           size="small"
@@ -419,7 +477,7 @@ export const PimSource = ({ source }: { source: PimAnswerSource }) => {
       <Collapse in={isExpanded}>
         <Box p={2} pt={0} display={"flex"} flexDirection={"column"} gap={1.5}>
           <Typography fontSize={14} color={COLORS.blueGrey[700]}>
-            {renderHighlightedText(source.sourceDescription, query)}
+            {source.sourceDescription}
           </Typography>
         </Box>
       </Collapse>
@@ -429,8 +487,6 @@ export const PimSource = ({ source }: { source: PimAnswerSource }) => {
 
 export const ChatSource = ({ source }: { source: ChatAnswerSource }) => {
   const [isExpanded, setIsExpanded] = useState(true);
-  const query = useChatStore((s) => s.searchQuery);
-  // 하이라이트 옵션(caseSensitive/useRegex)은 전역 스토어에서 내부적으로 읽습니다.
 
   return (
     <Box
@@ -451,7 +507,7 @@ export const ChatSource = ({ source }: { source: ChatAnswerSource }) => {
       >
         <RankBadge rank={source.sourceRank} />
         <Typography fontSize={16} fontWeight={500} flex={1}>
-          {renderHighlightedText(source.sourceName, query)}
+          {source.sourceName}
         </Typography>
         <IconButton
           size="small"
@@ -495,7 +551,7 @@ export const ChatSource = ({ source }: { source: ChatAnswerSource }) => {
             letterSpacing={0.14}
             color={COLORS.blueGrey[700]}
           >
-            {renderHighlightedText(source.sourceDescription, query)}
+            {source.sourceDescription}
           </Typography>
           <Button variant="contained" size="small" fullWidth>
             EDIT PROCESS

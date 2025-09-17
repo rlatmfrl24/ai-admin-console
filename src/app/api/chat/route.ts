@@ -1,4 +1,4 @@
-import { ChatAnswer } from "@/lib/types/chat";
+import { AnswerSource, ChatAnswer } from "@/lib/types/chat";
 import { faker } from "@faker-js/faker";
 import { NextResponse } from "next/server";
 
@@ -227,6 +227,14 @@ function makeMockResponseMessage(): ChatAnswer {
       sourceDescription: faker.lorem.paragraph(),
       duration: faker.number.int({ min: 1000, max: 10000 }),
       sourceRank: index + 1,
+      originSource: faker.helpers.arrayElement([null, faker.lorem.sentence()]),
+      intent: {
+        description: faker.lorem.paragraph(),
+        keywords: Array.from(
+          { length: faker.number.int({ min: 1, max: 5 }) },
+          () => faker.lorem.word()
+        ),
+      },
     } as const;
 
     switch (sourceType) {
@@ -302,17 +310,10 @@ function makeMockResponseMessage(): ChatAnswer {
     chatId: faker.string.uuid(),
     message: faker.lorem.paragraph(),
     role: "assistant",
-    intent: {
-      title: faker.lorem.sentence(),
-      description: faker.lorem.paragraph(),
-      keywords: Array.from(
-        { length: faker.number.int({ min: 1, max: 5 }) },
-        () => faker.lorem.word()
-      ),
-    },
+    intent: faker.lorem.sentence(),
     createdAt: new Date(),
     duration: faker.number.int({ min: 1000, max: 10000 }),
-    sources: sources,
+    sources: sources as AnswerSource[],
   };
 }
 
