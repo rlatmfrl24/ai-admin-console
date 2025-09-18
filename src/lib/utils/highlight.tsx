@@ -1,7 +1,7 @@
 import React from "react";
-import { COLORS } from "@/lib/constants/color";
 import { buildSearchRegex } from "@/lib/utils/search";
 import { useChatStore } from "@/lib/store/chatStore";
+import { colors } from "@mui/material";
 
 type HighlightOptions = {
   // caseSensitive/useRegex는 전역 스토어를 사용합니다. 호출부에서 넘길 필요가 없습니다.
@@ -49,10 +49,9 @@ export function renderHighlightedText(
         key={`h-${start}`}
         style={{
           backgroundColor: isActive
-            ? COLORS.warning.states.focusVisible
-            : COLORS.primary.states.focus,
-          borderRadius: 4,
-          padding: "0 2px",
+            ? colors.teal.A200
+            : "rgba(64, 255, 218, 0.32)",
+          padding: 0,
         }}
       >
         {text.slice(start, end)}

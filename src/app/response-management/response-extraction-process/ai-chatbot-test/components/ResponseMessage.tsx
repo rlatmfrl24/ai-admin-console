@@ -187,7 +187,7 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
                 : undefined;
 
             return (
-              <Box key={source.sourceType} mt={1.5}>
+              <Box key={source.sourceType} mt={3}>
                 <SourceMessage
                   source={source}
                   query={query}
