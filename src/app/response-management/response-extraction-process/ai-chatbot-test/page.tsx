@@ -1,21 +1,24 @@
 "use client";
 
 import { Box, Paper, Typography } from "@mui/material";
-import ChatIcon from "@/assets/icon-ai-chat.svg";
+import { useEffect, useMemo, useRef } from "react";
+import { motion, AnimatePresence } from "motion/react";
+
 import ChatSidebar from "./sidebar";
-import { COLORS } from "@/lib/theme";
 import ChatInput from "./input";
 import UserMessage from "./components/UserMessage";
 import ResponseMessage from "./components/ResponseMessage";
-import { ChatAnswer } from "@/lib/types/chat";
-import { useEffect, useMemo, useRef } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import EmptyChatLayer from "@/assets/img-empty-chat.svg";
 import Source from "./source";
 import JsonViewer from "./components/JsonViewer";
+import SearchField from "./components/SearchField";
+
+import ChatIcon from "@/assets/icon-ai-chat.svg";
+import { COLORS } from "@/lib/theme";
+import { ChatAnswer } from "@/lib/types/chat";
+import EmptyChatLayer from "@/assets/img-empty-chat.svg";
 import { useChatStore } from "@/lib/store/chatStore";
 import AIProfileIcon from "@/assets/icon-ai-profile.svg";
-import SearchField from "./components/SearchField";
+
 
 export default function Chat() {
   const currentThread = useChatStore((s) =>

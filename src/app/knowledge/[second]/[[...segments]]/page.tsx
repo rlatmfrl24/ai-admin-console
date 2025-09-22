@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
-import { isValidPath } from "@/lib/navigation";
+
 import BSAList from "./views/bsa/List";
 import BSADetail from "./views/bsa/Detail";
+
+import { isValidPath } from "@/lib/navigation";
 
 type PageProps = {
   params: Promise<{ second: string; segments?: string[] }>;

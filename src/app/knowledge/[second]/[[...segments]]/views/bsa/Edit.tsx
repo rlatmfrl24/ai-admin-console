@@ -27,11 +27,6 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { AddCircle, Cached, FileUploadOutlined } from "@mui/icons-material";
-import MenuTree from "./components/MenuTree";
-import { getBsaMenuTree } from "./bsaUtil";
-import { ChunkCard } from "./components/ChunkCard";
-import InputWithLabel from "@/components/common/Input";
-import { COLORS } from "@/lib/theme";
 import { format } from "date-fns";
 import {
   useEffect,
@@ -42,21 +37,7 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react";
-import type {
-  BSAMenuTreeItemProps,
-  BSATableProps,
-  ChunkProps,
-} from "@/lib/types/bsa";
-import { useBSAStore } from "@/lib/store/bsaStore";
 import { faker } from "@faker-js/faker";
-import {
-  AttachmentPreviewForDocument,
-  AttachmentPreviewForUI,
-} from "./components/AttachmentPreview";
-import FilterChipMenu from "./components/FilterChipMenu";
-import LeftPanelOpenIcon from "@/assets/icon-left-panel-open.svg";
-import LeftPanelCloseIcon from "@/assets/icon-left-panel-close.svg";
-import AIProcessIcon from "@/assets/icon-ai-process.svg";
 import { alpha } from "@mui/material/styles";
 import {
   DndContext,
@@ -75,6 +56,29 @@ import {
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+
+import MenuTree from "./components/MenuTree";
+import { getBsaMenuTree } from "./bsaUtil";
+import { ChunkCard } from "./components/ChunkCard";
+import {
+  AttachmentPreviewForDocument,
+  AttachmentPreviewForUI,
+} from "./components/AttachmentPreview";
+import FilterChipMenu from "./components/FilterChipMenu";
+
+import type {
+  BSAMenuTreeItemProps,
+  BSATableProps,
+  ChunkProps,
+} from "@/lib/types/bsa";
+
+import InputWithLabel from "@/components/common/Input";
+import { COLORS } from "@/lib/theme";
+import { useBSAStore } from "@/lib/store/bsaStore";
+import LeftPanelOpenIcon from "@/assets/icon-left-panel-open.svg";
+import LeftPanelCloseIcon from "@/assets/icon-left-panel-close.svg";
+import AIProcessIcon from "@/assets/icon-ai-process.svg";
+
 
 function findIndexPath(
   nodes: BSAMenuTreeItemProps[],

@@ -1,8 +1,10 @@
 import { Box, IconButton, Typography } from "@mui/material";
-import { COLORS } from "@/lib/theme";
 import { Close, ContentCopy, Check } from "@mui/icons-material";
-import { useChatStore } from "@/lib/store/chatStore";
 import { useMemo, useState } from "react";
+
+import { COLORS } from "@/lib/theme";
+import { useChatStore } from "@/lib/store/chatStore";
+
 
 export default function JsonViewer() {
   const isOpen = useChatStore((s) => s.isJsonViewerOpen);

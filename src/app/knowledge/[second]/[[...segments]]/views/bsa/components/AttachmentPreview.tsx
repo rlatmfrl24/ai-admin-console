@@ -9,8 +9,9 @@
 import { Box, IconButton, InputBase, Typography } from "@mui/material";
 import { Close, OpenInNew } from "@mui/icons-material";
 import Image from "next/image";
-import { COLORS } from "@/lib/theme";
 import { useState } from "react";
+
+import { COLORS } from "@/lib/theme";
 import { ImagePreviewModal } from "@/components/common/ImagePreviewModal";
 
 type AttachmentPreviewItemProps = {

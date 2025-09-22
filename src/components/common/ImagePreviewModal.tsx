@@ -9,8 +9,9 @@ import {
 } from "@mui/material";
 import { Close, Image as ImageIcon } from "@mui/icons-material";
 import Image from "next/image";
-import { COLORS } from "@/lib/theme";
 import { useEffect, useMemo, useState } from "react";
+
+import { COLORS } from "@/lib/theme";
 
 function extractFileNameFromUrl(url: string): string {
   try {
@@ -122,7 +123,6 @@ export function ImagePreviewModal({
         >
           <IconButton
             aria-label="Close preview"
-            autoFocus
             onClick={onClose}
             sx={{ color: COLORS.common.white, p: 1 }}
           >

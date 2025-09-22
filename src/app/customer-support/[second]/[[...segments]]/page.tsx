@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
 import type { NavigationItem } from "@/lib/types/navigation";
+
 import {
   breadcrumbFor,
   childrenForIds,

@@ -10,8 +10,10 @@ import {
 import AssistantOutlinedIcon from "@mui/icons-material/AssistantOutlined";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { forwardRef, useEffect, useState } from "react";
-import { NavigationItem } from "../lib/types/navigation";
 import { useRouter } from "next/navigation";
+
+import { NavigationItem } from "../lib/types/navigation";
+
 import { COLORS } from "@/lib/theme";
 import { pathFor } from "@/lib/navigation";
 

@@ -10,11 +10,13 @@ import {
 } from "@mui/material";
 import { MenuOpen } from "@mui/icons-material";
 import { useEffect, useMemo, useState, useCallback } from "react";
-import type { NavigationItem } from "../lib/types/navigation";
 import AssistantOutlinedIcon from "@mui/icons-material/AssistantOutlined";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import NAV_ITEMS from "@/lib/constants/navigation";
 import { useRouter } from "next/navigation";
+
+import type { NavigationItem } from "../lib/types/navigation";
+
+import NAV_ITEMS from "@/lib/constants/navigation";
 import { COLORS } from "@/lib/theme";
 import { pathFor } from "@/lib/navigation";
 

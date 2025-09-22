@@ -1,5 +1,6 @@
-import NAV_ITEMS from "@/lib/constants/navigation";
 import type { NavigationItem } from "@/lib/types/navigation";
+
+import NAV_ITEMS from "@/lib/constants/navigation";
 import MainLanding from "@/components/MainLanding";
 
 const TARGET_NAV_ID = [

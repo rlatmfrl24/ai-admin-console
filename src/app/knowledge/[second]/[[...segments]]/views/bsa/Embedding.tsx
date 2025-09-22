@@ -1,12 +1,15 @@
 "use client";
 
 import { Box, Button, Portal, Typography } from "@mui/material";
-import { COLORS } from "@/lib/theme";
 import { useMemo, useState, useCallback } from "react";
-import { ChunkProps } from "@/lib/types/bsa";
-import { CheckableChunkCard } from "./components/ChunkCard";
-import { useBSAStore } from "@/lib/store/bsaStore";
 import { UploadFile } from "@mui/icons-material";
+
+import { CheckableChunkCard } from "./components/ChunkCard";
+
+import { COLORS } from "@/lib/theme";
+import { ChunkProps } from "@/lib/types/bsa";
+import { useBSAStore } from "@/lib/store/bsaStore";
+
 
 export default function BSAChunkEmbedding() {
   const chunks = useBSAStore((s) => s.chunks);

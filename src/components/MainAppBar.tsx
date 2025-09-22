@@ -11,6 +11,8 @@ import {
   Typography,
 } from "@mui/material";
 import { Menu, Search } from "@mui/icons-material";
+import Link from "next/link";
+
 import NXLogo from "@/assets/logo-nx.svg";
 import SolutionIcon from "@/assets/icon-solution.svg";
 import FlowIcon from "@/assets/icon-flow.svg";
@@ -18,7 +20,6 @@ import NotificationIcon from "@/assets/icon-notification.svg";
 import UserIcon from "@/assets/icon-user-profile.svg";
 import BusinessIcon from "@/assets/icon-business.svg";
 import { COLORS } from "@/lib/theme";
-import Link from "next/link";
 
 type MainAppBarProps = {
   onMenuClick?: () => void;

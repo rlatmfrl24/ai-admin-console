@@ -14,16 +14,17 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
-import LeftPanelOpenIcon from "@/assets/icon-left-panel-open.svg";
-import LeftPanelCloseIcon from "@/assets/icon-left-panel-close.svg";
 import { useState, useMemo, useRef, useEffect, memo } from "react";
-import { COLORS } from "@/lib/constants/color";
 import {
   Add,
   DeleteOutline,
   EditOutlined,
   MoreVert,
 } from "@mui/icons-material";
+
+import LeftPanelOpenIcon from "@/assets/icon-left-panel-open.svg";
+import LeftPanelCloseIcon from "@/assets/icon-left-panel-close.svg";
+import { COLORS } from "@/lib/constants/color";
 import { useChatStore } from "@/lib/store/chatStore";
 import { Thread } from "@/lib/types/chat";
 import InputWithLabel from "@/components/common/Input";
@@ -358,7 +359,6 @@ const ChatSidebarItemComponent = ({
               <Button
                 onClick={handleDeleteConfirm}
                 variant="contained"
-                autoFocus
                 size="small"
               >
                 Delete

@@ -1,10 +1,12 @@
-import { ChatMessage } from "@/lib/types/chat";
 import { Box, Typography } from "@mui/material";
+import { format } from "date-fns";
+import { AccessTime } from "@mui/icons-material";
+
+import { ChatMessage } from "@/lib/types/chat";
 import { COLORS } from "@/lib/theme";
 import { useChatStore } from "@/lib/store/chatStore";
 import { renderHighlightedText } from "@/lib/utils/highlight";
-import { format } from "date-fns";
-import { AccessTime } from "@mui/icons-material";
+
 
 export default function UserMessage({ message }: { message: ChatMessage }) {
   const query = useChatStore((s) => s.searchQuery);

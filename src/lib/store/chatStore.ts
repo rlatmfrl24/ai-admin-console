@@ -1,5 +1,6 @@
-import { ChatMessage, Thread, ChatAnswer, AnswerSource } from "../types/chat";
 import { create } from "zustand";
+
+import { ChatMessage, Thread, ChatAnswer, AnswerSource } from "../types/chat";
 
 type SearchMatch = {
   chatId: string;

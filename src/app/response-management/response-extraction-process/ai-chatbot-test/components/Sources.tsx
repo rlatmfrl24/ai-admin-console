@@ -1,10 +1,3 @@
-import { COLORS } from "@/lib/theme";
-import {
-  PimAnswerSource,
-  ChatAnswerSource,
-  RetrievalAnswerSource,
-  ApiAnswerSource,
-} from "@/lib/types/chat";
 import {
   ArrowDropDown,
   ExpandMore,
@@ -20,8 +13,16 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import APIIcon from "@/assets/icon-agent-api.svg";
 import Image from "next/image";
+
+import APIIcon from "@/assets/icon-agent-api.svg";
+import {
+  PimAnswerSource,
+  ChatAnswerSource,
+  RetrievalAnswerSource,
+  ApiAnswerSource,
+} from "@/lib/types/chat";
+import { COLORS } from "@/lib/theme";
 import { ImagePreviewModal } from "@/components/common/ImagePreviewModal";
 import { useChatStore } from "@/lib/store/chatStore";
 

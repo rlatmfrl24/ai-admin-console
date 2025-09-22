@@ -1,11 +1,15 @@
 "use client";
 
-import { AnswerSource, ChatAnswer } from "@/lib/types/chat";
 import { Box, Divider, Paper, Typography } from "@mui/material";
-import { COLORS } from "@/lib/theme";
 import { format } from "date-fns";
 import { AccessTime, ChevronRight } from "@mui/icons-material";
+import React, { memo, useCallback, useMemo } from "react";
+import { useStore } from "zustand";
+
 import { AgentChip } from "./Chips";
+
+import { AnswerSource, ChatAnswer } from "@/lib/types/chat";
+import { COLORS } from "@/lib/theme";
 import RetrievalIcon from "@/assets/icon-agent-retrieval.svg";
 import PimIcon from "@/assets/icon-agent-pim.svg";
 import ApiIcon from "@/assets/icon-agent-api.svg";
@@ -13,8 +17,7 @@ import ChatIcon from "@/assets/icon-agent-chat.svg";
 import AIProfileIcon from "@/assets/icon-ai-profile.svg";
 import { useChatStore } from "@/lib/store/chatStore";
 import { renderHighlightedText } from "@/lib/utils/highlight";
-import React, { memo, useCallback, useMemo } from "react";
-import { useStore } from "zustand";
+
 
 function formatDuration(duration: number) {
   const seconds = Math.floor(duration / 1000);

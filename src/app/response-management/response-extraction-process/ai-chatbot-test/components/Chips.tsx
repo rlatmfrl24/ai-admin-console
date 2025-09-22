@@ -1,10 +1,11 @@
 import { Box, Typography } from "@mui/material";
+import { Check } from "@mui/icons-material";
+
 import { COLORS } from "@/lib/theme";
 import RetrievalIcon from "@/assets/icon-agent-retrieval.svg";
 import PimIcon from "@/assets/icon-agent-pim.svg";
 import ApiIcon from "@/assets/icon-agent-api.svg";
 import ChatIcon from "@/assets/icon-agent-chat.svg";
-import { Check } from "@mui/icons-material";
 import { useChatStore } from "@/lib/store/chatStore";
 
 function getAgentText(type: "api" | "pim" | "retrieval" | "chat") {
