@@ -27,8 +27,8 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { AddCircle, Cached, FileUploadOutlined } from "@mui/icons-material";
-import MenuTree from "@/app/knowledge/chunks/commercial/bsa/[id]/components/MenuTree";
-import { getBsaMenuTree } from "@/app/knowledge/chunks/commercial/bsa/bsaUtil";
+import MenuTree from "./components/MenuTree";
+import { getBsaMenuTree } from "./bsaUtil";
 import { ChunkCard } from "./components/ChunkCard";
 import InputWithLabel from "@/components/common/Input";
 import { COLORS } from "@/lib/theme";
