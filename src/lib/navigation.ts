@@ -1,5 +1,6 @@
-import NAV_ITEMS from "@/lib/constants/navigation";
 import type { NavigationItem } from "@/lib/types/navigation";
+
+import NAV_ITEMS from "@/lib/constants/navigation";
 
 export function pathFor(ids: string[]): string {
   const clean = ids.filter(Boolean);

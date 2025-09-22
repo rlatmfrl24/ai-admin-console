@@ -2,11 +2,14 @@
 
 import { Box, Paper, InputBase, IconButton, Button } from "@mui/material";
 import { Add } from "@mui/icons-material";
+import { Controller, useForm } from "react-hook-form";
+
+import type { ChatMessage } from "@/lib/types/chat";
+
 import SendIcon from "@/assets/icon-send.svg";
 import { COLORS } from "@/lib/theme";
-import { Controller, useForm } from "react-hook-form";
 import { useChatStore } from "@/lib/store/chatStore";
-import type { ChatMessage } from "@/lib/types/chat";
+
 
 type ChatInputProps = {
   onSubmit?: (message: string) => void;

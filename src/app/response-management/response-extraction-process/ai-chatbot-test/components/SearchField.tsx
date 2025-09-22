@@ -1,4 +1,3 @@
-import { COLORS } from "@/lib/constants/color";
 import {
   Clear,
   KeyboardArrowDown,
@@ -7,6 +6,8 @@ import {
 } from "@mui/icons-material";
 import { Box, Divider, IconButton, InputBase, Typography } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+import { COLORS } from "@/lib/constants/color";
 import { useChatStore } from "@/lib/store/chatStore";
 import { ChatAnswer } from "@/lib/types/chat";
 import { buildSearchRegex } from "@/lib/utils/search";

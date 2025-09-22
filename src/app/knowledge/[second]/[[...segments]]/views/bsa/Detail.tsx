@@ -3,15 +3,17 @@
 import { Box, Breadcrumbs, Typography } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { useHeaderStore } from "@/lib/store/headerStore";
 import { InsertDriveFileOutlined } from "@mui/icons-material";
 import { GridColDef, DataGrid, useGridApiRef } from "@mui/x-data-grid";
-import { BSATableProps, BSAMenuTreeItemProps } from "@/lib/types/bsa";
-import { COLORS } from "@/lib/theme";
+
 import { getBsaMenuTree, makeRandomChunk, getBsaRowById } from "./bsaUtil";
-import SegmentedTabs from "@/components/common/SegmentedTabs";
 import BSAChunkEdit from "./Edit";
 import BSAChunkEmbedding from "./Embedding";
+
+import { BSATableProps, BSAMenuTreeItemProps } from "@/lib/types/bsa";
+import { COLORS } from "@/lib/theme";
+import SegmentedTabs from "@/components/common/SegmentedTabs";
+import { useHeaderStore } from "@/lib/store/headerStore";
 import { useBSAStore } from "@/lib/store/bsaStore";
 
 function getInitialSelection(items: BSAMenuTreeItemProps[]): {

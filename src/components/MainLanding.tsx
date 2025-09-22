@@ -1,12 +1,16 @@
 "use client";
 
 import { Box, Typography } from "@mui/material";
+import { useEffect, useRef, useState, memo } from "react";
+
+import FloatingChatButton from "./FloatingChatButton";
+
+import type { NavigationItem } from "@/lib/types/navigation";
+
 import MainLayer1 from "@/assets/main-layer-1.svg";
 import MainLayer2 from "@/assets/main-layer-2.svg";
-import { useEffect, useRef, useState, memo } from "react";
-import type { NavigationItem } from "@/lib/types/navigation";
 import { MainCard } from "@/components/MainCard";
-import FloatingChatButton from "./FloatingChatButton";
+
 
 export interface MainLandingProps {
   items: NavigationItem[];

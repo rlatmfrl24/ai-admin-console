@@ -1,10 +1,18 @@
 "use client";
 
 import { Box, IconButton, Typography } from "@mui/material";
-import { COLORS } from "@/lib/theme";
 import { Close } from "@mui/icons-material";
-import { useChatStore } from "@/lib/store/chatStore";
+
 import { AgentFilterChip } from "./components/Chips";
+import {
+  ApiSource,
+  PimSource,
+  RetrievalSource,
+  ChatSource,
+} from "./components/Sources";
+
+import { COLORS } from "@/lib/theme";
+import { useChatStore } from "@/lib/store/chatStore";
 import {
   AnswerSource,
   ChatAnswerSource,
@@ -12,12 +20,7 @@ import {
   RetrievalAnswerSource,
   ApiAnswerSource,
 } from "@/lib/types/chat";
-import {
-  ApiSource,
-  PimSource,
-  RetrievalSource,
-  ChatSource,
-} from "./components/Sources";
+
 
 export default function Source() {
   const setSelectedAnswer = useChatStore((s) => s.setSelectedAnswer);

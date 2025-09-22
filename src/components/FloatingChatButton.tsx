@@ -1,5 +1,6 @@
-import FloatingChatImage from "@/assets/img-floating-chat.svg";
 import Link from "next/link";
+
+import FloatingChatImage from "@/assets/img-floating-chat.svg";
 
 export default function FloatingChatButton() {
   return (

@@ -8,9 +8,6 @@
 
 import { Box, Checkbox, Divider, Typography, Menu } from "@mui/material";
 import { ArrowDropDown } from "@mui/icons-material";
-import { useBSAStore } from "@/lib/store/bsaStore";
-import type { ChunkProps } from "@/lib/types/bsa";
-import { COLORS } from "@/lib/theme";
 import {
   useState,
   useMemo,
@@ -18,6 +15,11 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react";
+
+import type { ChunkProps } from "@/lib/types/bsa";
+
+import { useBSAStore } from "@/lib/store/bsaStore";
+import { COLORS } from "@/lib/theme";
 import {
   BSA_STATUS_OPTIONS,
   BSA_STATUS_LABEL,
@@ -143,12 +145,19 @@ export default function FilterChipMenu({
           list: { disablePadding: true },
         }}
       >
-        <div
+        <Box
+          role="button"
+          tabIndex={0}
           onMouseDown={(e) => {
             e.preventDefault();
           }}
           onClick={(e) => {
             e.stopPropagation();
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+            }
           }}
         >
           <Box
@@ -168,13 +177,20 @@ export default function FilterChipMenu({
             />
             <Typography fontSize={13}>All Status</Typography>
           </Box>
-        </div>
+        </Box>
         <Divider />
         {BSA_STATUS_OPTIONS.map(({ value }) => (
-          <div
+          <Box
             key={value}
+            role="button"
+            tabIndex={0}
             onClick={(e) => {
               e.preventDefault();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+              }
             }}
           >
             <Box
@@ -204,7 +220,7 @@ export default function FilterChipMenu({
                 {statusCounts[value as ChunkProps["status"]]}
               </Typography>
             </Box>
-          </div>
+          </Box>
         ))}
       </Menu>
     </>

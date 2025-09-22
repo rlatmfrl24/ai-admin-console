@@ -12,7 +12,9 @@ import {
   Box,
 } from "@mui/material";
 import { ArrowDropDown } from "@mui/icons-material";
+
 import type { PopperProps } from "@mui/material/Popper";
+
 import { pathFor } from "@/lib/navigation";
 export interface MenuItemData {
   id: string;
@@ -219,7 +221,9 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
             setTimeout(() => {
               try {
                 (anchorEl as HTMLElement).focus();
-              } catch {}
+              } catch {
+                void 0; // intentionally ignore focus errors
+              }
             }, 0);
             break;
           }

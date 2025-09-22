@@ -1,9 +1,11 @@
+import { faker } from "@faker-js/faker";
+
 import type {
   BSATableProps,
   BSAMenuTreeItemProps,
   ChunkProps,
 } from "@/lib/types/bsa";
-import { faker } from "@faker-js/faker";
+
 import menuTree from "@/lib/constants/bsa-menu-tree";
 
 function isValidNumericId(id: string | number): boolean {

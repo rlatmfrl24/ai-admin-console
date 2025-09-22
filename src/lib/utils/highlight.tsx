@@ -1,7 +1,8 @@
 import React from "react";
+import { colors } from "@mui/material";
+
 import { buildSearchRegex } from "@/lib/utils/search";
 import { useChatStore } from "@/lib/store/chatStore";
-import { colors } from "@mui/material";
 
 type HighlightOptions = {
   // caseSensitive/useRegex는 전역 스토어를 사용합니다. 호출부에서 넘길 필요가 없습니다.

@@ -1,5 +1,6 @@
 "use client";
 import { createTheme } from "@mui/material/styles";
+
 import type {} from "@mui/x-data-grid/themeAugmentation";
 import { COLORS as RAW_COLORS } from "@/lib/constants/color";
 export type Colors = typeof RAW_COLORS;
