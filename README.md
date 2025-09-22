@@ -32,7 +32,9 @@ npm run dev
 
 ```ts
 // 목록 조회 (기존: faker rows)
-const res = await fetch(`/api/bsa?stream=${stream}&module=${module}&status=${status}&search=${search}`);
+const res = await fetch(
+  `/api/bsa?stream=${stream}&module=${module}&status=${status}&search=${search}`,
+);
 const list: BSATableProps[] = await res.json();
 setRows(list);
 
@@ -47,16 +49,23 @@ const chunks: ChunkProps[] = await res.json();
 setChunks(chunks);
 
 // Chunk 생성 (기존: faker로 progressId 생성)
-const res = await fetch(`/api/bsa/${id}/chunks`, { method: 'POST', body: JSON.stringify(newChunk) });
+const res = await fetch(`/api/bsa/${id}/chunks`, {
+  method: 'POST',
+  body: JSON.stringify(newChunk),
+});
 const created = await res.json(); // 서버가 progressId 발급
 addChunk(created);
 
 // Chunk 저장 (Edit Save)
-await fetch(`/api/bsa/${id}/chunks/${progressId}`, { method: 'PATCH', body: JSON.stringify(updated) });
+await fetch(`/api/bsa/${id}/chunks/${progressId}`, {
+  method: 'PATCH',
+  body: JSON.stringify(updated),
+});
 updateChunk(updated);
 
 // 파일 업로드
-const fd = new FormData(); files.forEach(f => fd.append('files', f));
+const fd = new FormData();
+files.forEach((f) => fd.append('files', f));
 const res = await fetch(`/api/uploads`, { method: 'POST', body: fd });
 const uploaded = await res.json(); // [{ url, name, ... }]
 ```

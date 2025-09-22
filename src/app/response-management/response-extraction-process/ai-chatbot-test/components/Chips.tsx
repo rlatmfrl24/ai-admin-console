@@ -1,24 +1,24 @@
-import { Box, Typography } from "@mui/material";
-import { Check } from "@mui/icons-material";
+import { Box, Typography } from '@mui/material';
+import { Check } from '@mui/icons-material';
 
-import { COLORS } from "@/lib/theme";
-import RetrievalIcon from "@/assets/icon-agent-retrieval.svg";
-import PimIcon from "@/assets/icon-agent-pim.svg";
-import ApiIcon from "@/assets/icon-agent-api.svg";
-import ChatIcon from "@/assets/icon-agent-chat.svg";
-import { useChatStore } from "@/lib/store/chatStore";
+import { COLORS } from '@/lib/theme';
+import RetrievalIcon from '@/assets/icon-agent-retrieval.svg';
+import PimIcon from '@/assets/icon-agent-pim.svg';
+import ApiIcon from '@/assets/icon-agent-api.svg';
+import ChatIcon from '@/assets/icon-agent-chat.svg';
+import { useChatStore } from '@/lib/store/chatStore';
 
-function getAgentText(type: "api" | "pim" | "retrieval" | "chat") {
+function getAgentText(type: 'api' | 'pim' | 'retrieval' | 'chat') {
   return (() => {
     switch (type) {
-      case "api":
-        return "API";
-      case "pim":
-        return "PIM";
-      case "retrieval":
-        return "Retrieval";
-      case "chat":
-        return "Chat";
+      case 'api':
+        return 'API';
+      case 'pim':
+        return 'PIM';
+      case 'retrieval':
+        return 'Retrieval';
+      case 'chat':
+        return 'Chat';
       default:
         return type;
     }
@@ -30,46 +30,46 @@ export const AgentFilterChip = ({
   count,
   checked = false,
 }: {
-  type: "api" | "pim" | "retrieval" | "chat";
+  type: 'api' | 'pim' | 'retrieval' | 'chat';
   count: number;
   checked?: boolean;
 }) => {
   const toggleSelectedSourceType = useChatStore(
-    (s) => s.toggleSelectedSourceType
+    (s) => s.toggleSelectedSourceType,
   );
   return (
     <Box
-      display={"flex"}
-      alignItems={"center"}
-      gap={"6px"}
+      display={'flex'}
+      alignItems={'center'}
+      gap={'6px'}
       border={1}
       px={1.5}
-      py={"6px"}
+      py={'6px'}
       borderRadius={5}
       borderColor={checked ? COLORS.agent[type].main : COLORS.blueGrey[200]}
-      bgcolor={checked ? COLORS.agent[type].background : "white"}
+      bgcolor={checked ? COLORS.agent[type].background : 'white'}
       sx={{
-        cursor: "pointer",
+        cursor: 'pointer',
       }}
       onClick={() => {
         toggleSelectedSourceType(type);
       }}
     >
       {checked && <Check sx={{ fontSize: 16 }} />}
-      <Typography fontSize={13} fontWeight={500} lineHeight={"18px"}>
+      <Typography fontSize={13} fontWeight={500} lineHeight={'18px'}>
         {getAgentText(type)}
       </Typography>
       <Typography
         fontSize={12}
         fontWeight={500}
         bgcolor={COLORS.agent[type].main}
-        color={"white"}
+        color={'white'}
         borderRadius={5}
         width={16}
         height={16}
-        display={"flex"}
-        alignItems={"center"}
-        justifyContent={"center"}
+        display={'flex'}
+        alignItems={'center'}
+        justifyContent={'center'}
       >
         {count}
       </Typography>
@@ -81,18 +81,18 @@ export const AgentChip = ({
   type,
   count,
 }: {
-  type: "api" | "pim" | "retrieval" | "chat";
+  type: 'api' | 'pim' | 'retrieval' | 'chat';
   count: number;
 }) => {
   const icon = (() => {
     switch (type) {
-      case "api":
+      case 'api':
         return <ApiIcon />;
-      case "pim":
+      case 'pim':
         return <PimIcon />;
-      case "retrieval":
+      case 'retrieval':
         return <RetrievalIcon />;
-      case "chat":
+      case 'chat':
         return <ChatIcon />;
     }
   })();
@@ -104,9 +104,9 @@ export const AgentChip = ({
       bgcolor={COLORS.agent[type].background}
       color={COLORS.agent[type].main}
       borderRadius={5}
-      display={"flex"}
-      alignItems={"center"}
-      gap={"6px"}
+      display={'flex'}
+      alignItems={'center'}
+      gap={'6px'}
     >
       {icon}
       <Typography color={COLORS.text.primary} fontSize={12}>
@@ -116,14 +116,14 @@ export const AgentChip = ({
         width={16}
         height={16}
         bgcolor={COLORS.agent[type].main}
-        color={"white"}
+        color={'white'}
         fontWeight={500}
         borderRadius={5}
         fontSize={12}
-        lineHeight={"20px"}
-        display={"flex"}
-        alignItems={"center"}
-        justifyContent={"center"}
+        lineHeight={'20px'}
+        display={'flex'}
+        alignItems={'center'}
+        justifyContent={'center'}
       >
         {count}
       </Box>

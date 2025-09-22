@@ -1,16 +1,16 @@
-import type { NavigationItem } from "@/lib/types/navigation";
+import type { NavigationItem } from '@/lib/types/navigation';
 
-import NAV_ITEMS from "@/lib/constants/navigation";
+import NAV_ITEMS from '@/lib/constants/navigation';
 
 export function pathFor(ids: string[]): string {
   const clean = ids.filter(Boolean);
-  return `/${clean.join("/")}`;
+  return `/${clean.join('/')}`;
 }
 
 export type Breadcrumb = { id: string; label: string; href: string };
 
 export function breadcrumbFor(path: string): Breadcrumb[] {
-  const segments = (path || "").split("/").filter(Boolean);
+  const segments = (path || '').split('/').filter(Boolean);
   let currentItems: NavigationItem[] = NAV_ITEMS;
   const breadcrumbs: Breadcrumb[] = [];
   const accIds: string[] = [];
@@ -29,7 +29,7 @@ export function breadcrumbFor(path: string): Breadcrumb[] {
 }
 
 export function siblingsFor(path: string, level: number): NavigationItem[] {
-  const segments = (path || "").split("/").filter(Boolean);
+  const segments = (path || '').split('/').filter(Boolean);
   let currentItems: NavigationItem[] = NAV_ITEMS;
   for (let i = 0; i <= level; i++) {
     const seg = segments[i];

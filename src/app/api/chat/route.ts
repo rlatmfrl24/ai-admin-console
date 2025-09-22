@@ -1,7 +1,7 @@
-import { faker } from "@faker-js/faker";
-import { NextResponse } from "next/server";
+import { faker } from '@faker-js/faker';
+import { NextResponse } from 'next/server';
 
-import { AnswerSource, ChatAnswer } from "@/lib/types/chat";
+import { AnswerSource, ChatAnswer } from '@/lib/types/chat';
 
 function makeMockJson() {
   return JSON.stringify({
@@ -44,10 +44,10 @@ function makeMockJson() {
         github: faker.internet.url(),
       },
       preferences: {
-        language: faker.helpers.arrayElement(["ko", "en", "ja", "zh"]),
+        language: faker.helpers.arrayElement(['ko', 'en', 'ja', 'zh']),
         timezone: faker.location.timeZone(),
         currency: faker.finance.currencyCode(),
-        theme: faker.helpers.arrayElement(["light", "dark", "auto"]),
+        theme: faker.helpers.arrayElement(['light', 'dark', 'auto']),
       },
       statistics: {
         loginCount: faker.number.int({ min: 1, max: 1000 }),
@@ -68,25 +68,25 @@ function makeMockJson() {
           { length: faker.number.int({ min: 3, max: 10 }) },
           () =>
             faker.helpers.arrayElement([
-              "premium",
-              "basic",
-              "enterprise",
-              "trial",
-              "verified",
-              "active",
-            ])
+              'premium',
+              'basic',
+              'enterprise',
+              'trial',
+              'verified',
+              'active',
+            ]),
         ),
         permissions: Array.from(
           { length: faker.number.int({ min: 5, max: 15 }) },
           () =>
             faker.helpers.arrayElement([
-              "read",
-              "write",
-              "delete",
-              "admin",
-              "moderate",
-              "publish",
-            ])
+              'read',
+              'write',
+              'delete',
+              'admin',
+              'moderate',
+              'publish',
+            ]),
         ),
         notifications: {
           email: faker.datatype.boolean(),
@@ -100,12 +100,12 @@ function makeMockJson() {
         () => ({
           id: faker.string.uuid(),
           type: faker.helpers.arrayElement([
-            "login",
-            "logout",
-            "purchase",
-            "view",
-            "search",
-            "update",
+            'login',
+            'logout',
+            'purchase',
+            'view',
+            'search',
+            'update',
           ]),
           description: faker.lorem.sentence(),
           timestamp: faker.date.recent(),
@@ -115,23 +115,23 @@ function makeMockJson() {
             country: faker.location.country(),
             city: faker.location.city(),
           },
-        })
+        }),
       ),
       subscriptions: Array.from(
         { length: faker.number.int({ min: 1, max: 5 }) },
         () => ({
           id: faker.string.uuid(),
           plan: faker.helpers.arrayElement([
-            "basic",
-            "premium",
-            "enterprise",
-            "pro",
+            'basic',
+            'premium',
+            'enterprise',
+            'pro',
           ]),
           status: faker.helpers.arrayElement([
-            "active",
-            "cancelled",
-            "expired",
-            "pending",
+            'active',
+            'cancelled',
+            'expired',
+            'pending',
           ]),
           startDate: faker.date.past(),
           endDate: faker.date.future(),
@@ -144,13 +144,13 @@ function makeMockJson() {
             { length: faker.number.int({ min: 3, max: 8 }) },
             () =>
               faker.helpers.arrayElement([
-                "unlimited_storage",
-                "priority_support",
-                "advanced_analytics",
-                "custom_branding",
-              ])
+                'unlimited_storage',
+                'priority_support',
+                'advanced_analytics',
+                'custom_branding',
+              ]),
           ),
-        })
+        }),
       ),
       documents: Array.from(
         { length: faker.number.int({ min: 3, max: 12 }) },
@@ -159,30 +159,30 @@ function makeMockJson() {
           title: faker.lorem.sentence(),
           content: faker.lorem.paragraphs(3),
           type: faker.helpers.arrayElement([
-            "pdf",
-            "doc",
-            "txt",
-            "html",
-            "json",
+            'pdf',
+            'doc',
+            'txt',
+            'html',
+            'json',
           ]),
           size: faker.number.int({ min: 1024, max: 10485760 }), // 1KB to 10MB
           createdAt: faker.date.past(),
           updatedAt: faker.date.recent(),
           tags: Array.from(
             { length: faker.number.int({ min: 1, max: 4 }) },
-            () => faker.lorem.word()
+            () => faker.lorem.word(),
           ),
           isPublic: faker.datatype.boolean(),
           downloadCount: faker.number.int({ min: 0, max: 1000 }),
-        })
+        }),
       ),
     },
     settings: {
       privacy: {
         profileVisibility: faker.helpers.arrayElement([
-          "public",
-          "private",
-          "friends",
+          'public',
+          'private',
+          'friends',
         ]),
         showEmail: faker.datatype.boolean(),
         showPhone: faker.datatype.boolean(),
@@ -195,13 +195,13 @@ function makeMockJson() {
         sessionTimeout: faker.number.int({ min: 15, max: 480 }), // minutes
       },
       appearance: {
-        fontSize: faker.helpers.arrayElement(["small", "medium", "large"]),
-        colorScheme: faker.helpers.arrayElement(["light", "dark", "auto"]),
-        language: faker.helpers.arrayElement(["ko", "en", "ja", "zh"]),
+        fontSize: faker.helpers.arrayElement(['small', 'medium', 'large']),
+        colorScheme: faker.helpers.arrayElement(['light', 'dark', 'auto']),
+        language: faker.helpers.arrayElement(['ko', 'en', 'ja', 'zh']),
         dateFormat: faker.helpers.arrayElement([
-          "MM/DD/YYYY",
-          "DD/MM/YYYY",
-          "YYYY-MM-DD",
+          'MM/DD/YYYY',
+          'DD/MM/YYYY',
+          'YYYY-MM-DD',
         ]),
       },
     },
@@ -212,10 +212,10 @@ function makeMockResponseMessage(): ChatAnswer {
   const sourceCount = faker.number.int({ min: 1, max: 10 });
   const sources = Array.from({ length: sourceCount }, (_, index) => {
     const sourceType = faker.helpers.arrayElement([
-      "retrieval",
-      "api",
-      "chat",
-      "pim",
+      'retrieval',
+      'api',
+      'chat',
+      'pim',
     ] as const);
     const base = {
       sourceType,
@@ -233,46 +233,46 @@ function makeMockResponseMessage(): ChatAnswer {
         description: faker.lorem.paragraph(),
         keywords: Array.from(
           { length: faker.number.int({ min: 1, max: 5 }) },
-          () => faker.lorem.word()
+          () => faker.lorem.word(),
         ),
       },
     } as const;
 
     switch (sourceType) {
-      case "retrieval":
+      case 'retrieval':
         return {
           ...base,
-          sourceType: "retrieval" as const,
+          sourceType: 'retrieval' as const,
           chunkName: faker.system.fileName(),
-          previewFiles: ["/0430231ea47fe9e4f4797fee3ed8f8d7e5085cf6.png"],
+          previewFiles: ['/0430231ea47fe9e4f4797fee3ed8f8d7e5085cf6.png'],
           keywords: Array.from(
             { length: faker.number.int({ min: 1, max: 5 }) },
-            () => faker.lorem.word()
+            () => faker.lorem.word(),
           ),
         };
-      case "api":
+      case 'api':
         return {
           ...base,
-          sourceType: "api" as const,
+          sourceType: 'api' as const,
           specificFields: {
             endpoint: faker.internet.url(),
             method: faker.helpers.arrayElement([
-              "GET",
-              "POST",
-              "PUT",
-              "DELETE",
+              'GET',
+              'POST',
+              'PUT',
+              'DELETE',
             ]),
             status: String(faker.number.int({ min: 200, max: 599 })),
             json: makeMockJson(),
           },
         };
-      case "pim":
+      case 'pim':
         return {
           ...base,
-          sourceType: "pim" as const,
+          sourceType: 'pim' as const,
           keywords: Array.from(
             { length: faker.number.int({ min: 1, max: 6 }) },
-            () => faker.commerce.productAdjective()
+            () => faker.commerce.productAdjective(),
           ),
           additionalInfo: {
             updatedAt: faker.date.recent(),
@@ -283,13 +283,13 @@ function makeMockResponseMessage(): ChatAnswer {
             isSuperuser: faker.helpers.arrayElement([true, false]),
           },
         };
-      case "chat":
+      case 'chat':
         return {
           ...base,
-          sourceType: "chat" as const,
+          sourceType: 'chat' as const,
           context: Array.from(
             { length: faker.number.int({ min: 1, max: 4 }) },
-            () => faker.lorem.word()
+            () => faker.lorem.word(),
           ),
         };
     }
@@ -298,7 +298,7 @@ function makeMockResponseMessage(): ChatAnswer {
   return {
     chatId: faker.string.uuid(),
     message: faker.lorem.paragraph(),
-    role: "assistant",
+    role: 'assistant',
     intent: faker.lorem.sentence(),
     createdAt: new Date(),
     duration: faker.number.int({ min: 1000, max: 10000 }),
@@ -308,7 +308,7 @@ function makeMockResponseMessage(): ChatAnswer {
 
 export async function POST(request: Request) {
   const { message } = await request.json();
-  console.log("message::", message);
+  console.log('message::', message);
   await new Promise((resolve) => setTimeout(resolve, 3000));
   return NextResponse.json({ message: makeMockResponseMessage() });
 }

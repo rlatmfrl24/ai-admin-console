@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 /**
  * [인수인계 메모]
@@ -25,9 +25,9 @@ import {
   Popover,
   Switch,
   FormControlLabel,
-} from "@mui/material";
-import { AddCircle, Cached, FileUploadOutlined } from "@mui/icons-material";
-import { format } from "date-fns";
+} from '@mui/material';
+import { AddCircle, Cached, FileUploadOutlined } from '@mui/icons-material';
+import { format } from 'date-fns';
 import {
   useEffect,
   useMemo,
@@ -36,9 +36,9 @@ import {
   useCallback,
   type Dispatch,
   type SetStateAction,
-} from "react";
-import { faker } from "@faker-js/faker";
-import { alpha } from "@mui/material/styles";
+} from 'react';
+import { faker } from '@faker-js/faker';
+import { alpha } from '@mui/material/styles';
 import {
   DndContext,
   closestCenter,
@@ -47,43 +47,42 @@ import {
   useSensors,
   KeyboardSensor,
   type DragEndEvent,
-} from "@dnd-kit/core";
+} from '@dnd-kit/core';
 import {
   SortableContext,
   rectSortingStrategy,
   useSortable,
   arrayMove,
   sortableKeyboardCoordinates,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
-import MenuTree from "./components/MenuTree";
-import { getBsaMenuTree } from "./bsaUtil";
-import { ChunkCard } from "./components/ChunkCard";
+import MenuTree from './components/MenuTree';
+import { getBsaMenuTree } from './bsaUtil';
+import { ChunkCard } from './components/ChunkCard';
 import {
   AttachmentPreviewForDocument,
   AttachmentPreviewForUI,
-} from "./components/AttachmentPreview";
-import FilterChipMenu from "./components/FilterChipMenu";
+} from './components/AttachmentPreview';
+import FilterChipMenu from './components/FilterChipMenu';
 
 import type {
   BSAMenuTreeItemProps,
   BSATableProps,
   ChunkProps,
-} from "@/lib/types/bsa";
+} from '@/lib/types/bsa';
 
-import InputWithLabel from "@/components/common/Input";
-import { COLORS } from "@/lib/theme";
-import { useBSAStore } from "@/lib/store/bsaStore";
-import LeftPanelOpenIcon from "@/assets/icon-left-panel-open.svg";
-import LeftPanelCloseIcon from "@/assets/icon-left-panel-close.svg";
-import AIProcessIcon from "@/assets/icon-ai-process.svg";
-
+import InputWithLabel from '@/components/common/Input';
+import { COLORS } from '@/lib/theme';
+import { useBSAStore } from '@/lib/store/bsaStore';
+import LeftPanelOpenIcon from '@/assets/icon-left-panel-open.svg';
+import LeftPanelCloseIcon from '@/assets/icon-left-panel-close.svg';
+import AIProcessIcon from '@/assets/icon-ai-process.svg';
 
 function findIndexPath(
   nodes: BSAMenuTreeItemProps[],
   targetId: string,
-  acc: number[] = []
+  acc: number[] = [],
 ): number[] | null {
   for (const n of nodes) {
     const nextAcc = [...acc, n.index];
@@ -107,7 +106,7 @@ function isChunkChanged(chunk: ChunkProps, chunks: ChunkProps[]): boolean {
     return true;
   }
   return (chunk.attachedFile ?? []).some(
-    (a, i) => a.description !== (base.attachedFile ?? [])[i]?.description
+    (a, i) => a.description !== (base.attachedFile ?? [])[i]?.description,
   );
 }
 
@@ -138,7 +137,7 @@ export default function BSAChunkEdit({
   const [savedPreviewUrls, setSavedPreviewUrls] = useState<string[]>([]);
   const prevObjectUrlsRef = useRef<string[]>([]);
   const baseChunk = chunks.find(
-    (c) => c.progressId === selectedChunk?.progressId
+    (c) => c.progressId === selectedChunk?.progressId,
   );
   const [draftChunk, setDraftChunk] = useState<ChunkProps | null>(null);
   const flushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -157,7 +156,7 @@ export default function BSAChunkEdit({
   const filesSignature = useMemo(() => {
     return currentFiles
       .map((f) => `${f.name}:${f.size}:${f.lastModified}`)
-      .join("|");
+      .join('|');
   }, [currentFiles]);
 
   // Keep latest files in a ref to avoid effect dependency on array identity
@@ -215,23 +214,23 @@ export default function BSAChunkEdit({
   }, [selectedChunk]);
 
   const [filter, setFilter] = useState<string[]>([
-    "draft",
-    "in-progress",
-    "completed",
-    "done",
+    'draft',
+    'in-progress',
+    'completed',
+    'done',
   ]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const normalizedQuery = searchQuery.trim().toLowerCase();
   const [isMenuCollapsed, setIsMenuCollapsed] = useState(false);
   const [isDragMode, setIsDragMode] = useState(false);
   const [promptAnchorEl, setPromptAnchorEl] = useState<HTMLElement | null>(
-    null
+    null,
   );
   const isPromptOpen = Boolean(promptAnchorEl);
   const openPrompt = useCallback(
     (e: React.MouseEvent<HTMLElement>) =>
       setPromptAnchorEl(e.currentTarget as HTMLElement),
-    []
+    [],
   );
   const closePrompt = useCallback(() => setPromptAnchorEl(null), []);
   const visibleChunks =
@@ -240,7 +239,7 @@ export default function BSAChunkEdit({
       : chunks
           .filter((c) => filter.includes(c.status))
           .filter((c) => {
-            if (normalizedQuery === "") return true;
+            if (normalizedQuery === '') return true;
             return (
               c.title.toLowerCase().includes(normalizedQuery) ||
               c.progressId.toLowerCase().includes(normalizedQuery)
@@ -249,7 +248,9 @@ export default function BSAChunkEdit({
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
 
   // Keep selected grid to max 2 cols, collapse to 1 if too narrow
@@ -283,7 +284,7 @@ export default function BSAChunkEdit({
       if (oldIndex === -1 || newIndex === -1) return;
       setChunks(arrayMove(chunks, oldIndex, newIndex));
     },
-    [chunks, setChunks]
+    [chunks, setChunks],
   );
 
   function SortableChunkItem({ chunk }: { chunk: ChunkProps }) {
@@ -305,7 +306,7 @@ export default function BSAChunkEdit({
         <ChunkCard
           key={chunk.progressId}
           chunk={chunk}
-          showProgressId={!selectedData?.fileName.includes(".pdf")}
+          showProgressId={!selectedData?.fileName.includes('.pdf')}
           selected={selectedChunk?.progressId === chunk.progressId}
           onSelect={setSelectedChunk}
           onDelete={(c) => removeChunk(c.progressId)}
@@ -323,19 +324,19 @@ export default function BSAChunkEdit({
         aria-expanded={!isMenuCollapsed}
         borderRight={1}
         borderColor={COLORS.blueGrey[100]}
-        width={isMenuCollapsed ? "46px" : "264px"}
+        width={isMenuCollapsed ? '46px' : '264px'}
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
           minHeight: 0,
-          transition: "width 240ms ease-in-out",
-          willChange: "width",
+          transition: 'width 240ms ease-in-out',
+          willChange: 'width',
         }}
       >
         <Box
-          display={"flex"}
-          alignItems={"center"}
+          display={'flex'}
+          alignItems={'center'}
           gap={0.5}
           px={0.5}
           py={1}
@@ -345,8 +346,8 @@ export default function BSAChunkEdit({
           <IconButton
             aria-label={
               isMenuCollapsed
-                ? "Expand BSA Menu Tree"
-                : "Collapse BSA Menu Tree"
+                ? 'Expand BSA Menu Tree'
+                : 'Collapse BSA Menu Tree'
             }
             onClick={() => setIsMenuCollapsed((prev) => !prev)}
           >
@@ -357,12 +358,12 @@ export default function BSAChunkEdit({
             fontWeight={500}
             color="text.primary"
             sx={{
-              transition: "opacity 200ms ease, transform 200ms ease",
+              transition: 'opacity 200ms ease, transform 200ms ease',
               opacity: isMenuCollapsed ? 0 : 1,
-              transform: isMenuCollapsed ? "translateX(-4px)" : "none",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
+              transform: isMenuCollapsed ? 'translateX(-4px)' : 'none',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
             }}
           >
             Commercial
@@ -371,15 +372,15 @@ export default function BSAChunkEdit({
         <Box
           sx={{
             flex: 1,
-            width: "264px",
-            minWidth: "264px",
-            overflowY: "auto",
-            overflowX: "hidden",
-            transition: "opacity 200ms ease, transform 200ms ease",
-            willChange: "transform, opacity",
+            width: '264px',
+            minWidth: '264px',
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            transition: 'opacity 200ms ease, transform 200ms ease',
+            willChange: 'transform, opacity',
             opacity: isMenuCollapsed ? 0 : 1,
-            transform: isMenuCollapsed ? "translateX(-218px)" : "none",
-            pointerEvents: isMenuCollapsed ? "none" : "auto",
+            transform: isMenuCollapsed ? 'translateX(-218px)' : 'none',
+            pointerEvents: isMenuCollapsed ? 'none' : 'auto',
           }}
           aria-hidden={isMenuCollapsed}
         >
@@ -393,30 +394,30 @@ export default function BSAChunkEdit({
       </Box>
       <Box
         flexGrow={selectedChunk ? 3 : 1}
-        flexBasis={selectedChunk ? 0 : "auto"}
+        flexBasis={selectedChunk ? 0 : 'auto'}
         p={2}
         borderRight={selectedChunk ? 1 : 0}
         borderColor={COLORS.blueGrey[100]}
         sx={{
-          overflow: "auto",
+          overflow: 'auto',
           minHeight: 0,
-          minWidth: "184px",
+          minWidth: '184px',
         }}
       >
         <Box
-          display={"flex"}
-          alignItems={"center"}
+          display={'flex'}
+          alignItems={'center'}
           gap={0.5}
-          justifyContent={"space-between"}
+          justifyContent={'space-between'}
         >
           <Typography fontSize={14} fontWeight={500} color="text.primary">
-            {findIndexPath(BSA_MENU_TREE, selectedTreeItem?.id ?? "")?.join(
-              "."
+            {findIndexPath(BSA_MENU_TREE, selectedTreeItem?.id ?? '')?.join(
+              '.',
             ) +
-              ". " +
+              '. ' +
               selectedTreeItem?.label}
           </Typography>
-          <Box display={"flex"} alignItems={"center"} gap={0.5}>
+          <Box display={'flex'} alignItems={'center'} gap={0.5}>
             <FormControlLabel
               control={
                 <Switch
@@ -428,10 +429,10 @@ export default function BSAChunkEdit({
               label="Drag & Drop"
               sx={{
                 mr: 0,
-                "& .MuiFormControlLabel-label": {
+                '& .MuiFormControlLabel-label': {
                   fontSize: 12,
                   fontWeight: 500,
-                  color: "text.primary",
+                  color: 'text.primary',
                 },
               }}
             />
@@ -452,35 +453,35 @@ export default function BSAChunkEdit({
         </Box>
         <Box
           mt={1.5}
-          display={"grid"}
+          display={'grid'}
           gap={1.5}
           aria-label="Chunks"
           ref={selectedGridRef}
           sx={{
             gridTemplateColumns: selectedChunk
               ? `repeat(${selectedGridCols}, minmax(0, 1fr))`
-              : "repeat(auto-fit, minmax(252px, 1fr))",
+              : 'repeat(auto-fit, minmax(252px, 1fr))',
           }}
         >
           <Box
-            display={"flex"}
-            flexDirection={"column"}
+            display={'flex'}
+            flexDirection={'column'}
             sx={{
-              border: "2px dashed",
+              border: '2px dashed',
               borderColor: COLORS.blueGrey[100],
               borderRadius: 2,
-              cursor: "pointer",
+              cursor: 'pointer',
             }}
             minHeight={80}
-            justifyContent={"center"}
-            alignItems={"center"}
+            justifyContent={'center'}
+            alignItems={'center'}
             gap={0.5}
             onClick={() => {
               const now = new Date();
               const newChunk: ChunkProps = {
-                title: "",
-                content: "",
-                status: "draft",
+                title: '',
+                content: '',
+                status: 'draft',
                 progressId: faker.string.numeric(4),
                 attachedFile: [],
                 embeddingAt: null,
@@ -492,7 +493,7 @@ export default function BSAChunkEdit({
               setSelectedChunk(newChunk);
             }}
           >
-            <AddCircle sx={{ color: "primary.main" }} />
+            <AddCircle sx={{ color: 'primary.main' }} />
             <Typography fontSize={14} fontWeight={500} color="primary.main">
               New Chunk
             </Typography>
@@ -517,7 +518,7 @@ export default function BSAChunkEdit({
               <ChunkCard
                 key={chunk.progressId}
                 chunk={chunk}
-                showProgressId={!selectedData?.fileName.includes(".pdf")}
+                showProgressId={!selectedData?.fileName.includes('.pdf')}
                 selected={selectedChunk?.progressId === chunk.progressId}
                 onSelect={setSelectedChunk}
                 onDelete={(c) => removeChunk(c.progressId)}
@@ -531,16 +532,16 @@ export default function BSAChunkEdit({
           /* 편집 화면: 청크 리스트 대비 비율(예: 70%)로 공간 차지 */
           flexGrow={7}
           flexBasis={0}
-          display={"flex"}
+          display={'flex'}
           p={2}
           gap={2}
           sx={{ minHeight: 0 }}
         >
-          <Box flex={1} display={"flex"} flexDirection={"column"} gap={1}>
+          <Box flex={1} display={'flex'} flexDirection={'column'} gap={1}>
             <Box
-              display={"flex"}
-              justifyContent={"space-between"}
-              alignItems={"center"}
+              display={'flex'}
+              justifyContent={'space-between'}
+              alignItems={'center'}
             >
               <Typography fontSize={14} fontWeight={500} color="text.primary">
                 Edit Data
@@ -548,24 +549,24 @@ export default function BSAChunkEdit({
               <Box>
                 <Box
                   onClick={openPrompt}
-                  display={"flex"}
-                  alignItems={"center"}
+                  display={'flex'}
+                  alignItems={'center'}
                   gap={0.5}
                   px={1.5}
                   py={0.5}
                   sx={{
-                    border: "1px solid transparent",
-                    borderRadius: "6px",
+                    border: '1px solid transparent',
+                    borderRadius: '6px',
                     background: `linear-gradient(${alpha(
                       COLORS.primary.states.focus,
-                      isPromptOpen ? 0.12 : 0
+                      isPromptOpen ? 0.12 : 0,
                     )}, ${alpha(
                       COLORS.primary.states.focus,
-                      isPromptOpen ? 0.12 : 0
+                      isPromptOpen ? 0.12 : 0,
                     )}) padding-box, linear-gradient(${COLORS.common.white}, ${
                       COLORS.common.white
                     }) padding-box, ${COLORS.gradient.secondary} border-box`,
-                    cursor: "pointer",
+                    cursor: 'pointer',
                   }}
                 >
                   <AIProcessIcon />
@@ -574,8 +575,8 @@ export default function BSAChunkEdit({
                     fontWeight={500}
                     sx={{
                       background: COLORS.gradient.secondary,
-                      backgroundClip: "text",
-                      textFillColor: "transparent",
+                      backgroundClip: 'text',
+                      textFillColor: 'transparent',
                     }}
                   >
                     PROMPT
@@ -585,28 +586,28 @@ export default function BSAChunkEdit({
                   open={isPromptOpen}
                   anchorEl={promptAnchorEl}
                   onClose={closePrompt}
-                  anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-                  transformOrigin={{ vertical: "top", horizontal: "left" }}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                  transformOrigin={{ vertical: 'top', horizontal: 'left' }}
                   sx={{ zIndex: 2100 }}
                   slotProps={{
                     paper: {
                       elevation: 1,
                       sx: {
-                        width: "560px",
+                        width: '560px',
                         border: 1,
                         borderColor: COLORS.blueGrey[100],
                         borderRadius: 2,
                         bgcolor: COLORS.common.white,
-                        overflow: "visible",
+                        overflow: 'visible',
                       },
                     },
                   }}
                 >
                   <Box
-                    display={"flex"}
-                    alignItems={"center"}
+                    display={'flex'}
+                    alignItems={'center'}
                     gap={0.5}
-                    p={"12px 16px 8px 16px"}
+                    p={'12px 16px 8px 16px'}
                   >
                     <AIProcessIcon />
                     <Typography
@@ -614,8 +615,8 @@ export default function BSAChunkEdit({
                       fontWeight={500}
                       sx={{
                         background: COLORS.gradient.secondary,
-                        backgroundClip: "text",
-                        textFillColor: "transparent",
+                        backgroundClip: 'text',
+                        textFillColor: 'transparent',
                       }}
                     >
                       Prompt
@@ -627,12 +628,12 @@ export default function BSAChunkEdit({
                     borderColor={COLORS.blueGrey[100]}
                     p={2}
                     gap={1.5}
-                    display={"flex"}
-                    flexDirection={"column"}
+                    display={'flex'}
+                    flexDirection={'column'}
                   >
                     <Box
-                      display={"flex"}
-                      flexDirection={"column"}
+                      display={'flex'}
+                      flexDirection={'column'}
                       p={2}
                       fontSize={14}
                       fontWeight={500}
@@ -647,28 +648,28 @@ export default function BSAChunkEdit({
                       <p>semantic_summary</p>
                       <p>semantic_chunk</p>
                     </Box>
-                    <Box display={"flex"} flexDirection={"column"}>
+                    <Box display={'flex'} flexDirection={'column'}>
                       <Typography
                         variant="caption"
-                        color={"text.primary"}
+                        color={'text.primary'}
                         lineHeight={1.3}
                         fontWeight={500}
-                        m={"2px"}
+                        m={'2px'}
                       >
                         Add Prompt
                       </Typography>
                       <TextField
                         placeholder="추가로 원하는 프롬프트를 유저별로 입력"
                         sx={{
-                          "& .MuiInputBase-root": {
-                            padding: "6px 12px",
+                          '& .MuiInputBase-root': {
+                            padding: '6px 12px',
                           },
-                          "& .MuiOutlinedInput-root": {
-                            height: "100%",
-                            display: "flex",
-                            alignItems: "center",
-                            fontSize: "13px",
-                            backgroundColor: "white",
+                          '& .MuiOutlinedInput-root': {
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            fontSize: '13px',
+                            backgroundColor: 'white',
                           },
                         }}
                         multiline
@@ -677,17 +678,17 @@ export default function BSAChunkEdit({
                     </Box>
                   </Box>
                   <Box
-                    display={"flex"}
+                    display={'flex'}
                     gap={1}
-                    justifyContent={"end"}
-                    p={"8px 16px"}
+                    justifyContent={'end'}
+                    p={'8px 16px'}
                   >
                     <Button
                       variant="outlined"
                       size="small"
                       sx={{
-                        color: "text.primary",
-                        borderColor: "text.primary",
+                        color: 'text.primary',
+                        borderColor: 'text.primary',
                       }}
                       onClick={closePrompt}
                     >
@@ -707,27 +708,27 @@ export default function BSAChunkEdit({
             <Box
               flex={1}
               border={2}
-              borderColor={"primary.main"}
+              borderColor={'primary.main'}
               borderRadius={2}
-              display={"flex"}
-              flexDirection={"column"}
+              display={'flex'}
+              flexDirection={'column'}
               sx={{ minHeight: 0 }}
             >
               <Box
                 flex={1}
-                display={"flex"}
-                flexDirection={"column"}
+                display={'flex'}
+                flexDirection={'column'}
                 gap={2}
                 p={1.5}
                 sx={{
-                  borderRadius: "8px 8px 0px 0px",
-                  background: "linear-gradient(180deg, #FFF 0%, #F7F6FF 100%)",
-                  overflow: "auto",
+                  borderRadius: '8px 8px 0px 0px',
+                  background: 'linear-gradient(180deg, #FFF 0%, #F7F6FF 100%)',
+                  overflow: 'auto',
                 }}
               >
                 <InputWithLabel
                   label="Title"
-                  value={draftChunk?.title ?? ""}
+                  value={draftChunk?.title ?? ''}
                   onChange={(e) => {
                     if (!draftChunk) return;
                     const next = {
@@ -738,35 +739,35 @@ export default function BSAChunkEdit({
                     scheduleFlush(next);
                   }}
                 />
-                {selectedData?.fileName.includes(".pdf") && (
+                {selectedData?.fileName.includes('.pdf') && (
                   <InputWithLabel
                     label="Program ID"
-                    value={draftChunk?.progressId ?? ""}
+                    value={draftChunk?.progressId ?? ''}
                     disabled
                   />
                 )}
-                <Box display={"flex"} flexDirection={"column"}>
+                <Box display={'flex'} flexDirection={'column'}>
                   <Typography
                     variant="caption"
-                    color={"text.primary"}
+                    color={'text.primary'}
                     lineHeight={1.3}
                     fontWeight={500}
-                    m={"2px"}
+                    m={'2px'}
                   >
                     Content
                   </Typography>
                   <TextField
-                    value={draftChunk?.content ?? ""}
+                    value={draftChunk?.content ?? ''}
                     sx={{
-                      "& .MuiInputBase-root": {
-                        padding: "6px 12px",
+                      '& .MuiInputBase-root': {
+                        padding: '6px 12px',
                       },
-                      "& .MuiOutlinedInput-root": {
-                        height: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        fontSize: "13px",
-                        backgroundColor: "white",
+                      '& .MuiOutlinedInput-root': {
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        fontSize: '13px',
+                        backgroundColor: 'white',
                       },
                     }}
                     onChange={(e) => {
@@ -788,10 +789,10 @@ export default function BSAChunkEdit({
                   sx={{
                     fontSize: 14,
                     lineHeight: 1.4,
-                    width: "fit-content",
-                    textTransform: "none",
-                    color: "text.primary",
-                    borderColor: "text.primary",
+                    width: 'fit-content',
+                    textTransform: 'none',
+                    color: 'text.primary',
+                    borderColor: 'text.primary',
                   }}
                   onClick={() => fileInputRef.current?.click()}
                 >
@@ -808,7 +809,7 @@ export default function BSAChunkEdit({
                     if (!files.length || !draftChunk) return;
                     const newAttachments = files.map((file) => ({
                       file,
-                      description: "",
+                      description: '',
                     }));
                     const updated: ChunkProps = {
                       ...draftChunk,
@@ -819,20 +820,20 @@ export default function BSAChunkEdit({
                     };
                     setDraftChunk(updated);
                     scheduleFlush(updated);
-                    e.currentTarget.value = "";
+                    e.currentTarget.value = '';
                   }}
                 />
                 {previewUrls.length > 0 && (
-                  <Box gap={1} display={"flex"} flexDirection={"column"}>
+                  <Box gap={1} display={'flex'} flexDirection={'column'}>
                     {previewUrls.map((url, idx) =>
-                      selectedData?.fileName.includes(".pdf") ? (
+                      selectedData?.fileName.includes('.pdf') ? (
                         <AttachmentPreviewForDocument
                           key={`attachment-edit-${idx}`}
                           url={url}
                           index={idx}
                           mode="edit"
                           description={
-                            draftChunk?.attachedFile?.[idx]?.description ?? ""
+                            draftChunk?.attachedFile?.[idx]?.description ?? ''
                           }
                           fileName={draftChunk?.attachedFile?.[idx]?.file?.name}
                           onChangeDescription={(value) => {
@@ -841,7 +842,7 @@ export default function BSAChunkEdit({
                               ...draftChunk,
                               attachedFile: (draftChunk.attachedFile ?? []).map(
                                 (a, i) =>
-                                  i === idx ? { ...a, description: value } : a
+                                  i === idx ? { ...a, description: value } : a,
                               ),
                             };
                             setDraftChunk(updated);
@@ -866,7 +867,7 @@ export default function BSAChunkEdit({
                           index={idx}
                           mode="edit"
                           description={
-                            draftChunk?.attachedFile?.[idx]?.description ?? ""
+                            draftChunk?.attachedFile?.[idx]?.description ?? ''
                           }
                           fileName={draftChunk?.attachedFile?.[idx]?.file?.name}
                           onRemove={() => {
@@ -881,15 +882,15 @@ export default function BSAChunkEdit({
                             scheduleFlush(updated);
                           }}
                         />
-                      )
+                      ),
                     )}
                   </Box>
                 )}
               </Box>
               <Box
-                display={"flex"}
-                justifyContent={"space-between"}
-                alignItems={"center"}
+                display={'flex'}
+                justifyContent={'space-between'}
+                alignItems={'center'}
                 px={2}
                 py={1}
               >
@@ -897,14 +898,14 @@ export default function BSAChunkEdit({
                   fontSize={12}
                   fontWeight={400}
                   color={COLORS.blueGrey[200]}
-                  display={"flex"}
-                  alignItems={"center"}
+                  display={'flex'}
+                  alignItems={'center'}
                   gap={0.5}
                 >
                   <Cached sx={{ fontSize: 16 }} />
                   {selectedChunk.updatedAt
-                    ? format(selectedChunk.updatedAt, "yyyy-MM-dd HH:mm:ss")
-                    : ""}
+                    ? format(selectedChunk.updatedAt, 'yyyy-MM-dd HH:mm:ss')
+                    : ''}
                 </Typography>
                 <Button
                   size="small"
@@ -932,15 +933,15 @@ export default function BSAChunkEdit({
           {!selectedChunk.isNew && (
             <Box
               flex={1}
-              display={"flex"}
-              flexDirection={"column"}
+              display={'flex'}
+              flexDirection={'column'}
               gap={1}
               sx={{ minHeight: 0 }}
             >
               <Box
-                display={"flex"}
-                justifyContent={"space-between"}
-                alignItems={"center"}
+                display={'flex'}
+                justifyContent={'space-between'}
+                alignItems={'center'}
               >
                 <Typography fontSize={14} fontWeight={500} color="text.primary">
                   Current Data
@@ -949,54 +950,54 @@ export default function BSAChunkEdit({
                   fontSize={12}
                   fontWeight={400}
                   color={COLORS.blueGrey[200]}
-                  display={"flex"}
-                  alignItems={"center"}
+                  display={'flex'}
+                  alignItems={'center'}
                   gap={0.5}
                 >
                   <Cached sx={{ fontSize: 16 }} />
                   {selectedChunk.embeddingAt
-                    ? format(selectedChunk.embeddingAt, "yyyy-MM-dd HH:mm:ss")
-                    : ""}
+                    ? format(selectedChunk.embeddingAt, 'yyyy-MM-dd HH:mm:ss')
+                    : ''}
                 </Typography>
               </Box>
               <Box
                 flex={1}
                 bgcolor={COLORS.grey[100]}
                 borderRadius={2}
-                display={"flex"}
-                flexDirection={"column"}
+                display={'flex'}
+                flexDirection={'column'}
                 px={2}
                 py={1.5}
                 gap={1}
-                sx={{ overflow: "auto" }}
+                sx={{ overflow: 'auto' }}
               >
                 <Typography fontSize={14} fontWeight={500} color="text.primary">
                   {
                     chunks.find(
-                      (c) => c.progressId === selectedChunk.progressId
+                      (c) => c.progressId === selectedChunk.progressId,
                     )?.title
                   }
                 </Typography>
                 <Typography
                   fontSize={12}
                   fontWeight={400}
-                  whiteSpace={"pre-line"}
+                  whiteSpace={'pre-line'}
                 >
                   {
                     chunks.find(
-                      (c) => c.progressId === selectedChunk.progressId
+                      (c) => c.progressId === selectedChunk.progressId,
                     )?.content
                   }
                 </Typography>
                 {savedPreviewUrls.length > 0 && (
                   <Box
                     gap={1}
-                    display={"flex"}
-                    flexDirection={"column"}
+                    display={'flex'}
+                    flexDirection={'column'}
                     mt={0.5}
                   >
                     {savedPreviewUrls.map((url, idx) =>
-                      selectedData?.fileName.includes(".pdf") ? (
+                      selectedData?.fileName.includes('.pdf') ? (
                         <AttachmentPreviewForDocument
                           key={`saved-${url}-${idx}`}
                           url={url}
@@ -1004,17 +1005,17 @@ export default function BSAChunkEdit({
                           mode="read"
                           description={
                             chunks.find(
-                              (c) => c.progressId === selectedChunk.progressId
-                            )?.attachedFile?.[idx]?.description ?? ""
+                              (c) => c.progressId === selectedChunk.progressId,
+                            )?.attachedFile?.[idx]?.description ?? ''
                           }
                           fileName={
                             chunks.find(
-                              (c) => c.progressId === selectedChunk.progressId
+                              (c) => c.progressId === selectedChunk.progressId,
                             )?.attachedFile?.[idx]?.file instanceof File
                               ? (
                                   chunks.find(
                                     (c) =>
-                                      c.progressId === selectedChunk.progressId
+                                      c.progressId === selectedChunk.progressId,
                                   )?.attachedFile?.[idx]?.file as File
                                 ).name
                               : undefined
@@ -1027,18 +1028,18 @@ export default function BSAChunkEdit({
                           index={idx}
                           fileName={
                             chunks.find(
-                              (c) => c.progressId === selectedChunk.progressId
+                              (c) => c.progressId === selectedChunk.progressId,
                             )?.attachedFile?.[idx]?.file instanceof File
                               ? (
                                   chunks.find(
                                     (c) =>
-                                      c.progressId === selectedChunk.progressId
+                                      c.progressId === selectedChunk.progressId,
                                   )?.attachedFile?.[idx]?.file as File
                                 ).name
                               : undefined
                           }
                         />
-                      )
+                      ),
                     )}
                   </Box>
                 )}
@@ -1047,12 +1048,12 @@ export default function BSAChunkEdit({
           )}
         </Box>
       )}
-      <Portal container={() => document.getElementById("knowledge-footer")}>
+      <Portal container={() => document.getElementById('knowledge-footer')}>
         {selectedChunk ? (
           <Box
-            display={"flex"}
-            justifyContent={"flex-end"}
-            alignItems={"center"}
+            display={'flex'}
+            justifyContent={'flex-end'}
+            alignItems={'center'}
             bgcolor="white"
             px={2}
             py={1}

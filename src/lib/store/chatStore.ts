@@ -1,10 +1,10 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
-import { ChatMessage, Thread, ChatAnswer, AnswerSource } from "../types/chat";
+import { ChatMessage, Thread, ChatAnswer, AnswerSource } from '../types/chat';
 
 type SearchMatch = {
   chatId: string;
-  section: "body" | "source-title" | "source-content";
+  section: 'body' | 'source-title' | 'source-content';
   sourceKey?: string; // `${sourceType}:${sourceId}` when section starts with 'source-'
   occurrence: number; // 1-based occurrence within the section text
 };
@@ -45,11 +45,11 @@ interface ChatStoreState {
 
   // Selection state
   selectedAnswer: ChatAnswer | null;
-  selectedSourceTypes: AnswerSource["sourceType"][];
+  selectedSourceTypes: AnswerSource['sourceType'][];
   setSelectedAnswer: (answer: ChatAnswer | null) => void;
-  toggleSelectedSourceType: (type: AnswerSource["sourceType"]) => void;
-  setSelectedSourceTypes: (types: AnswerSource["sourceType"][]) => void;
-  selectOnlySourceType: (type: AnswerSource["sourceType"]) => void;
+  toggleSelectedSourceType: (type: AnswerSource['sourceType']) => void;
+  setSelectedSourceTypes: (types: AnswerSource['sourceType'][]) => void;
+  selectOnlySourceType: (type: AnswerSource['sourceType']) => void;
 
   // JSON Viewer state
   isJsonViewerOpen: boolean;
@@ -71,7 +71,7 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
   selectedSourceTypes: [],
   isJsonViewerOpen: false,
   jsonViewerData: null,
-  searchQuery: "",
+  searchQuery: '',
   searchCaseSensitive: false,
   searchUseRegex: false,
   searchMatches: [],
@@ -83,7 +83,7 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
     return threadHistory.find((t) => t.threadId === currentThreadId) || null;
   },
 
-  createThread: (name = "New Chat", description = "") => {
+  createThread: (name = 'New Chat', description = '') => {
     const now = new Date();
     const threadId = generateThreadId();
     const newThread: Thread = {
@@ -120,14 +120,14 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
   renameThread: (threadId: string, name: string) =>
     set((state) => ({
       threadHistory: state.threadHistory.map((t) =>
-        t.threadId === threadId ? { ...t, name, updatedAt: new Date() } : t
+        t.threadId === threadId ? { ...t, name, updatedAt: new Date() } : t,
       ),
     })),
 
   removeThread: (threadId: string) =>
     set((state) => {
       const filtered = state.threadHistory.filter(
-        (t) => t.threadId !== threadId
+        (t) => t.threadId !== threadId,
       );
       const isRemovingCurrent = state.currentThreadId === threadId;
       return {
@@ -163,8 +163,8 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
         const now = new Date();
         const bootstrapThread: Thread = {
           threadId: newId,
-          name: "New Chat",
-          description: "",
+          name: 'New Chat',
+          description: '',
           createdAt: now,
           updatedAt: now,
           messages: [],
@@ -176,7 +176,7 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
       const updatedHistory = threadHistory.map((t) =>
         t.threadId === currentThreadId
           ? { ...t, messages: [...t.messages, message], updatedAt: new Date() }
-          : t
+          : t,
       );
 
       return {
@@ -209,7 +209,7 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
   setSelectedAnswer: (answer: ChatAnswer | null) =>
     set(() => ({ selectedAnswer: answer })),
 
-  toggleSelectedSourceType: (type: AnswerSource["sourceType"]) =>
+  toggleSelectedSourceType: (type: AnswerSource['sourceType']) =>
     set((state) => {
       const hasType = state.selectedSourceTypes.includes(type);
       return {
@@ -219,10 +219,10 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
       };
     }),
 
-  setSelectedSourceTypes: (types: AnswerSource["sourceType"][]) =>
+  setSelectedSourceTypes: (types: AnswerSource['sourceType'][]) =>
     set(() => ({ selectedSourceTypes: Array.from(new Set(types)) })),
 
-  selectOnlySourceType: (type: AnswerSource["sourceType"]) =>
+  selectOnlySourceType: (type: AnswerSource['sourceType']) =>
     set(() => ({ selectedSourceTypes: [type] })),
 
   openJsonViewer: (data: string) =>

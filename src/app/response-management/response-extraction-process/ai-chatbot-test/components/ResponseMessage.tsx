@@ -1,28 +1,27 @@
-"use client";
+'use client';
 
-import { Box, Divider, Paper, Typography } from "@mui/material";
-import { format } from "date-fns";
-import { AccessTime, ChevronRight } from "@mui/icons-material";
-import React, { memo, useCallback, useMemo } from "react";
-import { useStore } from "zustand";
+import { Box, Divider, Paper, Typography } from '@mui/material';
+import { format } from 'date-fns';
+import { AccessTime, ChevronRight } from '@mui/icons-material';
+import React, { memo, useCallback, useMemo } from 'react';
+import { useStore } from 'zustand';
 
-import { AgentChip } from "./Chips";
+import { AgentChip } from './Chips';
 
-import { AnswerSource, ChatAnswer } from "@/lib/types/chat";
-import { COLORS } from "@/lib/theme";
-import RetrievalIcon from "@/assets/icon-agent-retrieval.svg";
-import PimIcon from "@/assets/icon-agent-pim.svg";
-import ApiIcon from "@/assets/icon-agent-api.svg";
-import ChatIcon from "@/assets/icon-agent-chat.svg";
-import AIProfileIcon from "@/assets/icon-ai-profile.svg";
-import { useChatStore } from "@/lib/store/chatStore";
-import { renderHighlightedText } from "@/lib/utils/highlight";
-
+import { AnswerSource, ChatAnswer } from '@/lib/types/chat';
+import { COLORS } from '@/lib/theme';
+import RetrievalIcon from '@/assets/icon-agent-retrieval.svg';
+import PimIcon from '@/assets/icon-agent-pim.svg';
+import ApiIcon from '@/assets/icon-agent-api.svg';
+import ChatIcon from '@/assets/icon-agent-chat.svg';
+import AIProfileIcon from '@/assets/icon-ai-profile.svg';
+import { useChatStore } from '@/lib/store/chatStore';
+import { renderHighlightedText } from '@/lib/utils/highlight';
 
 function formatDuration(duration: number) {
   const seconds = Math.floor(duration / 1000);
   const milliseconds = duration % 1000;
-  return `${seconds}.${milliseconds.toString().padStart(3, "0")}s`;
+  return `${seconds}.${milliseconds.toString().padStart(3, '0')}s`;
 }
 
 export default function ResponseMessage({ message }: { message: ChatAnswer }) {
@@ -33,18 +32,18 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
   const currentIndex = useStore(useChatStore, (s) => s.searchCurrentMatchIndex);
   const selectOnlySourceType = useStore(
     useChatStore,
-    (s) => s.selectOnlySourceType
+    (s) => s.selectOnlySourceType,
   );
   const setSelectedSourceTypes = useStore(
     useChatStore,
-    (s) => s.setSelectedSourceTypes
+    (s) => s.setSelectedSourceTypes,
   );
 
   const active = matches[currentIndex];
   const chatId = message.chatId;
   const sources = useMemo(() => message.sources ?? [], [message.sources]);
   const activeOccurrenceGlobal = useMemo(() => {
-    if (!active || active.chatId !== chatId || active.section !== "body")
+    if (!active || active.chatId !== chatId || active.section !== 'body')
       return undefined;
     return active.occurrence;
   }, [active, chatId]);
@@ -62,7 +61,7 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
 
   const allSourceTypes = useMemo(
     () => Array.from(new Set(sources.map((s) => s.sourceType))),
-    [sources]
+    [sources],
   );
 
   const AgentChips = useMemo(() => {
@@ -80,26 +79,26 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
   }, [setSelectedAnswer, setSelectedSourceTypes, message, allSourceTypes]);
 
   const handleSelectSourceType = useCallback(
-    (type: AnswerSource["sourceType"]) => {
+    (type: AnswerSource['sourceType']) => {
       // 소스 클릭 시에도 답변과 소스 타입 선택이 함께 반영되도록 처리
       setSelectedAnswer(message);
       selectOnlySourceType(type);
     },
-    [message, setSelectedAnswer, selectOnlySourceType]
+    [message, setSelectedAnswer, selectOnlySourceType],
   );
 
   return (
     <Box
       aria-label="response-message"
-      width={"fit-content"}
-      alignSelf={"flex-start"}
-      display={"flex"}
-      alignItems={"flex-end"}
+      width={'fit-content'}
+      alignSelf={'flex-start'}
+      display={'flex'}
+      alignItems={'flex-end'}
       gap={1.5}
     >
       <AIProfileIcon
         style={{
-          alignSelf: "flex-start",
+          alignSelf: 'flex-start',
           marginTop: 8,
           flexShrink: 0,
           minWidth: 32,
@@ -115,41 +114,41 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
           lineHeight: 1.4,
           borderRadius: 1.5,
           border:
-            selectedAnswer?.chatId === message.chatId ? "2px solid" : "none",
+            selectedAnswer?.chatId === message.chatId ? '2px solid' : 'none',
           borderColor: COLORS.primary.main,
         }}
         elevation={2}
         onClick={handleSelectAnswer}
       >
         <Box
-          display={"flex"}
-          flexDirection={"column"}
+          display={'flex'}
+          flexDirection={'column'}
           gap={1}
           p={2}
           border={1}
           borderColor={COLORS.blueGrey[50]}
           borderRadius={1}
         >
-          <Box display={"flex"} alignItems={"center"} gap={0.5}>
+          <Box display={'flex'} alignItems={'center'} gap={0.5}>
             <Typography fontSize={12} color={COLORS.blueGrey[300]} width={48}>
               Intent
             </Typography>
             <Typography fontSize={12}>{message?.intent}</Typography>
           </Box>
-          <Box display={"flex"} alignItems={"center"} gap={0.5}>
+          <Box display={'flex'} alignItems={'center'} gap={0.5}>
             <Typography fontSize={12} color={COLORS.blueGrey[300]} width={48}>
               Agent
             </Typography>
             {AgentChips.map((chip) => (
               <AgentChip
                 key={chip.type}
-                type={chip.type as "api" | "pim" | "retrieval" | "chat"}
+                type={chip.type as 'api' | 'pim' | 'retrieval' | 'chat'}
                 count={chip.count}
               />
             ))}
           </Box>
-          <Box display={"flex"} alignItems={"center"} gap={1.5}>
-            <Box display={"flex"} alignItems={"center"} gap={0.5}>
+          <Box display={'flex'} alignItems={'center'} gap={1.5}>
+            <Box display={'flex'} alignItems={'center'} gap={0.5}>
               <Typography fontSize={12} color={COLORS.blueGrey[300]} width={48}>
                 Duration
               </Typography>
@@ -158,7 +157,7 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
               </Typography>
             </Box>
             <Divider orientation="vertical" sx={{ height: 12 }} />
-            <Box display={"flex"} alignItems={"center"} gap={1}>
+            <Box display={'flex'} alignItems={'center'} gap={1}>
               <Typography fontSize={12} color={COLORS.blueGrey[300]}>
                 Source
               </Typography>
@@ -168,7 +167,7 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
         </Box>
         <Box ml={0.5} mt={1.5}>
           <Typography fontSize={14}>
-            {renderHighlightedText((message?.message as string) ?? "", query, {
+            {renderHighlightedText((message?.message as string) ?? '', query, {
               activeOccurrence: activeOccurrenceGlobal,
             })}
           </Typography>
@@ -179,13 +178,13 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
             const activeTitleOccurrence =
               activeForThisMessage &&
               activeForThisMessage.sourceKey === sourceKey &&
-              activeForThisMessage.section === "source-title"
+              activeForThisMessage.section === 'source-title'
                 ? activeForThisMessage.occurrence
                 : undefined;
             const activeContentOccurrence =
               activeForThisMessage &&
               activeForThisMessage.sourceKey === sourceKey &&
-              activeForThisMessage.section === "source-content"
+              activeForThisMessage.section === 'source-content'
                 ? activeForThisMessage.occurrence
                 : undefined;
 
@@ -208,7 +207,7 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
                     px={1}
                     py={0.5}
                     lineHeight={1}
-                    width={"fit-content"}
+                    width={'fit-content'}
                     mt={1}
                   >
                     {`출처: ${source.originSource}`}
@@ -223,13 +222,13 @@ export default function ResponseMessage({ message }: { message: ChatAnswer }) {
         fontSize={12}
         fontWeight={400}
         color={COLORS.blueGrey[300]}
-        display={"flex"}
-        alignItems={"center"}
+        display={'flex'}
+        alignItems={'center'}
         gap={0.5}
         mb={0.5}
       >
         <AccessTime sx={{ fontSize: 12 }} />
-        {format(message?.createdAt, "HH:mm:ss")}
+        {format(message?.createdAt, 'HH:mm:ss')}
       </Typography>
     </Box>
   );
@@ -246,17 +245,17 @@ const SourceMessage = memo(function SourceMessage({
   query: string;
   activeTitleOccurrence?: number;
   activeContentOccurrence?: number;
-  onSelectSourceType: (type: AnswerSource["sourceType"]) => void;
+  onSelectSourceType: (type: AnswerSource['sourceType']) => void;
 }) {
   const Icon = useMemo(() => {
     switch (source.sourceType) {
-      case "retrieval":
+      case 'retrieval':
         return RetrievalIcon;
-      case "pim":
+      case 'pim':
         return PimIcon;
-      case "api":
+      case 'api':
         return ApiIcon;
-      case "chat":
+      case 'chat':
         return ChatIcon;
       default:
         return RetrievalIcon;
@@ -268,26 +267,26 @@ const SourceMessage = memo(function SourceMessage({
       e.stopPropagation();
       onSelectSourceType(source.sourceType);
     },
-    [onSelectSourceType, source.sourceType]
+    [onSelectSourceType, source.sourceType],
   );
 
   return (
     <Box
       sx={{
-        cursor: "pointer",
+        cursor: 'pointer',
       }}
       onClick={handleClick}
     >
-      <Box display={"flex"} alignItems={"center"} gap={0.5}>
+      <Box display={'flex'} alignItems={'center'} gap={0.5}>
         <Box
           bgcolor={COLORS.agent[source.sourceType].background}
           borderRadius={99}
           p={0.5}
           width={24}
           height={24}
-          display={"flex"}
-          alignItems={"center"}
-          justifyContent={"center"}
+          display={'flex'}
+          alignItems={'center'}
+          justifyContent={'center'}
           gap={1}
         >
           <Icon />
@@ -312,7 +311,7 @@ const SourceMessage = memo(function SourceMessage({
       <Typography
         fontSize={14}
         color={COLORS.blueGrey[900]}
-        whiteSpace={"pre-wrap"}
+        whiteSpace={'pre-wrap'}
         mt={1}
       >
         {renderHighlightedText(source.sourceMessage.content, query, {

@@ -2,7 +2,7 @@ interface ChatMessage {
   chatId: string;
   message: string | ChatAnswer;
   attachedFiles?: File[];
-  role: "user" | "assistant";
+  role: 'user' | 'assistant';
   createdAt: Date;
 }
 
@@ -14,7 +14,7 @@ interface ChatAnswer extends ChatMessage {
 
 interface AnswerSource {
   sourceRank: number;
-  sourceType: "retrieval" | "api" | "chat" | "pim";
+  sourceType: 'retrieval' | 'api' | 'chat' | 'pim';
   sourceId: string;
   sourceName: string;
   sourceMessage: {

@@ -5,21 +5,21 @@ export type SearchOptions = {
 
 export function buildSearchRegex(query: string, opts: SearchOptions) {
   const { caseSensitive = false, useRegex = false } = opts || {};
-  const trimmed = (query ?? "").trim();
+  const trimmed = (query ?? '').trim();
   if (!trimmed) {
     return {
       regex: null as RegExp | null,
-      pattern: "",
+      pattern: '',
       error: null as string | null,
     };
   }
 
   const pattern = useRegex
     ? trimmed
-    : trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    : trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
   try {
-    const regex = new RegExp(pattern, `g${caseSensitive ? "" : "i"}`);
+    const regex = new RegExp(pattern, `g${caseSensitive ? '' : 'i'}`);
     return { regex, pattern, error: null as string | null };
   } catch (e) {
     return {

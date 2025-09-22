@@ -1,10 +1,9 @@
-import { Box, IconButton, Typography } from "@mui/material";
-import { Close, ContentCopy, Check } from "@mui/icons-material";
-import { useMemo, useState } from "react";
+import { Box, IconButton, Typography } from '@mui/material';
+import { Close, ContentCopy, Check } from '@mui/icons-material';
+import { useMemo, useState } from 'react';
 
-import { COLORS } from "@/lib/theme";
-import { useChatStore } from "@/lib/store/chatStore";
-
+import { COLORS } from '@/lib/theme';
+import { useChatStore } from '@/lib/store/chatStore';
 
 export default function JsonViewer() {
   const isOpen = useChatStore((s) => s.isJsonViewerOpen);
@@ -14,7 +13,7 @@ export default function JsonViewer() {
   const [isCopied, setIsCopied] = useState(false);
 
   const formatted = useMemo(() => {
-    if (!jsonData) return "";
+    if (!jsonData) return '';
     try {
       const obj = JSON.parse(jsonData);
       return JSON.stringify(obj, null, 2);
@@ -27,19 +26,19 @@ export default function JsonViewer() {
 
   return (
     <Box
-      width={"520px"}
-      bgcolor={"white"}
+      width={'520px'}
+      bgcolor={'white'}
       borderLeft={1}
       borderColor={COLORS.blueGrey[100]}
       px={2}
       py={1.5}
-      display={"flex"}
-      flexDirection={"column"}
+      display={'flex'}
+      flexDirection={'column'}
     >
       <Box
-        display={"flex"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
+        display={'flex'}
+        alignItems={'center'}
+        justifyContent={'space-between'}
       >
         <Typography fontSize={20} fontWeight={500} lineHeight={1.6}>
           JSON Data
@@ -61,9 +60,9 @@ export default function JsonViewer() {
       >
         <IconButton
           sx={{
-            position: "sticky",
+            position: 'sticky',
             top: 0,
-            left: "calc(100%)",
+            left: 'calc(100%)',
             border: 1,
             borderColor: COLORS.blueGrey[100],
             zIndex: 1,
@@ -84,7 +83,7 @@ export default function JsonViewer() {
           )}
         </IconButton>
         <pre
-          style={{ margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+          style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
         >
           {formatted}
         </pre>

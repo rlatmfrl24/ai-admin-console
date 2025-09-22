@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   MenuItem,
   MenuList,
@@ -10,12 +10,12 @@ import {
   ListItemIcon,
   ListItemText,
   Box,
-} from "@mui/material";
-import { ArrowDropDown } from "@mui/icons-material";
+} from '@mui/material';
+import { ArrowDropDown } from '@mui/icons-material';
 
-import type { PopperProps } from "@mui/material/Popper";
+import type { PopperProps } from '@mui/material/Popper';
 
-import { pathFor } from "@/lib/navigation";
+import { pathFor } from '@/lib/navigation';
 export interface MenuItemData {
   id: string;
   label: string;
@@ -34,7 +34,7 @@ export interface NestedDropdownMenuProps {
   onItemClick?: (item: MenuItemData) => void;
   id?: string;
   className?: string;
-  placement?: PopperProps["placement"];
+  placement?: PopperProps['placement'];
   hoverOpenDelay?: number;
   hoverCloseDelay?: number;
   baseIds?: string[];
@@ -54,7 +54,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
   onItemClick,
   id,
   className,
-  placement = "bottom-start",
+  placement = 'bottom-start',
   hoverOpenDelay,
   hoverCloseDelay,
   baseIds = [],
@@ -85,7 +85,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
         isOpen: true,
       });
     },
-    []
+    [],
   );
 
   const closeSubMenu = useCallback(() => {
@@ -127,7 +127,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
         closeSubMenu();
       }
     },
-    [openSubMenu, closeSubMenu, openDelay]
+    [openSubMenu, closeSubMenu, openDelay],
   );
 
   const handleMouseLeave = useCallback(
@@ -138,7 +138,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
 
       const nextTarget = event.relatedTarget as Node | null;
       if (nextTarget && subMenuState?.menuItem) {
-        const childMenuId = `${id || "menu"}-${subMenuState.menuItem.id}`;
+        const childMenuId = `${id || 'menu'}-${subMenuState.menuItem.id}`;
         const childMenuElement = document.getElementById(childMenuId);
         if (childMenuElement && childMenuElement.contains(nextTarget)) {
           return;
@@ -151,11 +151,11 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
       // Guarded close: wait and then check if child submenu is hovered
       leaveTimeoutRef.current = setTimeout(() => {
         if (subMenuState?.menuItem) {
-          const childMenuId = `${id || "menu"}-${subMenuState.menuItem.id}`;
+          const childMenuId = `${id || 'menu'}-${subMenuState.menuItem.id}`;
           const childMenuElement = document.getElementById(childMenuId);
           if (
             childMenuElement &&
-            (childMenuElement.matches(":hover") ||
+            (childMenuElement.matches(':hover') ||
               childMenuElement.contains(document.activeElement))
           ) {
             return; // keep open if user moved into submenu
@@ -164,7 +164,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
         setSubMenuState(null);
       }, closeDelay);
     },
-    [closeDelay, id, subMenuState?.menuItem]
+    [closeDelay, id, subMenuState?.menuItem],
   );
 
   const handleItemClick = useCallback(
@@ -179,7 +179,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
       onItemClick?.(item);
       onClose?.();
     },
-    [onItemClick, onClose, router, baseIds]
+    [onItemClick, onClose, router, baseIds],
   );
 
   const handleKeyDown = useCallback(
@@ -187,14 +187,14 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
       if (!menuListRef.current) return;
 
       const menuItems = Array.from(
-        menuListRef.current.children
+        menuListRef.current.children,
       ) as HTMLLIElement[];
       const currentFocusIndex = focusedIndexRef.current;
 
       switch (event.key) {
         // ArrowUp/ArrowDown은 MUI MenuList 기본 네비게이션에 맡깁니다.
 
-        case "ArrowRight":
+        case 'ArrowRight':
           if (currentFocusIndex >= 0) {
             const currentItem = items[currentFocusIndex];
             if (currentItem?.children && currentItem.children.length > 0) {
@@ -207,7 +207,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
           }
           break;
 
-        case "ArrowLeft":
+        case 'ArrowLeft':
           event.preventDefault();
           // 1) 하위 서브메뉴가 열려 있으면 우선 닫기
           if (subMenuState?.isOpen) {
@@ -231,8 +231,8 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
           onClose?.();
           break;
 
-        case "Enter":
-        case " ":
+        case 'Enter':
+        case ' ':
           event.preventDefault();
           if (currentFocusIndex >= 0) {
             const currentItem = items[currentFocusIndex];
@@ -249,7 +249,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
           }
           break;
 
-        case "Escape":
+        case 'Escape':
           event.preventDefault();
           if (subMenuState?.isOpen) {
             closeSubMenuImmediate();
@@ -258,7 +258,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
           }
           break;
 
-        case "Tab":
+        case 'Tab':
           event.preventDefault();
           onClose?.();
           break;
@@ -272,7 +272,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
       subMenuState?.isOpen,
       onClose,
       anchorEl,
-    ]
+    ],
   );
 
   /**
@@ -320,13 +320,13 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
             <Grow
               {...TransitionProps}
               style={{
-                transformOrigin: popperPlacement?.startsWith("right")
-                  ? "left top"
-                  : popperPlacement?.startsWith("left")
-                  ? "right top"
-                  : popperPlacement?.startsWith("top")
-                  ? "left bottom"
-                  : "left top",
+                transformOrigin: popperPlacement?.startsWith('right')
+                  ? 'left top'
+                  : popperPlacement?.startsWith('left')
+                    ? 'right top'
+                    : popperPlacement?.startsWith('top')
+                      ? 'left bottom'
+                      : 'left top',
               }}
             >
               <Paper
@@ -335,7 +335,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
                   minWidth: 200,
                   maxWidth: 300,
                   borderRadius: 1,
-                  overflow: "hidden",
+                  overflow: 'hidden',
                 }}
               >
                 <MenuList
@@ -353,22 +353,22 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
                   tabIndex={0}
                   sx={{
                     py: 1,
-                    "&.MuiList-root": {
+                    '&.MuiList-root': {
                       py: 0,
                       borderRadius: 1,
-                      outline: "none",
+                      outline: 'none',
                     },
-                    "& .MuiMenuItem-root": {
+                    '& .MuiMenuItem-root': {
                       minHeight: 34,
                       px: 1,
                       py: 0.5,
-                      "&:focus:not(.Mui-selected)": {
-                        backgroundColor: "transparent",
+                      '&:focus:not(.Mui-selected)': {
+                        backgroundColor: 'transparent',
                       },
-                      "&.Mui-selected": {
-                        backgroundColor: "action.selected",
+                      '&.Mui-selected': {
+                        backgroundColor: 'action.selected',
                       },
-                      "&.Mui-disabled": {
+                      '&.Mui-disabled': {
                         opacity: 0.5,
                       },
                     },
@@ -405,34 +405,34 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
                       role="menuitem"
                       aria-haspopup={
                         item.children && item.children.length > 0
-                          ? "menu"
+                          ? 'menu'
                           : undefined
                       }
                       aria-expanded={
                         subMenuState?.menuItem.id === item.id &&
                         subMenuState.isOpen
-                          ? "true"
+                          ? 'true'
                           : undefined
                       }
                       sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        cursor: item.disabled ? "default" : "pointer",
-                        "&.Mui-selected": {
-                          backgroundColor: "action.selected",
-                          "&:hover": { backgroundColor: "action.selected" },
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        cursor: item.disabled ? 'default' : 'pointer',
+                        '&.Mui-selected': {
+                          backgroundColor: 'action.selected',
+                          '&:hover': { backgroundColor: 'action.selected' },
                         },
-                        "&:hover:not(.Mui-selected)": {
-                          backgroundColor: "action.hover",
+                        '&:hover:not(.Mui-selected)': {
+                          backgroundColor: 'action.hover',
                         },
-                        "&:focus:not(.Mui-selected)": {
-                          backgroundColor: "transparent",
+                        '&:focus:not(.Mui-selected)': {
+                          backgroundColor: 'transparent',
                         },
                       }}
                     >
                       <Box
-                        sx={{ display: "flex", alignItems: "center", flex: 1 }}
+                        sx={{ display: 'flex', alignItems: 'center', flex: 1 }}
                       >
                         {item.icon && (
                           <ListItemIcon sx={{ minWidth: 36 }}>
@@ -444,7 +444,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
                           slotProps={{
                             primary: {
                               noWrap: true,
-                              fontSize: "13px",
+                              fontSize: '13px',
                             },
                           }}
                         />
@@ -452,10 +452,10 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
                       {item.children && item.children.length > 0 && (
                         <ArrowDropDown
                           sx={{
-                            color: "action.active",
+                            color: 'action.active',
                             ml: 1,
                             fontSize: 20,
-                            rotate: "270deg",
+                            rotate: '270deg',
                           }}
                         />
                       )}
@@ -474,7 +474,7 @@ export const NestedDropdownMenu: React.FC<NestedDropdownMenuProps> = ({
             open={subMenuState.isOpen}
             onClose={closeSubMenuImmediate}
             onItemClick={onItemClick}
-            id={`${id || "menu"}-${subMenuState.menuItem.id}`}
+            id={`${id || 'menu'}-${subMenuState.menuItem.id}`}
             placement="right-start"
             hoverOpenDelay={openDelay}
             hoverCloseDelay={closeDelay}
