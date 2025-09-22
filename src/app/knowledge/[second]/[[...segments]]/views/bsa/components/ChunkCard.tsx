@@ -7,23 +7,23 @@ import {
   Popover,
   MenuItem,
   ListItemText,
-} from "@mui/material";
-import { CheckCircle, MoreVert } from "@mui/icons-material";
-import { useState } from "react";
+} from '@mui/material';
+import { CheckCircle, MoreVert } from '@mui/icons-material';
+import { useState } from 'react';
 
-import { COLORS } from "@/lib/theme";
-import { ChunkProps } from "@/lib/types/bsa";
+import { COLORS } from '@/lib/theme';
+import { ChunkProps } from '@/lib/types/bsa';
 // [인수인계 메모]
 // - 역할: 단일 Chunk 카드 UI(상태칩/제목/진행ID/액션)
 // - API 연동 시 onDelete, onSelect는 상위에서 서버 호출 후 상태를 동기화하세요.
 // - 선택/삭제/드래그 상태에서 이벤트 버블링 제어 주의.
 // - 접근성: 버튼에 적절한 aria-label 적용(이미 반영), 카드 선택 시 키보드 접근 고려.
-import { Chip } from "@/components/common/Chip";
+import { Chip } from '@/components/common/Chip';
 import {
   BSA_STATUS_CHIP_COLOR,
   BSA_STATUS_LABEL,
   type BSAStatus,
-} from "@/lib/constants/bsa-status";
+} from '@/lib/constants/bsa-status';
 
 function getStatusChip(status: BSAStatus) {
   return (
@@ -65,8 +65,8 @@ export function ChunkCard({
         borderColor: selected ? COLORS.primary.main : COLORS.blueGrey[100],
         borderRadius: 2,
         minWidth: 0,
-        width: "100%",
-        cursor: disableClick ? "grab" : "pointer",
+        width: '100%',
+        cursor: disableClick ? 'grab' : 'pointer',
       }}
       elevation={selected ? 2 : 0}
       onClick={(e) => {
@@ -77,8 +77,8 @@ export function ChunkCard({
         onSelect?.(chunk);
       }}
     >
-      <CardContent sx={{ "&.MuiCardContent-root": { p: 1.5 } }}>
-        <Box display={"flex"} justifyContent={"space-between"}>
+      <CardContent sx={{ '&.MuiCardContent-root': { p: 1.5 } }}>
+        <Box display={'flex'} justifyContent={'space-between'}>
           {getStatusChip(chunk.status as BSAStatus)}
           <IconButton
             aria-label="More Options"
@@ -88,23 +88,23 @@ export function ChunkCard({
             onTouchStart={(e) => e.stopPropagation()}
             onClick={disableActions ? undefined : openMenu}
           >
-            <MoreVert sx={{ fontSize: "16px" }} />
+            <MoreVert sx={{ fontSize: '16px' }} />
           </IconButton>
           <Popover
             open={isMenuOpen}
             anchorEl={menuAnchorEl}
             onClose={closeMenu}
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            transformOrigin={{ vertical: "top", horizontal: "right" }}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             slotProps={{
               paper: {
                 elevation: 1,
                 sx: {
-                  border: "1px solid",
+                  border: '1px solid',
                   borderColor: COLORS.blueGrey[100],
                   borderRadius: 2,
                   bgcolor: COLORS.common.white,
-                  overflow: "visible",
+                  overflow: 'visible',
                 },
               },
             }}
@@ -116,16 +116,16 @@ export function ChunkCard({
                 onDelete?.(chunk);
               }}
               sx={{
-                "&.MuiMenuItem-root": {
+                '&.MuiMenuItem-root': {
                   borderRadius: 2,
                 },
               }}
             >
               <ListItemText
                 sx={{
-                  "& .MuiListItemText-primary": {
+                  '& .MuiListItemText-primary': {
                     fontSize: 12,
-                    lineHeight: "16px",
+                    lineHeight: '16px',
                   },
                 }}
               >
@@ -167,18 +167,18 @@ export function CheckableChunkCard({
       sx={{
         borderRadius: 2,
         minWidth: 252,
-        width: "100%",
-        cursor: "pointer",
+        width: '100%',
+        cursor: 'pointer',
       }}
       onClick={() => onSelect?.(chunk)}
       elevation={2}
     >
-      <CardContent sx={{ "&.MuiCardContent-root": { p: 1.5 } }}>
-        <Box display={"flex"} justifyContent={"space-between"}>
+      <CardContent sx={{ '&.MuiCardContent-root': { p: 1.5 } }}>
+        <Box display={'flex'} justifyContent={'space-between'}>
           {getStatusChip(chunk.status)}
           <CheckCircle
             sx={{
-              fontSize: "20px",
+              fontSize: '20px',
               color: selected ? COLORS.primary.main : COLORS.blueGrey[300],
             }}
           />

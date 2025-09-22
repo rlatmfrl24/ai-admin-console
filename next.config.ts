@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 // 로컬 최소 타입으로 처리하여 외부 타입 의존성 제거
 type RuleSetRuleLike = {
   test?: RegExp;
@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
     // 기존 SVG 처리 규칙 탐색 (없을 수 있으므로 안전하게 처리)
     const existingSvgRule = config.module.rules.find((rule: unknown) => {
       const r = rule as RuleSetRuleLike;
-      return r?.test instanceof RegExp && r.test.test(".svg");
+      return r?.test instanceof RegExp && r.test.test('.svg');
     }) as RuleSetRuleLike | undefined;
 
     // *.svg?url 은 기존 자산 로더를 사용(있으면 복제), 없으면 asset/resource 사용
@@ -27,7 +27,7 @@ const nextConfig: NextConfig = {
       : {
           test: /\.svg$/i,
           resourceQuery: /url/,
-          type: "asset/resource",
+          type: 'asset/resource',
         };
 
     // 그 외 *.svg 은 React 컴포넌트로 변환(@svgr/webpack)
@@ -37,7 +37,7 @@ const nextConfig: NextConfig = {
       resourceQuery: { not: [/url/] },
       use: [
         {
-          loader: "@svgr/webpack",
+          loader: '@svgr/webpack',
           options: { svgo: true, titleProp: true, ref: true },
         },
       ],

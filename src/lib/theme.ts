@@ -1,15 +1,15 @@
-"use client";
-import { createTheme } from "@mui/material/styles";
+'use client';
+import { createTheme } from '@mui/material/styles';
 
-import type {} from "@mui/x-data-grid/themeAugmentation";
-import { COLORS as RAW_COLORS } from "@/lib/constants/color";
+import type {} from '@mui/x-data-grid/themeAugmentation';
+import { COLORS as RAW_COLORS } from '@/lib/constants/color';
 export type Colors = typeof RAW_COLORS;
 export const COLORS = RAW_COLORS;
 
 const theme = createTheme({
   cssVariables: true,
   palette: {
-    mode: "light",
+    mode: 'light',
     primary: {
       main: COLORS.primary.main,
       dark: COLORS.primary.dark,
@@ -54,7 +54,7 @@ const theme = createTheme({
     grey: COLORS.grey,
   },
   typography: {
-    fontFamily: "var(--font-roboto)",
+    fontFamily: 'var(--font-roboto)',
   },
   components: {
     MuiButton: {
@@ -74,23 +74,23 @@ const theme = createTheme({
         root: {
           borderRadius: 8,
           borderWidth: 1,
-          borderStyle: "solid",
+          borderStyle: 'solid',
           borderColor: COLORS.blueGrey[100],
           paddingLeft: 8,
           paddingRight: 8,
           paddingTop: 4,
           paddingBottom: 4,
-          "& .MuiDataGrid-columnHeader": {
+          '& .MuiDataGrid-columnHeader': {
             fontSize: 13,
             fontWeight: 600,
           },
-          "& .MuiDataGrid-cell": {
+          '& .MuiDataGrid-cell': {
             fontSize: 13,
           },
-          "& .MuiDataGrid-row.Mui-hover": {
+          '& .MuiDataGrid-row.Mui-hover': {
             backgroundColor: COLORS.text.states.hover,
           },
-          "& .MuiDataGrid-row.Mui-selected": {
+          '& .MuiDataGrid-row.Mui-selected': {
             backgroundColor: COLORS.blueGrey[100],
           },
         },

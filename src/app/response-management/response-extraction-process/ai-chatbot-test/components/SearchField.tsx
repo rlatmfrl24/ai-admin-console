@@ -3,23 +3,23 @@ import {
   KeyboardArrowDown,
   KeyboardArrowUp,
   Search,
-} from "@mui/icons-material";
-import { Box, Divider, IconButton, InputBase, Typography } from "@mui/material";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+} from '@mui/icons-material';
+import { Box, Divider, IconButton, InputBase, Typography } from '@mui/material';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { COLORS } from "@/lib/constants/color";
-import { useChatStore } from "@/lib/store/chatStore";
-import { ChatAnswer } from "@/lib/types/chat";
-import { buildSearchRegex } from "@/lib/utils/search";
+import { COLORS } from '@/lib/constants/color';
+import { useChatStore } from '@/lib/store/chatStore';
+import { ChatAnswer } from '@/lib/types/chat';
+import { buildSearchRegex } from '@/lib/utils/search';
 
 export default function SearchField() {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   // 입력 디바운싱 결과(빠른 타이핑 시 불필요한 재계산 방지)
-  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [matches, setMatches] = useState<
     {
       chatId: string;
-      section: "body" | "source-title" | "source-content";
+      section: 'body' | 'source-title' | 'source-content';
       sourceKey?: string;
       occurrence: number;
     }[]
@@ -30,8 +30,8 @@ export default function SearchField() {
 
   const currentThread = useChatStore((s) =>
     s.currentThreadId
-      ? s.threadHistory.find((t) => t.threadId === s.currentThreadId) ?? null
-      : null
+      ? (s.threadHistory.find((t) => t.threadId === s.currentThreadId) ?? null)
+      : null,
   );
   const storeQuery = useChatStore((s) => s.searchQuery);
   const setStoreQuery = useChatStore((s) => s.setSearchQuery);
@@ -42,7 +42,7 @@ export default function SearchField() {
 
   const messages = useMemo(
     () => currentThread?.messages ?? [],
-    [currentThread?.messages]
+    [currentThread?.messages],
   );
 
   // 외부 스토어 검색어와 동기화
@@ -81,21 +81,21 @@ export default function SearchField() {
     const trimmed = debouncedQuery.trim();
     if (!trimmed) {
       clearSearchState();
-      console.debug("[Search] cleared", { query: trimmed });
+      console.debug('[Search] cleared', { query: trimmed });
       return;
     }
 
     // 2) 정규식이 유효하지 않으면 초기화
     const { regex, pattern, error } = compiled;
     if (!regex) {
-      console.warn("[Search] invalid regex", { pattern, error });
+      console.warn('[Search] invalid regex', { pattern, error });
       clearSearchState();
       return;
     }
 
     const flattened: {
       chatId: string;
-      section: "body" | "source-title" | "source-content";
+      section: 'body' | 'source-title' | 'source-content';
       sourceKey?: string;
       occurrence: number;
     }[] = [];
@@ -106,10 +106,10 @@ export default function SearchField() {
 
       const addSectionMatches = (
         text: string,
-        section: "body" | "source-title" | "source-content",
+        section: 'body' | 'source-title' | 'source-content',
         chatId: string,
         sourceKey?: string,
-        getNextOcc?: () => number
+        getNextOcc?: () => number,
       ) => {
         if (!text || !re) return;
         re.lastIndex = 0;
@@ -130,15 +130,15 @@ export default function SearchField() {
       // Body
       let bodyOcc = 0;
       const body =
-        (typeof m.message === "string"
+        (typeof m.message === 'string'
           ? m.message
-          : (m as unknown as { message?: string })?.message) ?? "";
-      addSectionMatches(body, "body", m.chatId, undefined, () => ++bodyOcc);
+          : (m as unknown as { message?: string })?.message) ?? '';
+      addSectionMatches(body, 'body', m.chatId, undefined, () => ++bodyOcc);
 
       // Sources (assistant only)
       // - 동일한 sourceType 내에서 가장 낮은 sourceRank(우선순위가 높은 항목)만 채택
       // - 이렇게 축약하여 매칭 범위를 줄이고 성능과 가독성을 모두 확보
-      if (m.role === "assistant") {
+      if (m.role === 'assistant') {
         const ans = m as unknown as ChatAnswer;
         const all = Array.isArray(ans.sources) ? ans.sources : [];
         const map = new Map<string, (typeof all)[number]>();
@@ -149,7 +149,7 @@ export default function SearchField() {
           }
         }
         const top = Array.from(map.values()).sort(
-          (a, b) => a.sourceRank - b.sourceRank
+          (a, b) => a.sourceRank - b.sourceRank,
         );
         for (const s of top) {
           const key = `${s.sourceType}:${s.sourceId}`;
@@ -157,17 +157,17 @@ export default function SearchField() {
           let contentOcc = 0;
           addSectionMatches(
             s.sourceMessage.title,
-            "source-title",
+            'source-title',
             m.chatId,
             key,
-            () => ++titleOcc
+            () => ++titleOcc,
           );
           addSectionMatches(
             s.sourceMessage.content,
-            "source-content",
+            'source-content',
             m.chatId,
             key,
-            () => ++contentOcc
+            () => ++contentOcc,
           );
         }
       }
@@ -178,7 +178,7 @@ export default function SearchField() {
     setCurrentMatchIndex(0);
     setStoreMatches(flattened);
     setStoreMatchIndex(0);
-    console.debug("[Search] recomputed matches", {
+    console.debug('[Search] recomputed matches', {
       query: trimmed,
       total: flattened.length,
       sample: flattened.slice(0, 10),
@@ -186,10 +186,10 @@ export default function SearchField() {
     if (flattened.length > 0) {
       const firstId = flattened[0].chatId;
       const el = document.querySelector(
-        `[data-chat-id="${firstId}"]`
+        `[data-chat-id="${firstId}"]`,
       ) as HTMLElement | null;
-      el?.scrollIntoView({ behavior: "smooth", block: "center" });
-      console.debug("[Search] auto-scroll to first match", {
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      console.debug('[Search] auto-scroll to first match', {
         index: 0,
         match: flattened[0],
       });
@@ -211,12 +211,12 @@ export default function SearchField() {
       if (!target) return;
       const chatId = target.chatId;
       const el = document.querySelector(
-        `[data-chat-id="${chatId}"]`
+        `[data-chat-id="${chatId}"]`,
       ) as HTMLElement | null;
-      el?.scrollIntoView({ behavior: "smooth", block: "center" });
-      console.debug("[Search] navigate to match", { index, match: target });
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      console.debug('[Search] navigate to match', { index, match: target });
     },
-    [matches]
+    [matches],
   );
 
   // 현재 인덱스 기준 상/하 이동 헬퍼(Enter / Shift+Enter 공통 처리)
@@ -229,7 +229,7 @@ export default function SearchField() {
       setCurrentMatchIndex(next);
       setStoreMatchIndex(next);
     },
-    [currentMatchIndex, matches.length, scrollToMatch, setStoreMatchIndex]
+    [currentMatchIndex, matches.length, scrollToMatch, setStoreMatchIndex],
   );
 
   return (
@@ -240,16 +240,16 @@ export default function SearchField() {
       minWidth={276 + 24}
       borderRadius={5}
       px={1.5}
-      py={"6px"}
+      py={'6px'}
       sx={{
-        outline: "1px solid",
+        outline: '1px solid',
         outlineColor: COLORS.blueGrey[100],
-        "&:hover": {
+        '&:hover': {
           outlineColor: COLORS.text.primary,
-          outline: "1px solid",
+          outline: '1px solid',
         },
-        "&:focus-within": {
-          outline: "2px solid",
+        '&:focus-within': {
+          outline: '2px solid',
           outlineColor: COLORS.primary.main,
         },
       }}
@@ -262,12 +262,12 @@ export default function SearchField() {
         size="small"
         sx={{
           flex: 1,
-          "& .MuiInputBase-input": {
+          '& .MuiInputBase-input': {
             padding: 0,
             fontSize: 14,
             fontWeight: 500,
-            lineHeight: "20px",
-            letterSpacing: "0.14px",
+            lineHeight: '20px',
+            letterSpacing: '0.14px',
           },
         }}
         value={query}
@@ -280,11 +280,11 @@ export default function SearchField() {
         }}
         onKeyDown={(e) => {
           // Enter: 다음, Shift+Enter: 이전, Escape: 검색 초기화
-          if (e.key === "Enter") {
+          if (e.key === 'Enter') {
             navigateRelative(e.shiftKey ? -1 : 1);
-          } else if (e.key === "Escape") {
-            setQuery("");
-            setStoreQuery("");
+          } else if (e.key === 'Escape') {
+            setQuery('');
+            setStoreQuery('');
             clearSearchState();
           }
         }}
@@ -293,7 +293,7 @@ export default function SearchField() {
       {isSearching && (
         <>
           {matches.length > 0 && (
-            <Box display={"flex"} alignItems={"center"}>
+            <Box display={'flex'} alignItems={'center'}>
               <Typography
                 fontSize={12}
                 fontWeight={500}
@@ -344,8 +344,8 @@ export default function SearchField() {
             sx={{ width: 20, height: 20 }}
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => {
-              setQuery("");
-              setStoreQuery("");
+              setQuery('');
+              setStoreQuery('');
               clearSearchState();
               inputRef.current?.focus();
             }}

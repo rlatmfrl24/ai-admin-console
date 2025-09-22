@@ -1,26 +1,25 @@
-"use client";
+'use client';
 
-import { Box, IconButton, Typography } from "@mui/material";
-import { Close } from "@mui/icons-material";
+import { Box, IconButton, Typography } from '@mui/material';
+import { Close } from '@mui/icons-material';
 
-import { AgentFilterChip } from "./components/Chips";
+import { AgentFilterChip } from './components/Chips';
 import {
   ApiSource,
   PimSource,
   RetrievalSource,
   ChatSource,
-} from "./components/Sources";
+} from './components/Sources';
 
-import { COLORS } from "@/lib/theme";
-import { useChatStore } from "@/lib/store/chatStore";
+import { COLORS } from '@/lib/theme';
+import { useChatStore } from '@/lib/store/chatStore';
 import {
   AnswerSource,
   ChatAnswerSource,
   PimAnswerSource,
   RetrievalAnswerSource,
   ApiAnswerSource,
-} from "@/lib/types/chat";
-
+} from '@/lib/types/chat';
 
 export default function Source() {
   const setSelectedAnswer = useChatStore((s) => s.setSelectedAnswer);
@@ -42,20 +41,20 @@ export default function Source() {
 
   return (
     <Box
-      bgcolor={"white"}
+      bgcolor={'white'}
       borderLeft={1}
       borderColor={COLORS.blueGrey[100]}
       minWidth={488 + 16 + 16}
       maxWidth={488 + 16 + 16}
       px={2}
-      display={"flex"}
-      flexDirection={"column"}
-      overflow={"auto"}
+      display={'flex'}
+      flexDirection={'column'}
+      overflow={'auto'}
     >
       <Box
-        display={"flex"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
+        display={'flex'}
+        alignItems={'center'}
+        justifyContent={'space-between'}
         mt={1.5}
       >
         <Typography fontSize={20} fontWeight={500}>
@@ -71,45 +70,45 @@ export default function Source() {
           <Close sx={{ fontSize: 20 }} />
         </IconButton>
       </Box>
-      <Box display={"flex"} alignItems={"center"} gap={0.5} mt={1.5}>
+      <Box display={'flex'} alignItems={'center'} gap={0.5} mt={1.5}>
         {AgentChips.map((chip) => (
           <AgentFilterChip
             key={chip.type}
-            type={chip.type as "api" | "pim" | "retrieval" | "chat"}
+            type={chip.type as 'api' | 'pim' | 'retrieval' | 'chat'}
             count={chip.count}
             checked={selectedSourceTypes.includes(
-              chip.type as AnswerSource["sourceType"]
+              chip.type as AnswerSource['sourceType'],
             )}
           />
         ))}
       </Box>
-      <Box display={"flex"} flexDirection={"column"} gap={1} my={2}>
+      <Box display={'flex'} flexDirection={'column'} gap={1} my={2}>
         {selectedAnswer?.sources
           .slice()
           .sort((a, b) => a.sourceRank - b.sourceRank)
           .filter((source) => selectedSourceTypes.includes(source.sourceType))
           .map((source) =>
-            source.sourceType === "retrieval" ? (
+            source.sourceType === 'retrieval' ? (
               <RetrievalSource
                 key={source.sourceId}
                 source={source as RetrievalAnswerSource}
               />
-            ) : source.sourceType === "api" ? (
+            ) : source.sourceType === 'api' ? (
               <ApiSource
                 key={source.sourceId}
                 source={source as ApiAnswerSource}
               />
-            ) : source.sourceType === "pim" ? (
+            ) : source.sourceType === 'pim' ? (
               <PimSource
                 key={source.sourceId}
                 source={source as PimAnswerSource}
               />
-            ) : source.sourceType === "chat" ? (
+            ) : source.sourceType === 'chat' ? (
               <ChatSource
                 key={source.sourceId}
                 source={source as ChatAnswerSource}
               />
-            ) : null
+            ) : null,
           )}
       </Box>
     </Box>

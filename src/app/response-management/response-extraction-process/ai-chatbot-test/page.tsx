@@ -1,34 +1,33 @@
-"use client";
+'use client';
 
-import { Box, Paper, Typography } from "@mui/material";
-import { useEffect, useMemo, useRef } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { Box, Paper, Typography } from '@mui/material';
+import { useEffect, useMemo, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 
-import ChatSidebar from "./sidebar";
-import ChatInput from "./input";
-import UserMessage from "./components/UserMessage";
-import ResponseMessage from "./components/ResponseMessage";
-import Source from "./source";
-import JsonViewer from "./components/JsonViewer";
-import SearchField from "./components/SearchField";
+import ChatSidebar from './sidebar';
+import ChatInput from './input';
+import UserMessage from './components/UserMessage';
+import ResponseMessage from './components/ResponseMessage';
+import Source from './source';
+import JsonViewer from './components/JsonViewer';
+import SearchField from './components/SearchField';
 
-import ChatIcon from "@/assets/icon-ai-chat.svg";
-import { COLORS } from "@/lib/theme";
-import { ChatAnswer } from "@/lib/types/chat";
-import EmptyChatLayer from "@/assets/img-empty-chat.svg";
-import { useChatStore } from "@/lib/store/chatStore";
-import AIProfileIcon from "@/assets/icon-ai-profile.svg";
-
+import ChatIcon from '@/assets/icon-ai-chat.svg';
+import { COLORS } from '@/lib/theme';
+import { ChatAnswer } from '@/lib/types/chat';
+import EmptyChatLayer from '@/assets/img-empty-chat.svg';
+import { useChatStore } from '@/lib/store/chatStore';
+import AIProfileIcon from '@/assets/icon-ai-profile.svg';
 
 export default function Chat() {
   const currentThread = useChatStore((s) =>
     s.currentThreadId
-      ? s.threadHistory.find((t) => t.threadId === s.currentThreadId) ?? null
-      : null
+      ? (s.threadHistory.find((t) => t.threadId === s.currentThreadId) ?? null)
+      : null,
   );
   const messages = useMemo(
     () => currentThread?.messages ?? [],
-    [currentThread?.messages]
+    [currentThread?.messages],
   );
   const isAwaiting = useChatStore((s) => s.isAwaitingResponse);
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -44,13 +43,13 @@ export default function Chat() {
 
     if (messages.length > prevMsgLen) {
       // New message appended → smooth scroll
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     } else if (isAwaiting && !prevIsAwaiting) {
       // Waiting bubble appeared → smooth scroll
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     } else if (!isAwaiting && prevIsAwaiting) {
       // Waiting bubble removed → jump instantly to avoid flicker
-      bottomRef.current?.scrollIntoView({ behavior: "auto" });
+      bottomRef.current?.scrollIntoView({ behavior: 'auto' });
     }
 
     prevIsAwaitingRef.current = isAwaiting;
@@ -91,10 +90,10 @@ export default function Chat() {
           flexGrow={1}
           height={0}
           minHeight={0}
-          overflow={messages.length === 0 ? "hidden" : "auto"}
+          overflow={messages.length === 0 ? 'hidden' : 'auto'}
           display="flex"
           flexDirection="column"
-          sx={{ overflowAnchor: "none", scrollbarGutter: "stable" }}
+          sx={{ overflowAnchor: 'none', scrollbarGutter: 'stable' }}
         >
           <Box p={2} display="flex" flexDirection="column" gap={2.5}>
             {messages.length === 0 ? (
@@ -106,15 +105,15 @@ export default function Chat() {
                     key={m.chatId}
                     data-chat-id={m.chatId}
                     style={{
-                      alignSelf: m.role === "user" ? "flex-end" : "flex-start",
-                      width: "fit-content",
+                      alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
+                      width: 'fit-content',
                     }}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.18, ease: "easeOut" }}
+                    transition={{ duration: 0.18, ease: 'easeOut' }}
                   >
-                    {m.role === "user" ? (
+                    {m.role === 'user' ? (
                       <UserMessage message={m} />
                     ) : (
                       <ResponseMessage message={m as ChatAnswer} />
@@ -129,7 +128,7 @@ export default function Chat() {
                   key="waiting"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.12, ease: "easeOut" }}
+                  transition={{ duration: 0.12, ease: 'easeOut' }}
                 >
                   <WaitingMessage />
                 </motion.div>
@@ -158,16 +157,16 @@ const WaitingMessage = () => {
               sx={{
                 width: 6,
                 height: 6,
-                borderRadius: "50%",
-                backgroundColor: "#B5BED7",
+                borderRadius: '50%',
+                backgroundColor: '#B5BED7',
                 animation: `bounce 1.4s ease-in-out infinite`,
                 animationDelay: `${index * 0.2}s`,
-                "@keyframes bounce": {
-                  "0%, 60%, 100%": {
-                    transform: "translateY(0)",
+                '@keyframes bounce': {
+                  '0%, 60%, 100%': {
+                    transform: 'translateY(0)',
                   },
-                  "30%": {
-                    transform: "translateY(-4px)",
+                  '30%': {
+                    transform: 'translateY(-4px)',
                   },
                 },
               }}
@@ -194,7 +193,7 @@ const EmptyChat = () => {
       <Typography
         fontSize={24}
         fontWeight={400}
-        lineHeight={"116%"}
+        lineHeight={'116%'}
         textAlign="center"
         color={COLORS.primary.states.focusVisible}
       >

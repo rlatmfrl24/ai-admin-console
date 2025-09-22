@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { Box, Breadcrumbs, Typography } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
-import { InsertDriveFileOutlined } from "@mui/icons-material";
-import { GridColDef, DataGrid, useGridApiRef } from "@mui/x-data-grid";
+import { Box, Breadcrumbs, Typography } from '@mui/material';
+import { useEffect, useMemo, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { InsertDriveFileOutlined } from '@mui/icons-material';
+import { GridColDef, DataGrid, useGridApiRef } from '@mui/x-data-grid';
 
-import { getBsaMenuTree, makeRandomChunk, getBsaRowById } from "./bsaUtil";
-import BSAChunkEdit from "./Edit";
-import BSAChunkEmbedding from "./Embedding";
+import { getBsaMenuTree, makeRandomChunk, getBsaRowById } from './bsaUtil';
+import BSAChunkEdit from './Edit';
+import BSAChunkEmbedding from './Embedding';
 
-import { BSATableProps, BSAMenuTreeItemProps } from "@/lib/types/bsa";
-import { COLORS } from "@/lib/theme";
-import SegmentedTabs from "@/components/common/SegmentedTabs";
-import { useHeaderStore } from "@/lib/store/headerStore";
-import { useBSAStore } from "@/lib/store/bsaStore";
+import { BSATableProps, BSAMenuTreeItemProps } from '@/lib/types/bsa';
+import { COLORS } from '@/lib/theme';
+import SegmentedTabs from '@/components/common/SegmentedTabs';
+import { useHeaderStore } from '@/lib/store/headerStore';
+import { useBSAStore } from '@/lib/store/bsaStore';
 
 function getInitialSelection(items: BSAMenuTreeItemProps[]): {
   selected: BSAMenuTreeItemProps | null;
@@ -36,7 +36,7 @@ export default function BSADetail() {
   const segments = (params as { segments?: string[] })?.segments;
   const idParam = useMemo(() => {
     if (!Array.isArray(segments)) return undefined;
-    const idx = segments.findIndex((s) => s === "bsa");
+    const idx = segments.findIndex((s) => s === 'bsa');
     if (idx >= 0 && segments[idx + 1]) return segments[idx + 1];
     // 기본 패턴: ["commercial", "bsa", ":id"] → 2번째 인덱스가 ID
     if (segments.length >= 3) return segments[2];
@@ -49,26 +49,26 @@ export default function BSADetail() {
   const BSA_MENU_TREE = useMemo(() => getBsaMenuTree(), []);
   const { selected: initialSelectedItem } = useMemo(
     () => getInitialSelection(BSA_MENU_TREE),
-    [BSA_MENU_TREE]
+    [BSA_MENU_TREE],
   );
   const [selectedTreeItem, setSelectedTreeItem] =
     useState<BSAMenuTreeItemProps | null>(initialSelectedItem);
-  const [activeTab, setActiveTab] = useState<string>("edit");
+  const [activeTab, setActiveTab] = useState<string>('edit');
 
   const columns: GridColDef<BSATableProps>[] = [
-    { field: "stream", headerName: "Stream", width: 150 },
-    { field: "module", headerName: "Module", width: 150 },
-    { field: "fileName", headerName: "File Name", width: 150 },
-    { field: "pageName", headerName: "Page Name", width: 150 },
-    { field: "category", headerName: "Category", width: 120 },
-    { field: "chunk", headerName: "Chunk", width: 120 },
-    { field: "semanticTitle", headerName: "Semantic Title", width: 150 },
-    { field: "semanticSummary", headerName: "Semantic Summary", width: 150 },
-    { field: "semanticChunk", headerName: "Semantic Chunk", width: 150 },
-    { field: "language", headerName: "Language", width: 100 },
-    { field: "date", headerName: "Date", width: 150 },
-    { field: "version", headerName: "Version", width: 100 },
-    { field: "filePath", headerName: "File Path", width: 150 },
+    { field: 'stream', headerName: 'Stream', width: 150 },
+    { field: 'module', headerName: 'Module', width: 150 },
+    { field: 'fileName', headerName: 'File Name', width: 150 },
+    { field: 'pageName', headerName: 'Page Name', width: 150 },
+    { field: 'category', headerName: 'Category', width: 120 },
+    { field: 'chunk', headerName: 'Chunk', width: 120 },
+    { field: 'semanticTitle', headerName: 'Semantic Title', width: 150 },
+    { field: 'semanticSummary', headerName: 'Semantic Summary', width: 150 },
+    { field: 'semanticChunk', headerName: 'Semantic Chunk', width: 150 },
+    { field: 'language', headerName: 'Language', width: 100 },
+    { field: 'date', headerName: 'Date', width: 150 },
+    { field: 'version', headerName: 'Version', width: 100 },
+    { field: 'filePath', headerName: 'File Path', width: 150 },
   ];
 
   const selectedData = useMemo<BSATableProps | null>(() => {
@@ -79,16 +79,16 @@ export default function BSADetail() {
   useEffect(() => {
     if (!selectedData) return;
     const header = (
-      <Box display={"inline-flex"} flex={1} justifyContent={"space-between"}>
+      <Box display={'inline-flex'} flex={1} justifyContent={'space-between'}>
         <Breadcrumbs>
           <Box />
-          <Box display={"flex"} alignItems={"center"} p={0.5} gap={0.5}>
+          <Box display={'flex'} alignItems={'center'} p={0.5} gap={0.5}>
             <Typography lineHeight={1} fontSize={12} color="text.primary">
-              Basic Slot Allocation ({selectedData?.fileName ?? "-"})
+              Basic Slot Allocation ({selectedData?.fileName ?? '-'})
             </Typography>
           </Box>
-          {selectedChunk && activeTab === "edit" && (
-            <Box display={"flex"} alignItems={"center"} p={0.5} gap={0.5}>
+          {selectedChunk && activeTab === 'edit' && (
+            <Box display={'flex'} alignItems={'center'} p={0.5} gap={0.5}>
               <Typography lineHeight={1} fontSize={12} color="text.primary">
                 {
                   chunks.find((c) => c.progressId === selectedChunk.progressId)
@@ -97,8 +97,8 @@ export default function BSADetail() {
               </Typography>
             </Box>
           )}
-          {activeTab === "embedding" && (
-            <Box display={"flex"} alignItems={"center"} p={0.5} gap={0.5}>
+          {activeTab === 'embedding' && (
+            <Box display={'flex'} alignItems={'center'} p={0.5} gap={0.5}>
               <Typography lineHeight={1} fontSize={12} color="text.primary">
                 Data Embedding
               </Typography>
@@ -106,15 +106,15 @@ export default function BSADetail() {
           )}
         </Breadcrumbs>
         <Box
-          display={"flex"}
-          alignItems={"center"}
+          display={'flex'}
+          alignItems={'center'}
           gap={0.5}
           sx={{
-            cursor: "pointer",
+            cursor: 'pointer',
             paddingLeft: 1,
             paddingRight: 1,
             borderRadius: 2,
-            "&:hover": { backgroundColor: "action.hover" },
+            '&:hover': { backgroundColor: 'action.hover' },
           }}
         >
           <InsertDriveFileOutlined sx={{ fontSize: 16 }} />
@@ -122,8 +122,8 @@ export default function BSADetail() {
             lineHeight={1}
             fontSize={12}
             color="text.primary"
-            display={"flex"}
-            alignItems={"center"}
+            display={'flex'}
+            alignItems={'center'}
             gap={0.5}
           >
             Origin DOC
@@ -144,7 +144,7 @@ export default function BSADetail() {
   useEffect(() => {
     if (!selectedChunk) return;
     const latest = chunks.find(
-      (c) => c.progressId === selectedChunk.progressId
+      (c) => c.progressId === selectedChunk.progressId,
     );
     if (!latest) {
       setSelectedChunk(null);
@@ -158,25 +158,25 @@ export default function BSADetail() {
     }
   }, [chunks, selectedChunk, setSelectedChunk]);
 
-  if (!selectedData) throw new Error("BSA data not found");
+  if (!selectedData) throw new Error('BSA data not found');
 
   return (
     <Box
       flex={1}
       sx={{ minHeight: 0 }}
-      height={"100%"}
-      display={"flex"}
-      flexDirection={"column"}
+      height={'100%'}
+      display={'flex'}
+      flexDirection={'column'}
       gap={1.5}
     >
-      {!selectedChunk && activeTab === "edit" ? (
+      {!selectedChunk && activeTab === 'edit' ? (
         <Box>
           <DataGrid
             apiRef={apiRef}
             rows={[selectedData]}
             columns={columns}
             hideFooter
-            sx={{ height: "114px" }}
+            sx={{ height: '114px' }}
           />
         </Box>
       ) : (
@@ -185,8 +185,8 @@ export default function BSADetail() {
           onChange={setActiveTab}
           ariaLabel="BSA Tabs"
           items={[
-            { value: "edit", label: "Data Edit" },
-            { value: "embedding", label: "Data Embedding" },
+            { value: 'edit', label: 'Data Edit' },
+            { value: 'embedding', label: 'Data Embedding' },
           ]}
         />
       )}
@@ -197,15 +197,15 @@ export default function BSADetail() {
         minHeight={0}
         borderRadius={2}
         borderColor={COLORS.blueGrey[100]}
-        display={"flex"}
-        overflow={"hidden"}
+        display={'flex'}
+        overflow={'hidden'}
       >
-        {activeTab === "edit" ? (
+        {activeTab === 'edit' ? (
           <BSAChunkEdit
             selectedData={selectedData}
             selectedTreeItem={selectedTreeItem}
             setSelectedTreeItem={setSelectedTreeItem}
-            onNext={() => setActiveTab("embedding")}
+            onNext={() => setActiveTab('embedding')}
           />
         ) : (
           <BSAChunkEmbedding />

@@ -1,16 +1,15 @@
-"use client";
+'use client';
 
-import { Box, Typography } from "@mui/material";
-import { useEffect, useRef, useState, memo } from "react";
+import { Box, Typography } from '@mui/material';
+import { useEffect, useRef, useState, memo } from 'react';
 
-import FloatingChatButton from "./FloatingChatButton";
+import FloatingChatButton from './FloatingChatButton';
 
-import type { NavigationItem } from "@/lib/types/navigation";
+import type { NavigationItem } from '@/lib/types/navigation';
 
-import MainLayer1 from "@/assets/main-layer-1.svg";
-import MainLayer2 from "@/assets/main-layer-2.svg";
-import { MainCard } from "@/components/MainCard";
-
+import MainLayer1 from '@/assets/main-layer-1.svg';
+import MainLayer2 from '@/assets/main-layer-2.svg';
+import { MainCard } from '@/components/MainCard';
 
 export interface MainLandingProps {
   items: NavigationItem[];
@@ -30,9 +29,9 @@ function MainLandingImpl({ items }: MainLandingProps) {
         setExpandedId(null);
       }
     };
-    document.addEventListener("mousedown", handleDocumentClick);
+    document.addEventListener('mousedown', handleDocumentClick);
     return () => {
-      document.removeEventListener("mousedown", handleDocumentClick);
+      document.removeEventListener('mousedown', handleDocumentClick);
     };
   }, [expandedId]);
 
@@ -45,7 +44,7 @@ function MainLandingImpl({ items }: MainLandingProps) {
       position="relative"
       height="100%"
       sx={{
-        background: "linear-gradient(180deg, #FFF 0%, #F7F6FF 100%)",
+        background: 'linear-gradient(180deg, #FFF 0%, #F7F6FF 100%)',
       }}
     >
       <FloatingChatButton />
@@ -58,7 +57,7 @@ function MainLandingImpl({ items }: MainLandingProps) {
       <Typography
         fontSize={45}
         fontWeight={500}
-        lineHeight={"52px"}
+        lineHeight={'52px'}
         position="absolute"
         top={247}
         left={40}

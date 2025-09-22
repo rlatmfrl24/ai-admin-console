@@ -7,18 +7,18 @@ import {
   ListItemText,
   Collapse,
   ListItemIcon,
-} from "@mui/material";
-import { MenuOpen } from "@mui/icons-material";
-import { useEffect, useMemo, useState, useCallback } from "react";
-import AssistantOutlinedIcon from "@mui/icons-material/AssistantOutlined";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { useRouter } from "next/navigation";
+} from '@mui/material';
+import { MenuOpen } from '@mui/icons-material';
+import { useEffect, useMemo, useState, useCallback } from 'react';
+import AssistantOutlinedIcon from '@mui/icons-material/AssistantOutlined';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useRouter } from 'next/navigation';
 
-import type { NavigationItem } from "../lib/types/navigation";
+import type { NavigationItem } from '../lib/types/navigation';
 
-import NAV_ITEMS from "@/lib/constants/navigation";
-import { COLORS } from "@/lib/theme";
-import { pathFor } from "@/lib/navigation";
+import NAV_ITEMS from '@/lib/constants/navigation';
+import { COLORS } from '@/lib/theme';
+import { pathFor } from '@/lib/navigation';
 
 type MenuItem = NavigationItem;
 
@@ -42,42 +42,42 @@ type BaseStyle = {
 const BASE_STYLES: { [key: number]: BaseStyle; default: BaseStyle } = {
   0: {
     containerBg: COLORS.indigo[900],
-    textColor: "#ffffff",
+    textColor: '#ffffff',
     paddingLeft: 2,
     fontSize: 16,
     fontWeight: 700,
     height: 44,
-    borderBottom: "1px solid ",
+    borderBottom: '1px solid ',
     borderColor: COLORS.blueGrey[700],
   },
   1: {
     containerBg: COLORS.indigo[900],
-    textColor: "#ffffff",
+    textColor: '#ffffff',
     fontSize: 14,
     fontWeight: 600,
     paddingLeft: 7,
     height: 36,
-    borderBottom: "1px solid ",
+    borderBottom: '1px solid ',
     borderColor: COLORS.blueGrey[700],
   },
   2: {
     containerBg: COLORS.indigo[900],
-    textColor: "#ffffff",
+    textColor: '#ffffff',
     fontSize: 12,
     fontWeight: 500,
     paddingLeft: 7,
     height: 36,
-    borderBottom: "1px solid ",
+    borderBottom: '1px solid ',
     borderColor: COLORS.blueGrey[700],
   },
   default: {
     containerBg: COLORS.common.white,
-    textColor: "rgba(0, 0, 0, 0.87)",
+    textColor: 'rgba(0, 0, 0, 0.87)',
     fontSize: 12,
     fontWeight: 500,
     paddingLeft: 8,
     height: 32,
-    borderBottom: "1px solid ",
+    borderBottom: '1px solid ',
     borderColor: COLORS.blueGrey[50],
   },
 };
@@ -146,7 +146,7 @@ export default function SideNavigation({
         return next;
       });
     },
-    [collectDescendantIds]
+    [collectDescendantIds],
   );
 
   useEffect(() => {
@@ -156,13 +156,13 @@ export default function SideNavigation({
   }, [open]);
 
   const renderItems = useCallback(
-    (items: MenuItem[], depth = 0, parentPath = "") => {
+    (items: MenuItem[], depth = 0, parentPath = '') => {
       return items.map((item) => {
         const hasChildren =
           Array.isArray(item.children) && item.children.length > 0;
         const isExpanded = !!expanded[item.id];
         const currentPath = pathFor([
-          ...parentPath.split("/").filter(Boolean),
+          ...parentPath.split('/').filter(Boolean),
           item.id,
         ]);
         // 깊이별 스타일 합성(동적 요소만 반영)
@@ -173,21 +173,21 @@ export default function SideNavigation({
                 ...base,
                 ...(isExpanded && {
                   containerBg: COLORS.indigo[800],
-                  borderBottom: "1px solid ",
+                  borderBottom: '1px solid ',
                   borderColor: COLORS.indigo[900],
                 }),
               }
             : depth === 1 || depth === 2
-            ? {
-                ...base,
-                ...(hasChildren &&
-                  isExpanded && {
-                    containerBg: COLORS.indigo[800],
-                    borderBottom: "1px solid ",
-                    borderColor: COLORS.indigo[900],
-                  }),
-              }
-            : base;
+              ? {
+                  ...base,
+                  ...(hasChildren &&
+                    isExpanded && {
+                      containerBg: COLORS.indigo[800],
+                      borderBottom: '1px solid ',
+                      borderColor: COLORS.indigo[900],
+                    }),
+                }
+              : base;
 
         return (
           <Box
@@ -207,7 +207,7 @@ export default function SideNavigation({
                 pl: stylesByDepth.paddingLeft,
                 py: 0,
                 height: stylesByDepth.height,
-                "& .MuiListItemText-primary": {
+                '& .MuiListItemText-primary': {
                   color: stylesByDepth.textColor,
                   fontSize: stylesByDepth.fontSize,
                   fontWeight: stylesByDepth.fontWeight,
@@ -229,8 +229,8 @@ export default function SideNavigation({
                   sx={{
                     color: stylesByDepth.textColor,
                     fontSize: 24,
-                    transition: "transform 0.3s ease-in-out",
-                    transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: 'transform 0.3s ease-in-out',
+                    transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
                   }}
                 />
               )}
@@ -246,12 +246,12 @@ export default function SideNavigation({
         );
       });
     },
-    [expanded, handleToggleAtDepth, onOpenChange, router]
+    [expanded, handleToggleAtDepth, onOpenChange, router],
   );
 
   return (
     <Drawer open={open} onClose={() => onOpenChange(false)}>
-      <Box minWidth={368} bgcolor={COLORS.indigo[900]} height={"100%"}>
+      <Box minWidth={368} bgcolor={COLORS.indigo[900]} height={'100%'}>
         <Box
           bgcolor={COLORS.indigo[900]}
           height={54}
@@ -260,7 +260,7 @@ export default function SideNavigation({
           alignItems="center"
         >
           <IconButton onClick={() => onOpenChange(false)}>
-            <MenuOpen sx={{ color: "white", fontSize: 24 }} />
+            <MenuOpen sx={{ color: 'white', fontSize: 24 }} />
           </IconButton>
         </Box>
         <Box>

@@ -41,7 +41,7 @@ type BSAMenuTreeItemProps = {
 
 interface ChunkProps {
   title: string;
-  status: "done" | "in-progress" | "completed" | "draft";
+  status: 'done' | 'in-progress' | 'completed' | 'draft';
   content: string;
   progressId: string;
   attachedFile: {

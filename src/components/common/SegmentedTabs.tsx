@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Tab, Tabs } from "@mui/material";
+import { Tab, Tabs } from '@mui/material';
 
-import { COLORS } from "@/lib/theme";
+import { COLORS } from '@/lib/theme';
 
 export type SegmentedTabItem = {
   value: string;
@@ -32,23 +32,23 @@ export default function SegmentedTabs({
         minHeight: 36,
         bgcolor: COLORS.grey[100],
         borderRadius: 2,
-        "& .MuiTab-root": {
+        '& .MuiTab-root': {
           minHeight: 36,
-          transition: "color 200ms ease",
-          position: "relative",
+          transition: 'color 200ms ease',
+          position: 'relative',
           lineHeight: 1,
           zIndex: 1,
         },
-        "& .MuiTabs-indicator": {
-          height: "calc(100% - 8px)",
+        '& .MuiTabs-indicator': {
+          height: 'calc(100% - 8px)',
           top: 4,
-          bottom: "auto",
-          backgroundColor: "white",
+          bottom: 'auto',
+          backgroundColor: 'white',
           borderRadius: 2,
-          boxShadow: "0 0 4px 0 rgba(23, 28, 60, 0.48)",
-          transition: "left 240ms ease, width 240ms ease",
+          boxShadow: '0 0 4px 0 rgba(23, 28, 60, 0.48)',
+          transition: 'left 240ms ease, width 240ms ease',
           zIndex: 0,
-          pointerEvents: "none",
+          pointerEvents: 'none',
         },
       }}
     >
@@ -59,14 +59,14 @@ export default function SegmentedTabs({
           label={item.label}
           sx={{
             m: 0.5,
-            p: "6px 10px",
-            textTransform: "none",
-            "&.Mui-selected": {
-              color: "text.primary",
-              backgroundColor: "transparent",
+            p: '6px 10px',
+            textTransform: 'none',
+            '&.Mui-selected': {
+              color: 'text.primary',
+              backgroundColor: 'transparent',
               borderRadius: 2,
               m: 0.5,
-              boxShadow: "none",
+              boxShadow: 'none',
             },
           }}
           disableRipple

@@ -13,21 +13,21 @@ import {
   DialogContentText,
   DialogActions,
   Button,
-} from "@mui/material";
-import { useState, useMemo, useRef, useEffect, memo } from "react";
+} from '@mui/material';
+import { useState, useMemo, useRef, useEffect, memo } from 'react';
 import {
   Add,
   DeleteOutline,
   EditOutlined,
   MoreVert,
-} from "@mui/icons-material";
+} from '@mui/icons-material';
 
-import LeftPanelOpenIcon from "@/assets/icon-left-panel-open.svg";
-import LeftPanelCloseIcon from "@/assets/icon-left-panel-close.svg";
-import { COLORS } from "@/lib/constants/color";
-import { useChatStore } from "@/lib/store/chatStore";
-import { Thread } from "@/lib/types/chat";
-import InputWithLabel from "@/components/common/Input";
+import LeftPanelOpenIcon from '@/assets/icon-left-panel-open.svg';
+import LeftPanelCloseIcon from '@/assets/icon-left-panel-close.svg';
+import { COLORS } from '@/lib/constants/color';
+import { useChatStore } from '@/lib/store/chatStore';
+import { Thread } from '@/lib/types/chat';
+import InputWithLabel from '@/components/common/Input';
 
 // Sidebar widths (px)
 const SIDEBAR_CLOSED_WIDTH_PX = 48;
@@ -41,7 +41,7 @@ export default function ChatSidebar() {
   const currentThreadId = useChatStore((s) => s.currentThreadId);
   const sidebarWidth = useMemo(
     () => (sidebarOpen ? SIDEBAR_OPEN_WIDTH_PX : SIDEBAR_CLOSED_WIDTH_PX),
-    [sidebarOpen]
+    [sidebarOpen],
   );
   return (
     <ClickAwayListener onClickAway={() => sidebarOpen && setSidebarOpen(false)}>
@@ -50,30 +50,30 @@ export default function ChatSidebar() {
         aria-expanded={sidebarOpen}
         elevation={6}
         sx={{
-          position: "absolute",
+          position: 'absolute',
           top: 0,
           bottom: 0,
           left: 0,
           width: sidebarWidth,
           transition: (theme) =>
-            theme.transitions.create(["width"], {
+            theme.transitions.create(['width'], {
               duration: theme.transitions.duration.standard,
               easing: theme.transitions.easing.easeInOut,
             }),
           px: 1,
           py: 1.5,
           borderRadius: 0,
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
           zIndex: (theme) => theme.zIndex.appBar - 1,
         }}
       >
         <IconButton
           onClick={() => setSidebarOpen((v) => !v)}
-          aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
+          aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
           aria-controls="chat-sidebar-content"
-          sx={{ alignSelf: "flex-start" }}
+          sx={{ alignSelf: 'flex-start' }}
           size="small"
         >
           {sidebarOpen ? (
@@ -89,15 +89,15 @@ export default function ChatSidebar() {
           sx={{
             width: SIDEBAR_CONTENT_WIDTH_PX,
             minWidth: SIDEBAR_CONTENT_WIDTH_PX,
-            flex: "0 0 auto",
-            height: "100%",
+            flex: '0 0 auto',
+            height: '100%',
             opacity: sidebarOpen ? 1 : 0,
             transition: (theme) =>
-              theme.transitions.create(["opacity"], {
+              theme.transitions.create(['opacity'], {
                 duration: theme.transitions.duration.shorter,
                 easing: theme.transitions.easing.easeInOut,
               }),
-            pointerEvents: sidebarOpen ? "auto" : "none",
+            pointerEvents: sidebarOpen ? 'auto' : 'none',
           }}
           hidden={!sidebarOpen}
         >
@@ -110,13 +110,13 @@ export default function ChatSidebar() {
             borderColor={COLORS.primary.states.outlineBorder}
             borderRadius={1}
             color={COLORS.primary.main}
-            display={"flex"}
-            alignItems={"center"}
-            justifyContent={"center"}
+            display={'flex'}
+            alignItems={'center'}
+            justifyContent={'center'}
             gap={0.5}
             sx={{
-              cursor: "pointer",
-              "&:hover": { backgroundColor: COLORS.primary.states.hover },
+              cursor: 'pointer',
+              '&:hover': { backgroundColor: COLORS.primary.states.hover },
             }}
           >
             <Add />
@@ -134,7 +134,7 @@ export default function ChatSidebar() {
           >
             History
           </Typography>
-          <Box flex={1} display={"flex"} flexDirection={"column"}>
+          <Box flex={1} display={'flex'} flexDirection={'column'}>
             {threadHistory.map((thread) => (
               <ChatSidebarItem
                 key={thread.threadId}
@@ -165,7 +165,7 @@ const ChatSidebarItemComponent = ({
   const open = Boolean(anchorEl);
   const menuButtonId = useMemo(
     () => `thread-menu-button-${thread.threadId}`,
-    [thread.threadId]
+    [thread.threadId],
   );
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -180,9 +180,9 @@ const ChatSidebarItemComponent = ({
   };
 
   const handleMenuItemClick = (action: string) => {
-    if (action === "delete") {
+    if (action === 'delete') {
       setDeleteDialogOpen(true);
-    } else if (action === "rename") {
+    } else if (action === 'rename') {
       setIsRenaming(true);
     }
     handleMenuClose();
@@ -202,11 +202,11 @@ const ChatSidebarItemComponent = ({
   const renameInputRef = useRef<HTMLInputElement>(null);
 
   const handleRenameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       setIsRenaming(false);
       renameThread(thread.threadId, renameValue);
     }
-    if (e.key === "Escape") {
+    if (e.key === 'Escape') {
       setIsRenaming(false);
       setRenameValue(thread.name);
     }
@@ -241,11 +241,11 @@ const ChatSidebarItemComponent = ({
         <Box
           height={36}
           pl={1}
-          bgcolor={isSelected ? COLORS.blueGrey[50] : "transparent"}
+          bgcolor={isSelected ? COLORS.blueGrey[50] : 'transparent'}
           borderRadius={2}
           sx={{
-            cursor: "pointer",
-            "&:hover": { backgroundColor: COLORS.grey[100] },
+            cursor: 'pointer',
+            '&:hover': { backgroundColor: COLORS.grey[100] },
           }}
           onClick={() => setCurrentThread(thread.threadId)}
           onMouseEnter={() => setIsHovered(true)}
@@ -254,19 +254,19 @@ const ChatSidebarItemComponent = ({
               setIsHovered(false);
             }
           }}
-          display={"flex"}
-          alignItems={"center"}
-          justifyContent={"space-between"}
+          display={'flex'}
+          alignItems={'center'}
+          justifyContent={'space-between'}
         >
-          <Typography fontSize={14}>{thread.name || "New Chat"}</Typography>
+          <Typography fontSize={14}>{thread.name || 'New Chat'}</Typography>
           {isHovered && (
             <IconButton
               size="small"
               onClick={handleMenuClick}
               id={menuButtonId}
-              aria-controls={open ? "thread-menu" : undefined}
+              aria-controls={open ? 'thread-menu' : undefined}
               aria-haspopup={true}
-              aria-expanded={open ? "true" : undefined}
+              aria-expanded={open ? 'true' : undefined}
             >
               <MoreVert sx={{ fontSize: 20 }} />
             </IconButton>
@@ -280,7 +280,7 @@ const ChatSidebarItemComponent = ({
             disablePortal
             slotProps={{
               list: {
-                "aria-labelledby": menuButtonId,
+                'aria-labelledby': menuButtonId,
               },
               paper: {
                 sx: {
@@ -288,11 +288,11 @@ const ChatSidebarItemComponent = ({
                 },
               },
             }}
-            transformOrigin={{ horizontal: "right", vertical: "top" }}
-            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             disableAutoFocusItem
           >
-            <MenuItem onClick={() => handleMenuItemClick("rename")}>
+            <MenuItem onClick={() => handleMenuItemClick('rename')}>
               <EditOutlined
                 sx={{ fontSize: 20, color: COLORS.action.active, mr: 1 }}
               />
@@ -300,7 +300,7 @@ const ChatSidebarItemComponent = ({
                 Name Edit
               </ListItemText>
             </MenuItem>
-            <MenuItem onClick={() => handleMenuItemClick("delete")}>
+            <MenuItem onClick={() => handleMenuItemClick('delete')}>
               <DeleteOutline
                 sx={{ fontSize: 20, color: COLORS.action.active, mr: 1 }}
               />
@@ -339,7 +339,7 @@ const ChatSidebarItemComponent = ({
               }}
             >
               <DialogContentText id="delete-dialog-description">
-                This action will delete &ldquo;{thread.name || "New Chat"}
+                This action will delete &ldquo;{thread.name || 'New Chat'}
                 &rdquo;
               </DialogContentText>
             </DialogContent>
@@ -349,9 +349,9 @@ const ChatSidebarItemComponent = ({
                 variant="outlined"
                 size="small"
                 sx={{
-                  color: "text.primary",
-                  borderColor: "text.primary",
-                  borderRadius: "6px",
+                  color: 'text.primary',
+                  borderColor: 'text.primary',
+                  borderRadius: '6px',
                 }}
               >
                 Cancel
@@ -374,5 +374,5 @@ const ChatSidebarItemComponent = ({
 const ChatSidebarItem = memo(
   ChatSidebarItemComponent,
   (prev, next) =>
-    prev.isSelected === next.isSelected && prev.thread === next.thread
+    prev.isSelected === next.isSelected && prev.thread === next.thread,
 );

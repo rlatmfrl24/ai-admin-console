@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
-import type { NavigationItem } from "@/lib/types/navigation";
+import type { NavigationItem } from '@/lib/types/navigation';
 
 import {
   breadcrumbFor,
@@ -9,7 +9,7 @@ import {
   findItemByIds,
   isValidPath,
   pathFor,
-} from "@/lib/navigation";
+} from '@/lib/navigation';
 
 type PageProps = {
   params: Promise<{ second: string; segments?: string[] }>;
@@ -17,7 +17,7 @@ type PageProps = {
 
 export default async function Page({ params }: PageProps) {
   const { second, segments } = await params;
-  const ids = ["response-management", second, ...(segments ?? [])];
+  const ids = ['response-management', second, ...(segments ?? [])];
 
   if (!isValidPath(ids)) return notFound();
 
@@ -30,14 +30,14 @@ export default async function Page({ params }: PageProps) {
       <nav aria-label="breadcrumb" style={{ marginBottom: 12 }}>
         {breadcrumbs.map((bc, idx) => (
           <span key={bc.href}>
-            {idx > 0 && " / "}
+            {idx > 0 && ' / '}
             <Link href={bc.href}>{bc.label}</Link>
           </span>
         ))}
       </nav>
       <h1 style={{ margin: 0 }}>{item?.label}</h1>
       {item?.description && (
-        <p style={{ color: "#6b7280", marginTop: 8 }}>{item.description}</p>
+        <p style={{ color: '#6b7280', marginTop: 8 }}>{item.description}</p>
       )}
       {children.length > 0 ? (
         <ul style={{ paddingLeft: 16, marginTop: 16 }}>

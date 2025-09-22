@@ -1,37 +1,37 @@
-import { forwardRef } from "react";
-import { Box, MenuItem, Select, SelectProps } from "@mui/material";
-import { Typography } from "@mui/material";
-import { SxProps } from "@mui/system";
+import { forwardRef } from 'react';
+import { Box, MenuItem, Select, SelectProps } from '@mui/material';
+import { Typography } from '@mui/material';
+import { SxProps } from '@mui/system';
 
-import type { Theme } from "@mui/material/styles";
+import type { Theme } from '@mui/material/styles';
 
-import { COLORS } from "@/lib/theme";
+import { COLORS } from '@/lib/theme';
 
 export interface SelectWithLabelOption {
   label: string;
   value: string;
 }
-export interface SelectWithLabelProps extends Omit<SelectProps, "size"> {
+export interface SelectWithLabelProps extends Omit<SelectProps, 'size'> {
   label: string;
-  size?: "small" | "medium";
+  size?: 'small' | 'medium';
   options: SelectWithLabelOption[];
   sx?: SxProps<Theme>;
 }
 
 const SelectWithLabel = forwardRef<HTMLDivElement, SelectWithLabelProps>(
   function SelectWithLabel(
-    { label, size = "medium", options, sx, ...props },
-    ref
+    { label, size = 'medium', options, sx, ...props },
+    ref,
   ) {
     return (
-      <Box display={"flex"} flexDirection={"column"}>
+      <Box display={'flex'} flexDirection={'column'}>
         <Typography
           id={props.id ? `${props.id}-label` : undefined}
           variant="caption"
-          color={"text.primary"}
-          lineHeight={size === "small" ? 1 : 1.3}
-          fontWeight={size === "small" ? 400 : 500}
-          m={"2px"}
+          color={'text.primary'}
+          lineHeight={size === 'small' ? 1 : 1.3}
+          fontWeight={size === 'small' ? 400 : 500}
+          m={'2px'}
         >
           {label}
         </Typography>
@@ -41,13 +41,13 @@ const SelectWithLabel = forwardRef<HTMLDivElement, SelectWithLabelProps>(
           labelId={props.id ? `${props.id}-label` : undefined}
           aria-labelledby={props.id ? `${props.id}-label` : undefined}
           sx={{
-            height: size === "small" ? 24 : 36,
-            ".MuiOutlinedInput-input": {
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              padding: size === "small" ? "0 8px" : "0 12px",
-              fontSize: size === "small" ? "12px" : "13px",
+            height: size === 'small' ? 24 : 36,
+            '.MuiOutlinedInput-input': {
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              padding: size === 'small' ? '0 8px' : '0 12px',
+              fontSize: size === 'small' ? '12px' : '13px',
             },
             ...(sx as SxProps),
           }}
@@ -61,10 +61,10 @@ const SelectWithLabel = forwardRef<HTMLDivElement, SelectWithLabelProps>(
                 lineHeight: 1.3,
                 fontWeight: 400,
                 p: 1,
-                "&.Mui-selected": {
+                '&.Mui-selected': {
                   backgroundColor: COLORS.text.states.selected,
                 },
-                "&:hover": {
+                '&:hover': {
                   backgroundColor: COLORS.text.states.hover,
                 },
               }}
@@ -75,7 +75,7 @@ const SelectWithLabel = forwardRef<HTMLDivElement, SelectWithLabelProps>(
         </Select>
       </Box>
     );
-  }
+  },
 );
 
 export default SelectWithLabel;

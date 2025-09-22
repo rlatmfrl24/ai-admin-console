@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Box } from "@mui/material";
+import { useState } from 'react';
+import { Box } from '@mui/material';
 
-import { MainAppBar } from "./MainAppBar";
-import SideNavigation from "./SideNavigation";
+import { MainAppBar } from './MainAppBar';
+import SideNavigation from './SideNavigation';
 
 type AppShellProps = {
   children: React.ReactNode;

@@ -1,8 +1,8 @@
-import React from "react";
-import { colors } from "@mui/material";
+import React from 'react';
+import { colors } from '@mui/material';
 
-import { buildSearchRegex } from "@/lib/utils/search";
-import { useChatStore } from "@/lib/store/chatStore";
+import { buildSearchRegex } from '@/lib/utils/search';
+import { useChatStore } from '@/lib/store/chatStore';
 
 type HighlightOptions = {
   // caseSensitive/useRegex는 전역 스토어를 사용합니다. 호출부에서 넘길 필요가 없습니다.
@@ -12,7 +12,7 @@ type HighlightOptions = {
 export function renderHighlightedText(
   text: string,
   query: string,
-  options: HighlightOptions = {}
+  options: HighlightOptions = {},
 ): React.ReactNode {
   if (!query || !query.trim()) return text;
   const caseSensitive = useChatStore.getState().searchCaseSensitive;
@@ -39,7 +39,7 @@ export function renderHighlightedText(
       nodes.push(
         <React.Fragment key={lastIndex}>
           {text.slice(lastIndex, start)}
-        </React.Fragment>
+        </React.Fragment>,
       );
     }
     occurrenceIndex += 1;
@@ -51,12 +51,12 @@ export function renderHighlightedText(
         style={{
           backgroundColor: isActive
             ? colors.teal.A200
-            : "rgba(64, 255, 218, 0.32)",
+            : 'rgba(64, 255, 218, 0.32)',
           padding: 0,
         }}
       >
         {text.slice(start, end)}
-      </span>
+      </span>,
     );
     lastIndex = end;
     if (regex.lastIndex === match.index) {
@@ -65,7 +65,7 @@ export function renderHighlightedText(
   }
   if (lastIndex < text.length) {
     nodes.push(
-      <React.Fragment key={lastIndex}>{text.slice(lastIndex)}</React.Fragment>
+      <React.Fragment key={lastIndex}>{text.slice(lastIndex)}</React.Fragment>,
     );
   }
   return nodes.length > 0 ? nodes : text;

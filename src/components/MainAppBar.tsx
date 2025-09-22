@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { memo } from "react";
+import React, { memo } from 'react';
 import {
   AppBar,
   Box,
@@ -9,17 +9,17 @@ import {
   TextField,
   InputAdornment,
   Typography,
-} from "@mui/material";
-import { Menu, Search } from "@mui/icons-material";
-import Link from "next/link";
+} from '@mui/material';
+import { Menu, Search } from '@mui/icons-material';
+import Link from 'next/link';
 
-import NXLogo from "@/assets/logo-nx.svg";
-import SolutionIcon from "@/assets/icon-solution.svg";
-import FlowIcon from "@/assets/icon-flow.svg";
-import NotificationIcon from "@/assets/icon-notification.svg";
-import UserIcon from "@/assets/icon-user-profile.svg";
-import BusinessIcon from "@/assets/icon-business.svg";
-import { COLORS } from "@/lib/theme";
+import NXLogo from '@/assets/logo-nx.svg';
+import SolutionIcon from '@/assets/icon-solution.svg';
+import FlowIcon from '@/assets/icon-flow.svg';
+import NotificationIcon from '@/assets/icon-notification.svg';
+import UserIcon from '@/assets/icon-user-profile.svg';
+import BusinessIcon from '@/assets/icon-business.svg';
+import { COLORS } from '@/lib/theme';
 
 type MainAppBarProps = {
   onMenuClick?: () => void;
@@ -42,9 +42,9 @@ export const MainAppBar = memo(function MainAppBar({
           aria-label="Open side navigation"
           title="Menu"
         >
-          <Menu sx={{ color: "white" }} />
+          <Menu sx={{ color: 'white' }} />
         </IconButton>
-        <Link href="/" style={{ display: "flex", alignItems: "center" }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
           <NXLogo />
         </Link>
         <Box
@@ -72,13 +72,13 @@ export const MainAppBar = memo(function MainAppBar({
             sx={{
               mx: 1.5,
               minWidth: 336,
-              "& .MuiOutlinedInput-root": {
+              '& .MuiOutlinedInput-root': {
                 backgroundColor: COLORS.indigo[800],
-                borderRadius: "28px",
-                color: "white",
+                borderRadius: '28px',
+                color: 'white',
               },
-              "& .MuiOutlinedInput-input": {
-                padding: "8px 12px",
+              '& .MuiOutlinedInput-input': {
+                padding: '8px 12px',
                 fontSize: 14,
               },
             }}

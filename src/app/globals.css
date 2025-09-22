@@ -1,9 +1,6 @@
-
-
 :root {
-  --background: #E5E9ED;
+  --background: #e5e9ed;
   --foreground: #171717;
-  
 }
 
 html,
@@ -23,21 +20,20 @@ body {
     border-radius: 0px 8px 8px 0px;
   }
   ::-webkit-scrollbar-thumb {
-    background-color: #CCD2E3;
+    background-color: #ccd2e3;
     background-clip: padding-box;
     border-radius: 8px;
     border: 3px solid transparent;
   }
   ::-webkit-scrollbar-track {
     background-color: white;
-    border-left: 1px solid #CCD2E3;
+    border-left: 1px solid #ccd2e3;
     border-radius: 0px 8px 8px 0px;
   }
-
 }
 
 /* Chat content 전용 스크롤바 트랙 오버라이드 */
-[aria-label="chat-content"]::-webkit-scrollbar-track {
+[aria-label='chat-content']::-webkit-scrollbar-track {
   border-left: none;
   background-color: transparent;
 }

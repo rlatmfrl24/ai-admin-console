@@ -1,4 +1,4 @@
-import { Chip as MuiChip, ChipProps } from "@mui/material";
+import { Chip as MuiChip, ChipProps } from '@mui/material';
 
 export function Chip({
   label,

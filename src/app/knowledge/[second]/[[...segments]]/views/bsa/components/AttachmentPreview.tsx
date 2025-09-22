@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 // [인수인계 메모]
 // - 역할: 첨부 이미지/문서 미리보기 및 설명 입력.
@@ -6,18 +6,18 @@
 // - 유의: Next/Image 최적화와 모달 프리로드 로직으로 초기 깜빡임 최소화.
 // - 접근성: 모달 열림 시 포커스 트랩/esc 닫기, aria-labelledby 제공(이미 반영).
 
-import { Box, IconButton, InputBase, Typography } from "@mui/material";
-import { Close, OpenInNew } from "@mui/icons-material";
-import Image from "next/image";
-import { useState } from "react";
+import { Box, IconButton, InputBase, Typography } from '@mui/material';
+import { Close, OpenInNew } from '@mui/icons-material';
+import Image from 'next/image';
+import { useState } from 'react';
 
-import { COLORS } from "@/lib/theme";
-import { ImagePreviewModal } from "@/components/common/ImagePreviewModal";
+import { COLORS } from '@/lib/theme';
+import { ImagePreviewModal } from '@/components/common/ImagePreviewModal';
 
 type AttachmentPreviewItemProps = {
   url: string;
   index: number;
-  mode: "edit" | "read";
+  mode: 'edit' | 'read';
   description: string;
   onChangeDescription?: (value: string) => void;
   onRemove?: () => void;
@@ -25,7 +25,7 @@ type AttachmentPreviewItemProps = {
 };
 
 type AttachmentUIPreviewProps = Partial<AttachmentPreviewItemProps> &
-  Pick<AttachmentPreviewItemProps, "url" | "index">;
+  Pick<AttachmentPreviewItemProps, 'url' | 'index'>;
 
 // removed: getMimeTypeFromDataUrl - no longer needed after removing type branches
 
@@ -38,16 +38,16 @@ export function AttachmentPreviewForUI({
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   return (
     <Box
-      bgcolor={"white"}
+      bgcolor={'white'}
       borderRadius={2}
       border={1}
       borderColor={COLORS.blueGrey[100]}
       p={1.5}
       pt={0.5}
-      display={"flex"}
-      flexDirection={"column"}
+      display={'flex'}
+      flexDirection={'column'}
     >
-      <Box display={"flex"} alignItems={"center"}>
+      <Box display={'flex'} alignItems={'center'}>
         <Typography
           id={`attachment-ui-screen-title-${index}`}
           fontSize={12}
@@ -81,11 +81,11 @@ export function AttachmentPreviewForUI({
         height={0}
         sizes="100vw"
         style={{
-          display: "block",
-          width: "100%",
-          height: "auto",
-          borderRadius: "4px",
-          objectFit: "cover",
+          display: 'block',
+          width: '100%',
+          height: 'auto',
+          borderRadius: '4px',
+          objectFit: 'cover',
         }}
         loading="lazy"
       />
@@ -115,15 +115,15 @@ export function AttachmentPreviewForDocument({
 
   return (
     <Box
-      bgcolor={"white"}
+      bgcolor={'white'}
       borderRadius={2}
       border={1}
       borderColor={COLORS.blueGrey[100]}
       p={1.5}
       sx={{ lineHeight: 0 }}
-      position={"relative"}
-      display={"flex"}
-      alignItems={"center"}
+      position={'relative'}
+      display={'flex'}
+      alignItems={'center'}
       gap={1.5}
     >
       <Image
@@ -132,16 +132,16 @@ export function AttachmentPreviewForDocument({
         src={url}
         alt={`attachment-preview-${index}`}
         style={{
-          display: "block",
-          borderRadius: "4px",
-          cursor: "zoom-in",
-          objectFit: "cover",
+          display: 'block',
+          borderRadius: '4px',
+          cursor: 'zoom-in',
+          objectFit: 'cover',
         }}
         loading="lazy"
         onClick={() => setIsPreviewOpen(true)}
       />
 
-      {mode === "edit" ? (
+      {mode === 'edit' ? (
         <InputBase
           sx={{ flex: 1, fontSize: 13 }}
           multiline
@@ -154,15 +154,15 @@ export function AttachmentPreviewForDocument({
           value={description}
         />
       ) : (
-        <Typography sx={{ flex: 1, whiteSpace: "pre-line" }} fontSize={12}>
+        <Typography sx={{ flex: 1, whiteSpace: 'pre-line' }} fontSize={12}>
           {description}
         </Typography>
       )}
 
-      {mode === "edit" && (
+      {mode === 'edit' && (
         <IconButton
           size="small"
-          sx={{ alignSelf: "flex-start" }}
+          sx={{ alignSelf: 'flex-start' }}
           aria-label="Remove attachment"
           onClick={onRemove}
         >

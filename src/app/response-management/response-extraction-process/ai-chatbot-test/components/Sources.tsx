@@ -3,7 +3,7 @@ import {
   ExpandMore,
   LocalOffer,
   OpenInNew,
-} from "@mui/icons-material";
+} from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -11,23 +11,23 @@ import {
   Divider,
   IconButton,
   Typography,
-} from "@mui/material";
-import { useState } from "react";
-import Image from "next/image";
+} from '@mui/material';
+import { useState } from 'react';
+import Image from 'next/image';
 
-import APIIcon from "@/assets/icon-agent-api.svg";
+import APIIcon from '@/assets/icon-agent-api.svg';
 import {
   PimAnswerSource,
   ChatAnswerSource,
   RetrievalAnswerSource,
   ApiAnswerSource,
-} from "@/lib/types/chat";
-import { COLORS } from "@/lib/theme";
-import { ImagePreviewModal } from "@/components/common/ImagePreviewModal";
-import { useChatStore } from "@/lib/store/chatStore";
+} from '@/lib/types/chat';
+import { COLORS } from '@/lib/theme';
+import { ImagePreviewModal } from '@/components/common/ImagePreviewModal';
+import { useChatStore } from '@/lib/store/chatStore';
 
 function getRankSuffix(rank: number) {
-  return rank === 1 ? "st" : rank === 2 ? "nd" : rank === 3 ? "rd" : "th";
+  return rank === 1 ? 'st' : rank === 2 ? 'nd' : rank === 3 ? 'rd' : 'th';
 }
 
 const RankBadge = ({ rank }: { rank: number }) => {
@@ -35,20 +35,20 @@ const RankBadge = ({ rank }: { rank: number }) => {
     <Box
       width={36}
       height={36}
-      display={"flex"}
-      alignItems={"center"}
-      justifyContent={"center"}
+      display={'flex'}
+      alignItems={'center'}
+      justifyContent={'center'}
       borderRadius={99}
       bgcolor={COLORS.primary.states.focus}
       border={1}
       borderColor={COLORS.blueGrey[100]}
       color={COLORS.primary.main}
-      gap={"2px"}
+      gap={'2px'}
     >
       <Typography fontSize={16} fontWeight={500}>
         {rank}
       </Typography>
-      <Typography fontSize={12} fontWeight={500} mt={"1px"}>
+      <Typography fontSize={12} fontWeight={500} mt={'1px'}>
         {getRankSuffix(rank)}
       </Typography>
     </Box>
@@ -61,7 +61,7 @@ const KeywordChip = ({ keyword }: { keyword: string }) => {
       fontSize={12}
       px={1}
       py={0.5}
-      width={"fit-content"}
+      width={'fit-content'}
       borderRadius={2}
       bgcolor={COLORS.blueGrey[50]}
       lineHeight={1}
@@ -87,13 +87,13 @@ export const RetrievalSource = ({
       border={1}
       borderColor={COLORS.blueGrey[200]}
       borderRadius={1}
-      display={"flex"}
-      flexDirection={"column"}
+      display={'flex'}
+      flexDirection={'column'}
     >
       <Box
-        display={"flex"}
-        flexDirection={"row"}
-        alignItems={"center"}
+        display={'flex'}
+        flexDirection={'row'}
+        alignItems={'center'}
         gap={1.5}
         px={2}
         pt={1.5}
@@ -114,19 +114,19 @@ export const RetrievalSource = ({
         </Box>
         <IconButton
           size="small"
-          sx={{ alignSelf: "flex-start" }}
+          sx={{ alignSelf: 'flex-start' }}
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <ExpandMore
             sx={{
               fontSize: 20,
-              transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+              transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
             }}
           />
         </IconButton>
       </Box>
       <Collapse in={isExpanded}>
-        <Box p={2} pt={0} display={"flex"} flexDirection={"column"} gap={1.5}>
+        <Box p={2} pt={0} display={'flex'} flexDirection={'column'} gap={1.5}>
           {previewUrl ? (
             <>
               <Image
@@ -135,11 +135,11 @@ export const RetrievalSource = ({
                 width={200}
                 height={200}
                 style={{
-                  width: "100%",
-                  height: "auto",
-                  borderRadius: "4px",
-                  objectFit: "cover",
-                  cursor: "zoom-in",
+                  width: '100%',
+                  height: 'auto',
+                  borderRadius: '4px',
+                  objectFit: 'cover',
+                  cursor: 'zoom-in',
                 }}
                 onClick={() => setIsPreviewOpen(true)}
               />
@@ -159,9 +159,9 @@ export const RetrievalSource = ({
               border={1}
               borderColor={COLORS.blueGrey[100]}
               bgcolor={COLORS.blueGrey[50]}
-              display={"flex"}
-              alignItems={"center"}
-              justifyContent={"center"}
+              display={'flex'}
+              alignItems={'center'}
+              justifyContent={'center'}
             >
               <Typography fontSize={12} color={COLORS.blueGrey[300]}>
                 No Preview
@@ -169,10 +169,10 @@ export const RetrievalSource = ({
             </Box>
           )}
         </Box>
-        <Box p={2} pt={0} display={"flex"} flexDirection={"column"} gap={1.5}>
+        <Box p={2} pt={0} display={'flex'} flexDirection={'column'} gap={1.5}>
           <Typography
             fontSize={14}
-            lineHeight={"20px"}
+            lineHeight={'20px'}
             letterSpacing={0.14}
             color={COLORS.blueGrey[700]}
           >
@@ -184,22 +184,22 @@ export const RetrievalSource = ({
           </Button>
         </Box>
         <Divider />
-        <Box p={2} pt={1} pb={1} display={"flex"} flexDirection={"column"}>
+        <Box p={2} pt={1} pb={1} display={'flex'} flexDirection={'column'}>
           <Box
-            display={"flex"}
-            alignItems={"center"}
+            display={'flex'}
+            alignItems={'center'}
             gap={0.5}
             bgcolor={COLORS.grey[100]}
             px={2}
             py={1}
             mb={1}
-            borderRadius={"6px"}
+            borderRadius={'6px'}
           >
             <Typography
               fontSize={12}
               color={COLORS.blueGrey[300]}
-              display={"flex"}
-              alignItems={"center"}
+              display={'flex'}
+              alignItems={'center'}
               gap={0.5}
               mr={1}
             >
@@ -210,14 +210,14 @@ export const RetrievalSource = ({
               <KeywordChip key={`${keyword}-${index}`} keyword={keyword} />
             ))}
           </Box>
-          <Box display={"flex"} flexDirection={"row"} alignItems={"center"}>
+          <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
             <Typography
               fontSize={12}
               lineHeight={1}
               letterSpacing={0.14}
               color={COLORS.blueGrey[300]}
-              display={"flex"}
-              alignItems={"center"}
+              display={'flex'}
+              alignItems={'center'}
               gap={1}
               flex={1}
             >
@@ -232,18 +232,18 @@ export const RetrievalSource = ({
                 sx={{
                   fontSize: 20,
                   transform: isKeywordsExpanded
-                    ? "rotate(180deg)"
-                    : "rotate(0deg)",
+                    ? 'rotate(180deg)'
+                    : 'rotate(0deg)',
                 }}
               />
             </IconButton>
           </Box>
           <Collapse in={isKeywordsExpanded}>
             <Box
-              display={"flex"}
-              flexDirection={"row"}
+              display={'flex'}
+              flexDirection={'row'}
               gap={1}
-              flexWrap={"wrap"}
+              flexWrap={'wrap'}
             >
               {source.keywords.map((keyword, index) => (
                 <KeywordChip key={`${keyword}-${index}`} keyword={keyword} />
@@ -275,13 +275,13 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
       border={1}
       borderColor={COLORS.blueGrey[200]}
       borderRadius={1}
-      display={"flex"}
-      flexDirection={"column"}
+      display={'flex'}
+      flexDirection={'column'}
     >
       <Box
-        display={"flex"}
-        flexDirection={"row"}
-        alignItems={"center"}
+        display={'flex'}
+        flexDirection={'row'}
+        alignItems={'center'}
         gap={1.5}
         px={2}
         pt={1.5}
@@ -293,22 +293,22 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
         </Typography>
         <IconButton
           size="small"
-          sx={{ alignSelf: "flex-start" }}
+          sx={{ alignSelf: 'flex-start' }}
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <ExpandMore
             sx={{
               fontSize: 20,
-              transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+              transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
             }}
           />
         </IconButton>
       </Box>
       <Collapse in={isExpanded}>
-        <Box p={2} pt={0} display={"flex"} flexDirection={"column"} gap={1.5}>
+        <Box p={2} pt={0} display={'flex'} flexDirection={'column'} gap={1.5}>
           <Typography
             fontSize={14}
-            lineHeight={"20px"}
+            lineHeight={'20px'}
             letterSpacing={0.14}
             color={COLORS.blueGrey[700]}
           >
@@ -320,13 +320,13 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
             borderRadius={1}
             px={1.5}
             py={1}
-            display={"flex"}
-            flexDirection={"column"}
+            display={'flex'}
+            flexDirection={'column'}
           >
             <Box
-              display={"flex"}
-              flexDirection={"row"}
-              alignItems={"center"}
+              display={'flex'}
+              flexDirection={'row'}
+              alignItems={'center'}
               gap={1}
             >
               <Box
@@ -335,9 +335,9 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
                 p={0.5}
                 width={24}
                 height={24}
-                display={"flex"}
-                alignItems={"center"}
-                justifyContent={"center"}
+                display={'flex'}
+                alignItems={'center'}
+                justifyContent={'center'}
                 gap={1}
               >
                 <APIIcon />
@@ -360,8 +360,8 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
                   sx={{
                     fontSize: 20,
                     transform: isSpecificFieldsExpanded
-                      ? "rotate(180deg)"
-                      : "rotate(0deg)",
+                      ? 'rotate(180deg)'
+                      : 'rotate(0deg)',
                   }}
                 />
               </IconButton>
@@ -377,29 +377,29 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
                 {`Status: ${source.specificFields.status}`}
               </Typography>
               <Box
-                display={"flex"}
+                display={'flex'}
                 bgcolor={COLORS.grey[100]}
                 px={2}
                 py={1.5}
                 gap={1}
                 mt={1}
-                borderRadius={"6px"}
-                flexDirection={"column"}
+                borderRadius={'6px'}
+                flexDirection={'column'}
               >
                 <Typography fontSize={16} fontWeight={500}>
                   Intent
                 </Typography>
                 <Box
-                  display={"flex"}
-                  flexDirection={"row"}
+                  display={'flex'}
+                  flexDirection={'row'}
                   gap={1}
-                  flexWrap={"wrap"}
+                  flexWrap={'wrap'}
                 >
                   <Typography
                     fontSize={12}
                     color={COLORS.blueGrey[300]}
-                    display={"flex"}
-                    alignItems={"center"}
+                    display={'flex'}
+                    alignItems={'center'}
                     gap={0.5}
                   >
                     <LocalOffer sx={{ fontSize: 16 }} />
@@ -418,7 +418,7 @@ export const ApiSource = ({ source }: { source: ApiAnswerSource }) => {
               </Box>
             </Collapse>
           </Box>
-          <Box display={"flex"} flexDirection={"row"} gap={1}>
+          <Box display={'flex'} flexDirection={'row'} gap={1}>
             <Button
               variant="outlined"
               size="small"
@@ -446,13 +446,13 @@ export const PimSource = ({ source }: { source: PimAnswerSource }) => {
       border={1}
       borderColor={COLORS.blueGrey[200]}
       borderRadius={1}
-      display={"flex"}
-      flexDirection={"column"}
+      display={'flex'}
+      flexDirection={'column'}
     >
       <Box
-        display={"flex"}
-        flexDirection={"row"}
-        alignItems={"center"}
+        display={'flex'}
+        flexDirection={'row'}
+        alignItems={'center'}
         gap={1.5}
         px={2}
         pt={1.5}
@@ -464,19 +464,19 @@ export const PimSource = ({ source }: { source: PimAnswerSource }) => {
         </Typography>
         <IconButton
           size="small"
-          sx={{ alignSelf: "flex-start" }}
+          sx={{ alignSelf: 'flex-start' }}
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <ExpandMore
             sx={{
               fontSize: 20,
-              transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+              transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
             }}
           />
         </IconButton>
       </Box>
       <Collapse in={isExpanded}>
-        <Box p={2} pt={0} display={"flex"} flexDirection={"column"} gap={1.5}>
+        <Box p={2} pt={0} display={'flex'} flexDirection={'column'} gap={1.5}>
           <Typography fontSize={14} color={COLORS.blueGrey[700]}>
             {source.sourceDescription}
           </Typography>
@@ -494,13 +494,13 @@ export const ChatSource = ({ source }: { source: ChatAnswerSource }) => {
       border={1}
       borderColor={COLORS.blueGrey[200]}
       borderRadius={1}
-      display={"flex"}
-      flexDirection={"column"}
+      display={'flex'}
+      flexDirection={'column'}
     >
       <Box
-        display={"flex"}
-        flexDirection={"row"}
-        alignItems={"center"}
+        display={'flex'}
+        flexDirection={'row'}
+        alignItems={'center'}
         gap={1.5}
         px={2}
         pt={1.5}
@@ -512,30 +512,30 @@ export const ChatSource = ({ source }: { source: ChatAnswerSource }) => {
         </Typography>
         <IconButton
           size="small"
-          sx={{ alignSelf: "flex-start" }}
+          sx={{ alignSelf: 'flex-start' }}
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <ExpandMore
             sx={{
               fontSize: 20,
-              transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+              transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
             }}
           />
         </IconButton>
       </Box>
       <Collapse in={isExpanded}>
         <Box
-          display={"flex"}
-          flexDirection={"row"}
+          display={'flex'}
+          flexDirection={'row'}
           gap={1.5}
           px={2}
-          alignItems={"center"}
+          alignItems={'center'}
         >
           <Typography
             fontSize={12}
             color={COLORS.blueGrey[300]}
-            display={"flex"}
-            alignItems={"center"}
+            display={'flex'}
+            alignItems={'center'}
             gap={0.5}
           >
             <LocalOffer sx={{ fontSize: 16 }} />
@@ -545,10 +545,10 @@ export const ChatSource = ({ source }: { source: ChatAnswerSource }) => {
             <KeywordChip key={`${context}-${index}`} keyword={context} />
           ))}
         </Box>
-        <Box p={2} pt={1.5} display={"flex"} flexDirection={"column"} gap={1.5}>
+        <Box p={2} pt={1.5} display={'flex'} flexDirection={'column'} gap={1.5}>
           <Typography
             fontSize={14}
-            lineHeight={"20px"}
+            lineHeight={'20px'}
             letterSpacing={0.14}
             color={COLORS.blueGrey[700]}
           >

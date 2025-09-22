@@ -1,33 +1,33 @@
-import { forwardRef } from "react";
-import { Box, TextField, TextFieldProps } from "@mui/material";
-import { Typography } from "@mui/material";
-import { SxProps } from "@mui/system";
+import { forwardRef } from 'react';
+import { Box, TextField, TextFieldProps } from '@mui/material';
+import { Typography } from '@mui/material';
+import { SxProps } from '@mui/system';
 
-import type { Theme } from "@mui/material/styles";
+import type { Theme } from '@mui/material/styles';
 
-import { COLORS } from "@/lib/theme";
+import { COLORS } from '@/lib/theme';
 
-export interface InputWithLabelProps extends Omit<TextFieldProps, "size"> {
+export interface InputWithLabelProps extends Omit<TextFieldProps, 'size'> {
   label?: string;
-  size?: "small" | "medium";
+  size?: 'small' | 'medium';
   noLabel?: boolean;
   sx?: SxProps<Theme>;
 }
 
 const InputWithLabel = forwardRef<HTMLInputElement, InputWithLabelProps>(
   function InputWithLabel(
-    { label, size = "medium", noLabel, sx, ...props },
-    ref
+    { label, size = 'medium', noLabel, sx, ...props },
+    ref,
   ) {
     return (
-      <Box display={"flex"} flexDirection={"column"}>
+      <Box display={'flex'} flexDirection={'column'}>
         {!noLabel && (
           <Typography
             variant="caption"
-            color={"text.primary"}
-            lineHeight={size === "small" ? 1 : 1.3}
-            fontWeight={size === "small" ? 400 : 500}
-            m={"2px"}
+            color={'text.primary'}
+            lineHeight={size === 'small' ? 1 : 1.3}
+            fontWeight={size === 'small' ? 400 : 500}
+            m={'2px'}
           >
             {label}
           </Typography>
@@ -37,27 +37,27 @@ const InputWithLabel = forwardRef<HTMLInputElement, InputWithLabelProps>(
           inputRef={ref}
           {...props}
           sx={{
-            height: size === "small" ? 24 : 36,
-            "& .MuiOutlinedInput-root": {
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              fontSize: size === "small" ? "12px" : "13px",
-              backgroundColor: props.disabled ? COLORS.grey[100] : "white",
+            height: size === 'small' ? 24 : 36,
+            '& .MuiOutlinedInput-root': {
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              fontSize: size === 'small' ? '12px' : '13px',
+              backgroundColor: props.disabled ? COLORS.grey[100] : 'white',
             },
-            "& .MuiOutlinedInput-input": {
-              padding: "0px 12px",
+            '& .MuiOutlinedInput-input': {
+              padding: '0px 12px',
             },
-            "& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline":
+            '& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline':
               {
-                borderColor: "rgba(0, 0, 0, 0.23)",
+                borderColor: 'rgba(0, 0, 0, 0.23)',
               },
             ...(sx as SxProps),
           }}
         />
       </Box>
     );
-  }
+  },
 );
 
 export default InputWithLabel;

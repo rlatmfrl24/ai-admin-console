@@ -6,16 +6,16 @@ import {
   ListItemButton,
   ListItemText,
   Collapse,
-} from "@mui/material";
-import AssistantOutlinedIcon from "@mui/icons-material/AssistantOutlined";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { forwardRef, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+} from '@mui/material';
+import AssistantOutlinedIcon from '@mui/icons-material/AssistantOutlined';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { forwardRef, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-import { NavigationItem } from "../lib/types/navigation";
+import { NavigationItem } from '../lib/types/navigation';
 
-import { COLORS } from "@/lib/theme";
-import { pathFor } from "@/lib/navigation";
+import { COLORS } from '@/lib/theme';
+import { pathFor } from '@/lib/navigation';
 
 export const MainCard = forwardRef<
   HTMLDivElement,
@@ -78,7 +78,7 @@ export const MainCard = forwardRef<
   const renderItems = (
     items: MenuItem[],
     depth = 0,
-    ancestorIds: string[] = []
+    ancestorIds: string[] = [],
   ) => {
     const sortedItems = items
       .map((it, pos) => ({ it, pos }))
@@ -98,37 +98,37 @@ export const MainCard = forwardRef<
       const stylesByDepth = (() => {
         if (depth === 0) {
           return {
-            textColor: isItemExpanded ? "white" : COLORS.indigo[900],
+            textColor: isItemExpanded ? 'white' : COLORS.indigo[900],
             fontSize: 16,
             fontWeight: 700,
-            paddingLeft: "12px",
+            paddingLeft: '12px',
             height: 44,
             bgColor: isItemExpanded ? COLORS.indigo[900] : COLORS.common.white,
-            borderBottom: "1px solid ",
+            borderBottom: '1px solid ',
             borderColor: COLORS.blueGrey[100],
           } as const;
         }
         if (depth === 1) {
           return {
-            textColor: "black",
+            textColor: 'black',
             fontSize: 14,
-            paddingLeft: "24px",
+            paddingLeft: '24px',
             fontWeight: isItemExpanded ? 500 : 400,
             height: 36,
             bgColor: COLORS.grey[200],
-            borderBottom: "1px solid ",
+            borderBottom: '1px solid ',
             borderColor: COLORS.blueGrey[100],
           } as const;
         }
         if (depth === 2) {
           return {
-            textColor: "black",
+            textColor: 'black',
             fontSize: 12,
-            paddingLeft: "32px",
+            paddingLeft: '32px',
             fontWeight: 400,
             height: 32,
             bgColor: COLORS.blueGrey[100],
-            borderBottom: "1px solid ",
+            borderBottom: '1px solid ',
             borderColor: COLORS.blueGrey[50],
           } as const;
         }
@@ -150,7 +150,7 @@ export const MainCard = forwardRef<
             sx={{
               pl: stylesByDepth?.paddingLeft,
               height: stylesByDepth?.height,
-              "& .MuiListItemText-primary": {
+              '& .MuiListItemText-primary': {
                 color: stylesByDepth?.textColor,
                 fontSize: stylesByDepth?.fontSize,
                 fontWeight: stylesByDepth?.fontWeight,
@@ -165,8 +165,8 @@ export const MainCard = forwardRef<
                 sx={{
                   color: stylesByDepth?.textColor,
                   fontSize: 24,
-                  transition: "transform 0.3s ease-in-out",
-                  transform: isItemExpanded ? "rotate(180deg)" : "rotate(0deg)",
+                  transition: 'transform 0.3s ease-in-out',
+                  transform: isItemExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
                 }}
               />
             )}
@@ -192,11 +192,11 @@ export const MainCard = forwardRef<
         sx={{
           p: 3,
           borderRadius: 4,
-          height: "100%",
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
-          cursor: "pointer",
+          height: '100%',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          cursor: 'pointer',
         }}
         ref={ref}
         onClick={onClick}
@@ -210,16 +210,16 @@ export const MainCard = forwardRef<
           display="flex"
           alignItems="center"
           justifyContent="center"
-          sx={{ cursor: "pointer" }}
+          sx={{ cursor: 'pointer' }}
         >
-          <AssistantOutlinedIcon sx={{ fontSize: 36, color: "primary.main" }} />
+          <AssistantOutlinedIcon sx={{ fontSize: 36, color: 'primary.main' }} />
         </Box>
         <Typography
           fontSize={28}
           fontWeight={700}
           mt={2}
           mb={1}
-          sx={{ cursor: "pointer" }}
+          sx={{ cursor: 'pointer' }}
         >
           {data.label}
         </Typography>
@@ -227,10 +227,10 @@ export const MainCard = forwardRef<
           fontSize={16}
           fontWeight={400}
           color={COLORS.text.disabled}
-          whiteSpace={isExpanded ? "normal" : "nowrap"}
+          whiteSpace={isExpanded ? 'normal' : 'nowrap'}
           overflow="hidden"
-          sx={{ textOverflow: "ellipsis" }}
-          style={{ cursor: "pointer" }}
+          sx={{ textOverflow: 'ellipsis' }}
+          style={{ cursor: 'pointer' }}
         >
           {data.description}
         </Typography>
@@ -238,7 +238,7 @@ export const MainCard = forwardRef<
           <Collapse in={isExpanded} timeout="auto" unmountOnExit>
             <Box
               mt={3}
-              sx={{ overflowY: "auto" }}
+              sx={{ overflowY: 'auto' }}
               onClick={(e) => {
                 e.stopPropagation();
               }}
@@ -253,4 +253,4 @@ export const MainCard = forwardRef<
     </Box>
   );
 });
-MainCard.displayName = "MainCard";
+MainCard.displayName = 'MainCard';

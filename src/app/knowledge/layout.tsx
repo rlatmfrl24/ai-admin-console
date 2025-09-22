@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { ArrowDropDown } from "@mui/icons-material";
-import { Box, Breadcrumbs, Typography } from "@mui/material";
-import { usePathname, useRouter } from "next/navigation";
-import { useMemo, useState, useRef, useCallback } from "react";
+import { ArrowDropDown } from '@mui/icons-material';
+import { Box, Breadcrumbs, Typography } from '@mui/material';
+import { usePathname, useRouter } from 'next/navigation';
+import { useMemo, useState, useRef, useCallback } from 'react';
 
-import type React from "react";
+import type React from 'react';
 
-import { COLORS } from "@/lib/theme";
-import { useHeaderStore } from "@/lib/store/headerStore";
+import { COLORS } from '@/lib/theme';
+import { useHeaderStore } from '@/lib/store/headerStore';
 import {
   NestedDropdownMenu,
   MenuItemData,
-} from "@/components/NestedDropdownMenu";
-import { NavigationItem } from "@/lib/types/navigation";
-import { breadcrumbFor, siblingsFor } from "@/lib/navigation";
+} from '@/components/NestedDropdownMenu';
+import { NavigationItem } from '@/lib/types/navigation';
+import { breadcrumbFor, siblingsFor } from '@/lib/navigation';
 
 /**
  * NavigationItem을 MenuItemData로 변환하는 유틸리티 함수
  */
 const convertNavItemsToMenuItems = (
   navItems: NavigationItem[],
-  basePath: string = ""
+  basePath: string = '',
 ): MenuItemData[] => {
   return navItems.map((item) => ({
     id: item.id,
@@ -30,7 +30,7 @@ const convertNavItemsToMenuItems = (
     children: item.children
       ? convertNavItemsToMenuItems(
           item.children,
-          basePath ? `${basePath}/${item.id}` : `/${item.id}`
+          basePath ? `${basePath}/${item.id}` : `/${item.id}`,
         )
       : undefined,
     disabled: false,
@@ -42,8 +42,8 @@ const convertNavItemsToMenuItems = (
  */
 const getAvailableItemsAtLevel = (
   segments: string[],
-  breadcrumbIndex: number
-): NavigationItem[] => siblingsFor(`/${segments.join("/")}`, breadcrumbIndex);
+  breadcrumbIndex: number,
+): NavigationItem[] => siblingsFor(`/${segments.join('/')}`, breadcrumbIndex);
 
 const KnowledgeBreadcrumbs = ({
   breadcrumbs,
@@ -55,8 +55,8 @@ const KnowledgeBreadcrumbs = ({
   const router = useRouter();
   const pathname = usePathname();
   const segments = useMemo(
-    () => pathname.split("/").filter(Boolean),
-    [pathname]
+    () => pathname.split('/').filter(Boolean),
+    [pathname],
   );
 
   // 드롭다운 메뉴 상태 관리
@@ -77,7 +77,7 @@ const KnowledgeBreadcrumbs = ({
         setOpenMenuIndex(index);
       }
     },
-    [openMenuIndex]
+    [openMenuIndex],
   );
 
   /**
@@ -97,7 +97,7 @@ const KnowledgeBreadcrumbs = ({
       }
       handleCloseMenu();
     },
-    [router, handleCloseMenu]
+    [router, handleCloseMenu],
   );
 
   /**
@@ -108,12 +108,12 @@ const KnowledgeBreadcrumbs = ({
     const availableItems = getAvailableItemsAtLevel(segments, openMenuIndex);
     const basePath = breadcrumbs
       .slice(0, openMenuIndex)
-      .map((b) => b.href.split("/").pop())
+      .map((b) => b.href.split('/').pop())
       .filter(Boolean)
-      .join("/");
+      .join('/');
     return convertNavItemsToMenuItems(
       availableItems,
-      basePath ? `/${basePath}` : ""
+      basePath ? `/${basePath}` : '',
     );
   }, [openMenuIndex, segments, breadcrumbs]);
 
@@ -124,9 +124,9 @@ const KnowledgeBreadcrumbs = ({
       borderColor={COLORS.blueGrey[100]}
       px={2}
       py={1}
-      display={"flex"}
-      alignItems={"center"}
-      justifyContent={"space-between"}
+      display={'flex'}
+      alignItems={'center'}
+      justifyContent={'space-between'}
     >
       <Breadcrumbs separator="/" aria-label="breadcrumb">
         {breadcrumbs.map((breadcrumb, index) => (
@@ -136,19 +136,19 @@ const KnowledgeBreadcrumbs = ({
             ref={(el) => {
               breadcrumbRefs.current[index] = el as HTMLElement | null;
             }}
-            display={"flex"}
-            alignItems={"center"}
+            display={'flex'}
+            alignItems={'center'}
             p={0.5}
             gap={0.5}
             borderRadius={1}
             onClick={handleBreadcrumbClick(index)}
             sx={{
-              cursor: "pointer",
+              cursor: 'pointer',
               backgroundColor:
                 openMenuIndex === index
                   ? COLORS.action.selected
-                  : "transparent",
-              "&:hover": {
+                  : 'transparent',
+              '&:hover': {
                 backgroundColor: COLORS.action.selected,
               },
             }}
@@ -160,8 +160,8 @@ const KnowledgeBreadcrumbs = ({
               sx={{
                 fontSize: 16,
                 transform:
-                  openMenuIndex === index ? "rotate(180deg)" : "rotate(0deg)",
-                transition: "transform 0.2s ease-in-out",
+                  openMenuIndex === index ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s ease-in-out',
               }}
             />
           </Box>
@@ -192,32 +192,32 @@ export default function KnowledgeLayout({
 }) {
   const pathname = usePathname();
   const segments = useMemo(
-    () => pathname.split("/").filter(Boolean),
-    [pathname]
+    () => pathname.split('/').filter(Boolean),
+    [pathname],
   );
   const headerNode = useHeaderStore((s) => s.headerNode);
   const initialBreadcrumbs = useMemo(() => {
-    return breadcrumbFor(`/${segments.join("/")}`).map((b) => ({
+    return breadcrumbFor(`/${segments.join('/')}`).map((b) => ({
       label: b.label,
       href: b.href,
     }));
   }, [segments]);
 
   return (
-    <Box display={"flex"} flexDirection={"column"} height={"100%"}>
-      <Box height={"100%"} display={"flex"} flexDirection={"column"}>
+    <Box display={'flex'} flexDirection={'column'} height={'100%'}>
+      <Box height={'100%'} display={'flex'} flexDirection={'column'}>
         <Box
-          bgcolor={"white"}
+          bgcolor={'white'}
           border={1}
           borderColor={COLORS.blueGrey[100]}
           flexGrow={1}
           height={0}
           minHeight={0}
-          overflow={"auto"}
+          overflow={'auto'}
           m={1.5}
           borderRadius={2}
-          display={"flex"}
-          flexDirection={"column"}
+          display={'flex'}
+          flexDirection={'column'}
         >
           <KnowledgeBreadcrumbs
             breadcrumbs={initialBreadcrumbs}

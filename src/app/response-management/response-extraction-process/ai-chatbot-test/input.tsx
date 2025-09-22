@@ -1,15 +1,14 @@
-"use client";
+'use client';
 
-import { Box, Paper, InputBase, IconButton, Button } from "@mui/material";
-import { Add } from "@mui/icons-material";
-import { Controller, useForm } from "react-hook-form";
+import { Box, Paper, InputBase, IconButton, Button } from '@mui/material';
+import { Add } from '@mui/icons-material';
+import { Controller, useForm } from 'react-hook-form';
 
-import type { ChatMessage } from "@/lib/types/chat";
+import type { ChatMessage } from '@/lib/types/chat';
 
-import SendIcon from "@/assets/icon-send.svg";
-import { COLORS } from "@/lib/theme";
-import { useChatStore } from "@/lib/store/chatStore";
-
+import SendIcon from '@/assets/icon-send.svg';
+import { COLORS } from '@/lib/theme';
+import { useChatStore } from '@/lib/store/chatStore';
 
 type ChatInputProps = {
   onSubmit?: (message: string) => void;
@@ -21,13 +20,13 @@ type FormValues = {
 
 export default function ChatInput({ onSubmit }: ChatInputProps) {
   const { control, handleSubmit, reset, watch } = useForm<FormValues>({
-    defaultValues: { message: "" },
+    defaultValues: { message: '' },
   });
   const addMessage = useChatStore((s) => s.addMessage);
   const isAwaitingResponse = useChatStore((s) => s.isAwaitingResponse);
   const setAwaitingResponse = useChatStore((s) => s.setAwaitingResponse);
 
-  const messageValue = watch("message");
+  const messageValue = watch('message');
 
   function generateChatId(): string {
     const randomSuffix = Math.random().toString(36).slice(2, 10);
@@ -43,7 +42,7 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
     const userMessage: ChatMessage = {
       chatId: generateChatId(),
       message: trimmed,
-      role: "user",
+      role: 'user',
       createdAt: new Date(),
     };
     addMessage(userMessage);
@@ -55,9 +54,9 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
     // Call backend and append assistant response
     try {
       setAwaitingResponse(true);
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: trimmed }),
       });
       if (!res.ok) {
@@ -76,11 +75,11 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
         addMessage(assistantMessage);
       }
     } catch (error) {
-      console.error("/api/chat 요청 실패:", error);
+      console.error('/api/chat 요청 실패:', error);
       const errorMessage: ChatMessage = {
         chatId: generateChatId(),
-        message: "요청 처리 중 오류가 발생했습니다.",
-        role: "assistant",
+        message: '요청 처리 중 오류가 발생했습니다.',
+        role: 'assistant',
         createdAt: new Date(),
       };
       addMessage(errorMessage);
@@ -103,20 +102,20 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
         aria-label="chat-input-box"
         elevation={2}
         sx={{
-          display: "flex",
+          display: 'flex',
           flex: 1,
           p: 1,
           borderRadius: 6,
           gap: 1.5,
-          "&:hover": {
-            outline: "1px solid",
+          '&:hover': {
+            outline: '1px solid',
             outlineColor: COLORS.text.primary,
-            border: "none",
+            border: 'none',
           },
-          "&:focus-within": {
-            outline: "2px solid",
+          '&:focus-within': {
+            outline: '2px solid',
             outlineColor: COLORS.primary.main,
-            border: "none",
+            border: 'none',
           },
         }}
       >
@@ -124,7 +123,7 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
           sx={{
             width: 32,
             height: 32,
-            border: "1px solid #0000003b",
+            border: '1px solid #0000003b',
           }}
           aria-label="add-attachment"
           title="Add attachment"
@@ -143,8 +142,8 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
               minRows={1}
               placeholder="Please enter your question.."
               inputProps={{
-                "aria-label": "chat-message-input",
-                enterKeyHint: "send",
+                'aria-label': 'chat-message-input',
+                enterKeyHint: 'send',
               }}
             />
           )}
@@ -154,7 +153,7 @@ export default function ChatInput({ onSubmit }: ChatInputProps) {
         startIcon={<SendIcon />}
         variant="contained"
         sx={{
-          borderRadius: "96px",
+          borderRadius: '96px',
           px: 3,
           py: 1.5,
         }}

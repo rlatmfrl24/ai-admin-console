@@ -1,6 +1,6 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
-import type { BSATableProps, ChunkProps } from "@/lib/types/bsa";
+import type { BSATableProps, ChunkProps } from '@/lib/types/bsa';
 
 // [인수인계 메모]
 // - 역할: BSA 화면의 전역 상태 관리(Zustand).
@@ -39,7 +39,7 @@ export const useBSAStore = create<BSAState>((set, get) => ({
   updateChunk: (updated) =>
     set({
       chunks: get().chunks.map((c) =>
-        c.progressId === updated.progressId ? updated : c
+        c.progressId === updated.progressId ? updated : c,
       ),
     }),
   addChunk: (chunk) => set({ chunks: [chunk, ...get().chunks] }),
