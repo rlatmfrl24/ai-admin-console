@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { Menu, Search } from '@mui/icons-material';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import NXLogo from '@/assets/logo-nx.svg';
 import SolutionIcon from '@/assets/icon-solution.svg';
@@ -20,6 +21,7 @@ import NotificationIcon from '@/assets/icon-notification.svg';
 import UserIcon from '@/assets/icon-user-profile.svg';
 import BusinessIcon from '@/assets/icon-business.svg';
 import { COLORS } from '@/lib/theme';
+import { useAuthStore } from '@/lib/store/authStore';
 
 type MainAppBarProps = {
   onMenuClick?: () => void;
@@ -91,6 +93,9 @@ export const MainAppBar = memo(function MainAppBar({
 });
 
 const ButtonSet = memo(function ButtonSet() {
+  const logout = useAuthStore((state) => state.logout);
+  const router = useRouter();
+
   return (
     <>
       <IconButton aria-label="Open solutions" title="Solutions">
@@ -123,7 +128,15 @@ const ButtonSet = memo(function ButtonSet() {
       <Typography fontSize={12} fontWeight={500}>
         SELHO
       </Typography>
-      <IconButton sx={{ ml: 1 }} aria-label="Open profile" title="Profile">
+      <IconButton
+        sx={{ ml: 1 }}
+        aria-label="Open profile"
+        title="Profile"
+        onClick={() => {
+          logout();
+          router.push('/');
+        }}
+      >
         <UserIcon width={24} height={24} />
       </IconButton>
     </>
