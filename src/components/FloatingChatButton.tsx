@@ -1,9 +1,17 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import FloatingChatImage from '@/assets/img-floating-chat.svg';
 
 export default function FloatingChatButton() {
-  return (
+  const pathname = usePathname();
+  const isChatPage = pathname.includes(
+    '/response-management/response-extraction-process/ai-chatbot-test',
+  );
+
+  return isChatPage ? null : (
     <Link
       href="/response-management/response-extraction-process/ai-chatbot-test"
       style={{

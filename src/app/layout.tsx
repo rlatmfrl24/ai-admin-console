@@ -8,6 +8,7 @@ import AppShell from '../components/AppShell';
 import type { Metadata } from 'next';
 
 import theme from '@/lib/theme';
+import FloatingChatButton from '@/components/FloatingChatButton';
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '600', '700'],
@@ -31,7 +32,10 @@ export default function RootLayout({
       <body className={roboto.className}>
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
-            <AppShell>{children}</AppShell>
+            <AppShell>
+              {children}
+              <FloatingChatButton />
+            </AppShell>
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>
