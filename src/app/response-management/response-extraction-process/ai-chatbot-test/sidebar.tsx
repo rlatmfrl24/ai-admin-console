@@ -34,7 +34,7 @@ const SIDEBAR_OPEN_WIDTH_PX = 336;
 const SIDEBAR_CONTENT_WIDTH_PX = 320;
 
 export default function ChatSidebar() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const createThread = useChatStore((s) => s.createThread);
   const threadHistory = useChatStore((s) => s.threadHistory);
   const currentThreadId = useChatStore((s) => s.currentThreadId);
