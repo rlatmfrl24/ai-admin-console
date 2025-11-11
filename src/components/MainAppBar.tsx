@@ -46,7 +46,7 @@ export const MainAppBar = memo(function MainAppBar({
         >
           <Menu sx={{ color: 'white' }} />
         </IconButton>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
+        <Link href="/home" style={{ display: 'flex', alignItems: 'center' }}>
           <NXLogo />
         </Link>
         <Box

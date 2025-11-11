@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Box,
@@ -9,18 +9,32 @@ import {
   Typography,
   Paper,
   Alert,
+  TextField,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
+import { VisibilityOffOutlined, VisibilityOutlined } from '@mui/icons-material';
 
-import InputWithLabel from '@/components/common/Input';
 import { useAuthStore } from '@/lib/store/authStore';
+import LoginLogo from '@/assets/logo-login.svg';
+import { COLORS } from '@/lib/theme';
 
 export default function Login() {
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const login = useAuthStore((state) => state.login);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const router = useRouter();
+
+  // 로그인 상태 확인 후 자동 리다이렉트
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/home');
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,15 +60,33 @@ export default function Login() {
       sx={{
         minHeight: '100vh',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        padding: 2,
+        backgroundColor: '#F7F6FF',
+        backgroundImage:
+          'url(/img-login-background.png), linear-gradient(180deg, #FFF 0%, #F7F6FF 100%)',
+        backgroundSize: 'cover, cover',
+        backgroundPosition: 'center, center',
+        backgroundRepeat: 'no-repeat, no-repeat',
       }}
     >
+      <LoginLogo />
+      <Typography
+        fontSize={24}
+        fontWeight={400}
+        color={COLORS.grey[700]}
+        gutterBottom
+        sx={{
+          paddingTop: 4,
+          paddingBottom: 7,
+        }}
+      >
+        Always by your side, Your reliable partner
+      </Typography>
       <Container maxWidth="sm">
         <Paper
-          elevation={8}
+          elevation={3}
           sx={{
             padding: 4,
             borderRadius: 2,
@@ -63,20 +95,6 @@ export default function Login() {
             gap: 3,
           }}
         >
-          <Box sx={{ textAlign: 'center', mb: 2 }}>
-            <Typography
-              variant="h4"
-              component="h1"
-              fontWeight={600}
-              gutterBottom
-            >
-              로그인
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              계정에 로그인하여 시작하세요
-            </Typography>
-          </Box>
-
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
@@ -86,11 +104,10 @@ export default function Login() {
           <Box
             component="form"
             onSubmit={handleSubmit}
-            sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}
+            sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
           >
-            <InputWithLabel
-              label="ID"
-              type="text"
+            <TextField
+              variant="outlined"
               placeholder="ID를 입력하세요"
               value={id}
               onChange={(e) => setId(e.target.value)}
@@ -98,16 +115,35 @@ export default function Login() {
               fullWidth
               autoComplete="id"
             />
-
-            <InputWithLabel
-              label="비밀번호"
-              type="password"
+            <TextField
+              variant="outlined"
               placeholder="비밀번호를 입력하세요"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              type={showPassword ? 'text' : 'password'}
               required
               fullWidth
               autoComplete="current-password"
+              sx={{}}
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end" sx={{ mr: 1 }}>
+                      <IconButton
+                        aria-label="Show/Hide Password"
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        {showPassword ? (
+                          <VisibilityOffOutlined />
+                        ) : (
+                          <VisibilityOutlined />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
             />
 
             <Button
@@ -117,14 +153,14 @@ export default function Login() {
               size="large"
               disabled={isLoading || !id || !password}
               sx={{
-                mt: 2,
-                py: 1.5,
+                mt: 1,
                 fontSize: '1rem',
                 fontWeight: 600,
                 textTransform: 'none',
+                borderRadius: 96,
               }}
             >
-              {isLoading ? '로그인 중...' : '로그인'}
+              {isLoading ? 'Loading...' : 'Login'}
             </Button>
           </Box>
         </Paper>
