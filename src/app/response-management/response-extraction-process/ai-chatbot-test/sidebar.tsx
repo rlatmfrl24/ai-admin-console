@@ -3,7 +3,6 @@ import {
   IconButton,
   Paper,
   Typography,
-  ClickAwayListener,
   Menu,
   MenuItem,
   ListItemText,
@@ -44,108 +43,102 @@ export default function ChatSidebar() {
     [sidebarOpen],
   );
   return (
-    <ClickAwayListener onClickAway={() => sidebarOpen && setSidebarOpen(false)}>
-      <Paper
-        aria-label="chat-sidebar"
-        aria-expanded={sidebarOpen}
-        elevation={6}
+    <Paper
+      aria-label="chat-sidebar"
+      aria-expanded={sidebarOpen}
+      elevation={6}
+      sx={{
+        width: sidebarWidth,
+        transition: (theme) =>
+          theme.transitions.create(['width'], {
+            duration: theme.transitions.duration.standard,
+            easing: theme.transitions.easing.easeInOut,
+          }),
+        px: 1,
+        py: 1.5,
+        borderRadius: 0,
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        zIndex: (theme) => theme.zIndex.appBar - 1,
+      }}
+    >
+      <IconButton
+        onClick={() => setSidebarOpen((v) => !v)}
+        aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+        aria-controls="chat-sidebar-content"
+        sx={{ alignSelf: 'flex-start' }}
+        size="small"
+      >
+        {sidebarOpen ? (
+          <LeftPanelCloseIcon sx={{ fontSize: 20 }} />
+        ) : (
+          <LeftPanelOpenIcon sx={{ fontSize: 20 }} />
+        )}
+      </IconButton>
+      <Box
+        id="chat-sidebar-content"
+        aria-hidden={!sidebarOpen}
+        mt={1}
         sx={{
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          left: 0,
-          width: sidebarWidth,
+          width: SIDEBAR_CONTENT_WIDTH_PX,
+          minWidth: SIDEBAR_CONTENT_WIDTH_PX,
+          flex: '0 0 auto',
+          height: '100%',
+          opacity: sidebarOpen ? 1 : 0,
           transition: (theme) =>
-            theme.transitions.create(['width'], {
-              duration: theme.transitions.duration.standard,
+            theme.transitions.create(['opacity'], {
+              duration: theme.transitions.duration.shorter,
               easing: theme.transitions.easing.easeInOut,
             }),
-          px: 1,
-          py: 1.5,
-          borderRadius: 0,
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          zIndex: (theme) => theme.zIndex.appBar - 1,
+          pointerEvents: sidebarOpen ? 'auto' : 'none',
         }}
+        hidden={!sidebarOpen}
       >
-        <IconButton
-          onClick={() => setSidebarOpen((v) => !v)}
-          aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
-          aria-controls="chat-sidebar-content"
-          sx={{ alignSelf: 'flex-start' }}
-          size="small"
-        >
-          {sidebarOpen ? (
-            <LeftPanelCloseIcon sx={{ fontSize: 20 }} />
-          ) : (
-            <LeftPanelOpenIcon sx={{ fontSize: 20 }} />
-          )}
-        </IconButton>
         <Box
-          id="chat-sidebar-content"
-          aria-hidden={!sidebarOpen}
-          mt={1}
+          aria-label="new-chat"
+          onClick={() => createThread()}
+          px={1.5}
+          py={0.5}
+          border={1}
+          borderColor={COLORS.primary.states.outlineBorder}
+          borderRadius={1}
+          color={COLORS.primary.main}
+          display={'flex'}
+          alignItems={'center'}
+          justifyContent={'center'}
+          gap={0.5}
           sx={{
-            width: SIDEBAR_CONTENT_WIDTH_PX,
-            minWidth: SIDEBAR_CONTENT_WIDTH_PX,
-            flex: '0 0 auto',
-            height: '100%',
-            opacity: sidebarOpen ? 1 : 0,
-            transition: (theme) =>
-              theme.transitions.create(['opacity'], {
-                duration: theme.transitions.duration.shorter,
-                easing: theme.transitions.easing.easeInOut,
-              }),
-            pointerEvents: sidebarOpen ? 'auto' : 'none',
+            cursor: 'pointer',
+            '&:hover': { backgroundColor: COLORS.primary.states.hover },
           }}
-          hidden={!sidebarOpen}
         >
-          <Box
-            aria-label="new-chat"
-            onClick={() => createThread()}
-            px={1.5}
-            py={0.5}
-            border={1}
-            borderColor={COLORS.primary.states.outlineBorder}
-            borderRadius={1}
-            color={COLORS.primary.main}
-            display={'flex'}
-            alignItems={'center'}
-            justifyContent={'center'}
-            gap={0.5}
-            sx={{
-              cursor: 'pointer',
-              '&:hover': { backgroundColor: COLORS.primary.states.hover },
-            }}
-          >
-            <Add />
-            <Typography fontSize={13} fontWeight={500}>
-              NEW CHAT
-            </Typography>
-          </Box>
-          <Typography
-            fontSize={12}
-            fontWeight={500}
-            color={COLORS.blueGrey[300]}
-            mt={2}
-            mb={1}
-            ml={1}
-          >
-            History
+          <Add />
+          <Typography fontSize={13} fontWeight={500}>
+            NEW CHAT
           </Typography>
-          <Box flex={1} display={'flex'} flexDirection={'column'}>
-            {threadHistory.map((thread) => (
-              <ChatSidebarItem
-                key={thread.threadId}
-                isSelected={thread.threadId === currentThreadId}
-                thread={thread}
-              />
-            ))}
-          </Box>
         </Box>
-      </Paper>
-    </ClickAwayListener>
+        <Typography
+          fontSize={12}
+          fontWeight={500}
+          color={COLORS.blueGrey[300]}
+          mt={2}
+          mb={1}
+          ml={1}
+        >
+          History
+        </Typography>
+        <Box flex={1} display={'flex'} flexDirection={'column'}>
+          {threadHistory.map((thread) => (
+            <ChatSidebarItem
+              key={thread.threadId}
+              isSelected={thread.threadId === currentThreadId}
+              thread={thread}
+            />
+          ))}
+        </Box>
+      </Box>
+    </Paper>
   );
 }
 
