@@ -110,6 +110,18 @@ function isChunkChanged(chunk: ChunkProps, chunks: ChunkProps[]): boolean {
   );
 }
 
+/**
+ * 파일 확장자에 따라 타입을 구분하는 함수
+ * @param fileName 파일명
+ * @returns 'manual' (pdf) | 'ui' (png) | null
+ */
+function getFileType(fileName?: string): 'manual' | 'ui' | null {
+  if (!fileName) return null;
+  if (fileName.toLowerCase().includes('.pdf')) return 'manual';
+  if (fileName.toLowerCase().includes('.png')) return 'ui';
+  return null;
+}
+
 type BSAEditProps = {
   selectedData: BSATableProps | null;
   selectedTreeItem: BSAMenuTreeItemProps | null;
@@ -306,7 +318,7 @@ export default function BSAChunkEdit({
         <ChunkCard
           key={chunk.progressId}
           chunk={chunk}
-          showProgressId={!selectedData?.fileName.includes('.pdf')}
+          showProgressId={getFileType(selectedData?.fileName) !== 'manual'}
           selected={selectedChunk?.progressId === chunk.progressId}
           onSelect={setSelectedChunk}
           onDelete={(c) => removeChunk(c.progressId)}
@@ -389,6 +401,7 @@ export default function BSAChunkEdit({
             ariaLabel="BSA Menu Tree"
             selectedId={selectedTreeItem?.id}
             onSelect={(_, item) => setSelectedTreeItem(item)}
+            enableFolding={getFileType(selectedData?.fileName) === 'ui'}
           />
         </Box>
       </Box>
@@ -518,7 +531,9 @@ export default function BSAChunkEdit({
               <ChunkCard
                 key={chunk.progressId}
                 chunk={chunk}
-                showProgressId={!selectedData?.fileName.includes('.pdf')}
+                showProgressId={
+                  getFileType(selectedData?.fileName) !== 'manual'
+                }
                 selected={selectedChunk?.progressId === chunk.progressId}
                 onSelect={setSelectedChunk}
                 onDelete={(c) => removeChunk(c.progressId)}
@@ -739,7 +754,7 @@ export default function BSAChunkEdit({
                     scheduleFlush(next);
                   }}
                 />
-                {selectedData?.fileName.includes('.pdf') && (
+                {getFileType(selectedData?.fileName) === 'manual' && (
                   <InputWithLabel
                     label="Program ID"
                     value={draftChunk?.progressId ?? ''}
@@ -826,7 +841,7 @@ export default function BSAChunkEdit({
                 {previewUrls.length > 0 && (
                   <Box gap={1} display={'flex'} flexDirection={'column'}>
                     {previewUrls.map((url, idx) =>
-                      selectedData?.fileName.includes('.pdf') ? (
+                      getFileType(selectedData?.fileName) === 'manual' ? (
                         <AttachmentPreviewForDocument
                           key={`attachment-edit-${idx}`}
                           url={url}
@@ -997,7 +1012,7 @@ export default function BSAChunkEdit({
                     mt={0.5}
                   >
                     {savedPreviewUrls.map((url, idx) =>
-                      selectedData?.fileName.includes('.pdf') ? (
+                      getFileType(selectedData?.fileName) === 'manual' ? (
                         <AttachmentPreviewForDocument
                           key={`saved-${url}-${idx}`}
                           url={url}

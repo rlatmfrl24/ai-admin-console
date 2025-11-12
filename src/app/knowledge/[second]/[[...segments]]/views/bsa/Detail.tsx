@@ -46,6 +46,8 @@ export default function BSADetail() {
   const setChunks = useBSAStore((s) => s.setChunks);
   const selectedChunk = useBSAStore((s) => s.selectedChunk);
   const setSelectedChunk = useBSAStore((s) => s.setSelectedChunk);
+  const selectedRowFromStore = useBSAStore((s) => s.selectedRow);
+  const setSelectedRow = useBSAStore((s) => s.setSelectedRow);
   const BSA_MENU_TREE = useMemo(() => getBsaMenuTree(), []);
   const { selected: initialSelectedItem } = useMemo(
     () => getInitialSelection(BSA_MENU_TREE),
@@ -73,8 +75,25 @@ export default function BSADetail() {
 
   const selectedData = useMemo<BSATableProps | null>(() => {
     if (!idParam) return null;
+    
+    // Store에 저장된 selectedRow가 있고, ID가 일치하면 그것을 사용
+    if (
+      selectedRowFromStore &&
+      String(selectedRowFromStore.id) === String(idParam)
+    ) {
+      return selectedRowFromStore;
+    }
+    
+    // 그렇지 않으면 getBsaRowById로 생성 (fallback)
     return getBsaRowById(idParam);
-  }, [idParam]);
+  }, [idParam, selectedRowFromStore]);
+
+  // selectedData가 변경될 때 store에도 저장 (URL로 직접 접근한 경우 대비)
+  useEffect(() => {
+    if (selectedData && (!selectedRowFromStore || selectedRowFromStore.id !== selectedData.id)) {
+      setSelectedRow(selectedData);
+    }
+  }, [selectedData, selectedRowFromStore, setSelectedRow]);
 
   useEffect(() => {
     if (!selectedData) return;

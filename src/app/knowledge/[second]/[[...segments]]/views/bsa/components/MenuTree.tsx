@@ -1,5 +1,13 @@
-import { Fragment, useCallback, memo } from 'react';
-import { List, ListItemButton, ListItemText, Box } from '@mui/material';
+import { Fragment, useCallback, memo, useState, useEffect } from 'react';
+import {
+  List,
+  ListItemButton,
+  ListItemText,
+  Box,
+  IconButton,
+  Collapse,
+} from '@mui/material';
+import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
 import type { BSAMenuTreeItemProps } from '@/lib/types/bsa';
 
@@ -16,13 +24,18 @@ type MenuTreeProps = {
   selectedId?: string;
   onSelect?: (id: string, item: BSAMenuTreeItemProps) => void;
   ariaLabel?: string;
+  enableFolding?: boolean;
 };
 
-function getDepthStyles(level: number, isSelected: boolean) {
+function getDepthStyles(
+  level: number,
+  isSelected: boolean,
+  enableFolding: boolean,
+) {
   switch (level) {
     case 0:
       return {
-        paddingLeft: 2,
+        paddingLeft: enableFolding ? 1 : 1.5,
         bgcolor: isSelected ? COLORS.indigo[900] : 'white',
         '&.Mui-selected': {
           bgcolor: COLORS.indigo[900],
@@ -35,8 +48,9 @@ function getDepthStyles(level: number, isSelected: boolean) {
         },
       } as const;
     case 1:
+    case 2:
       return {
-        paddingLeft: 4,
+        paddingLeft: enableFolding ? 1 : 2.5,
         bgcolor: isSelected ? COLORS.blueGrey[100] : COLORS.grey[100],
         '&.Mui-selected': {
           bgcolor: COLORS.blueGrey[100],
@@ -58,13 +72,51 @@ function MenuTree({
   selectedId,
   onSelect,
   ariaLabel,
+  enableFolding = false,
 }: MenuTreeProps) {
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(() => {
+    if (enableFolding && items.length > 0) {
+      const topLevelIds = items
+        .filter(
+          (item) => Array.isArray(item.children) && item.children.length > 0,
+        )
+        .map((item) => item.id);
+      return new Set(topLevelIds);
+    }
+    return new Set<string>();
+  });
+
+  // items가 변경될 때 최상위 항목들을 펼쳐진 상태로 업데이트
+  useEffect(() => {
+    if (enableFolding && items.length > 0) {
+      const topLevelIds = items
+        .filter(
+          (item) => Array.isArray(item.children) && item.children.length > 0,
+        )
+        .map((item) => item.id);
+      setExpandedIds(new Set(topLevelIds));
+    }
+  }, [enableFolding, items]);
+
   const handleSelect = useCallback(
     (item: BSAMenuTreeItemProps) => {
       onSelect?.(item.id, item);
     },
     [onSelect],
   );
+
+  const handleToggle = useCallback((e: React.MouseEvent, nodeId: string) => {
+    e.stopPropagation();
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(nodeId)) {
+        next.delete(nodeId);
+      } else {
+        next.add(nodeId);
+      }
+      return next;
+    });
+  }, []);
 
   const renderItems = (
     nodes: BSAMenuTreeItemProps[],
@@ -76,6 +128,7 @@ function MenuTree({
       const hasChildren =
         Array.isArray(node.children) && node.children.length > 0;
       const isSelected = selectedId === node.id;
+      const isExpanded = expandedIds.has(node.id);
       const basePrefix = parentPrefix ? parentPrefix + '.' : '';
       const displayPrefix = `${basePrefix}${node.index}.`;
       const primaryStyles = {
@@ -84,6 +137,7 @@ function MenuTree({
         lineHeight: 1.5,
         color: level === 0 && isSelected ? 'white' : 'text.primary',
       } as const;
+      const showFoldIcon = enableFolding && hasChildren;
 
       return (
         <Fragment key={node.id}>
@@ -91,19 +145,54 @@ function MenuTree({
             role="treeitem"
             aria-level={level + 1}
             aria-current={isSelected ? 'true' : undefined}
+            aria-expanded={showFoldIcon ? isExpanded : undefined}
             selected={isSelected}
             onClick={() => handleSelect(node)}
             sx={{
-              pl: 1,
               py: 0.5,
               gap: 0.5,
               minHeight: 32,
               alignItems: 'center',
               borderBottom: 1,
               borderColor: COLORS.blueGrey[100],
-              ...getDepthStyles(level, isSelected),
+              ...getDepthStyles(level, isSelected, enableFolding),
             }}
           >
+            {enableFolding && (
+              <IconButton
+                size="small"
+                disabled={!hasChildren}
+                onClick={(e) => handleToggle(e, node.id)}
+                sx={{
+                  p: 0.25,
+                  width: 24,
+                  height: 24,
+                  color: level === 0 && isSelected ? 'white' : 'text.primary',
+                  '&:hover': {
+                    bgcolor:
+                      level === 0 && isSelected
+                        ? 'rgba(255, 255, 255, 0.1)'
+                        : COLORS.action.hover,
+                  },
+                  '&.Mui-disabled': {
+                    opacity: 0,
+                  },
+                }}
+                aria-label={
+                  hasChildren ? (isExpanded ? '접기' : '펴기') : undefined
+                }
+              >
+                {hasChildren && (
+                  <>
+                    {isExpanded ? (
+                      <ArrowDropUp fontSize="small" />
+                    ) : (
+                      <ArrowDropDown fontSize="small" />
+                    )}
+                  </>
+                )}
+              </IconButton>
+            )}
             <ListItemText
               primary={`${displayPrefix} ${node.label}`}
               sx={{
@@ -112,13 +201,15 @@ function MenuTree({
             />
           </ListItemButton>
           {hasChildren && (
-            <List disablePadding role="group">
-              {renderItems(
-                node.children,
-                level + 1,
-                `${basePrefix}${node.index}`,
-              )}
-            </List>
+            <Collapse in={!enableFolding || isExpanded} timeout="auto">
+              <List disablePadding role="group">
+                {renderItems(
+                  node.children,
+                  level + 1,
+                  `${basePrefix}${node.index}`,
+                )}
+              </List>
+            </Collapse>
           )}
         </Fragment>
       );
