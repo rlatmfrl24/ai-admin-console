@@ -1,9 +1,15 @@
 'use client';
 
-import { Box, Breadcrumbs, Typography, Button } from '@mui/material';
+import {
+  Box,
+  Breadcrumbs,
+  Typography,
+  Button,
+  IconButton,
+} from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { InsertDriveFileOutlined } from '@mui/icons-material';
+import DescriptionIcon from '@mui/icons-material/Description';
 import { GridColDef, DataGrid, useGridApiRef } from '@mui/x-data-grid';
 
 import { getBsaMenuTree, makeRandomChunk, getBsaRowById } from './bsaUtil';
@@ -49,6 +55,8 @@ export default function BSADetail() {
   const setSelectedChunk = useBSAStore((s) => s.setSelectedChunk);
   const selectedRowFromStore = useBSAStore((s) => s.selectedRow);
   const setSelectedRow = useBSAStore((s) => s.setSelectedRow);
+  const docViewerOpen = useBSAStore((s) => s.docViewerOpen);
+  const setDocViewerOpen = useBSAStore((s) => s.setDocViewerOpen);
   const BSA_MENU_TREE = useMemo(() => getBsaMenuTree(), []);
   const { selected: initialSelectedItem } = useMemo(
     () => getInitialSelection(BSA_MENU_TREE),
@@ -128,36 +136,38 @@ export default function BSADetail() {
             </Box>
           )}
         </Breadcrumbs>
-        <Box
-          display={'flex'}
-          alignItems={'center'}
-          gap={0.5}
+        <IconButton
+          onClick={() => setDocViewerOpen(!docViewerOpen)}
+          aria-label="Toggle Origin DOC viewer"
+          title="Origin DOC"
+          size="small"
           sx={{
-            cursor: 'pointer',
-            paddingLeft: 1,
-            paddingRight: 1,
-            borderRadius: 2,
-            '&:hover': { backgroundColor: 'action.hover' },
+            color: COLORS.grey[600],
+            border: '1px solid',
+            borderColor: COLORS.blueGrey[100],
+            borderRadius: '9999px',
+            '&:hover': {
+              borderColor: COLORS.blueGrey[200],
+            },
           }}
         >
-          <InsertDriveFileOutlined sx={{ fontSize: 16 }} />
-          <Typography
-            lineHeight={1}
-            fontSize={12}
-            color="text.primary"
-            display={'flex'}
-            alignItems={'center'}
-            gap={0.5}
-          >
-            Origin DOC
-          </Typography>
-        </Box>
+          <DescriptionIcon sx={{ fontSize: 20 }} />
+        </IconButton>
       </Box>
     );
     setHeaderNode(header);
     apiRef.current?.selectRow(selectedData.id, true, true);
     return () => setHeaderNode(null);
-  }, [setHeaderNode, apiRef, selectedData, selectedChunk, chunks, activeTab]);
+  }, [
+    setHeaderNode,
+    apiRef,
+    selectedData,
+    selectedChunk,
+    chunks,
+    activeTab,
+    docViewerOpen,
+    setDocViewerOpen,
+  ]);
 
   useEffect(() => {
     if (!selectedTreeItem) return;
