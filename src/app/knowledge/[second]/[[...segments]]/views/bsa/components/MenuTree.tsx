@@ -1,4 +1,11 @@
-import { Fragment, useCallback, memo, useState, useEffect } from 'react';
+import {
+  Fragment,
+  useCallback,
+  memo,
+  useState,
+  useEffect,
+  useRef,
+} from 'react';
 import {
   List,
   ListItemButton,
@@ -96,11 +103,25 @@ function MenuTree({
     return new Set<string>();
   });
 
-  // items가 변경될 때 모든 자식이 있는 항목들을 펼쳐진 상태로 업데이트
+  // 이전 enableFolding 값을 추적하여 false에서 true로 변경될 때만 초기화
+  const prevEnableFoldingRef = useRef(enableFolding);
+
+  // enableFolding이 false에서 true로 변경될 때만 모든 노드를 펼침
+  // items 변경 시에는 사용자의 수동 접기/펼치기 상태를 보존
   useEffect(() => {
-    if (enableFolding && items.length > 0) {
+    const prevEnableFolding = prevEnableFoldingRef.current;
+
+    // enableFolding이 false에서 true로 변경된 경우에만 초기화
+    if (!prevEnableFolding && enableFolding && items.length > 0) {
       setExpandedIds(collectAllExpandableIds(items));
     }
+
+    // enableFolding이 true에서 false로 변경된 경우 모든 노드 접기
+    if (prevEnableFolding && !enableFolding) {
+      setExpandedIds(new Set<string>());
+    }
+
+    prevEnableFoldingRef.current = enableFolding;
   }, [enableFolding, items]);
 
   const handleSelect = useCallback(
