@@ -1,8 +1,8 @@
 'use client';
 
-import { Box, Breadcrumbs, Typography } from '@mui/material';
+import { Box, Breadcrumbs, Typography, Button } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { InsertDriveFileOutlined } from '@mui/icons-material';
 import { GridColDef, DataGrid, useGridApiRef } from '@mui/x-data-grid';
 
@@ -32,6 +32,7 @@ function getInitialSelection(items: BSAMenuTreeItemProps[]): {
 export default function BSADetail() {
   const apiRef = useGridApiRef();
   const setHeaderNode = useHeaderStore((s) => s.setHeaderNode);
+  const router = useRouter();
   const params = useParams();
   const segments = (params as { segments?: string[] })?.segments;
   const idParam = useMemo(() => {
@@ -75,7 +76,7 @@ export default function BSADetail() {
 
   const selectedData = useMemo<BSATableProps | null>(() => {
     if (!idParam) return null;
-    
+
     // Store에 저장된 selectedRow가 있고, ID가 일치하면 그것을 사용
     if (
       selectedRowFromStore &&
@@ -83,14 +84,17 @@ export default function BSADetail() {
     ) {
       return selectedRowFromStore;
     }
-    
+
     // 그렇지 않으면 getBsaRowById로 생성 (fallback)
     return getBsaRowById(idParam);
   }, [idParam, selectedRowFromStore]);
 
   // selectedData가 변경될 때 store에도 저장 (URL로 직접 접근한 경우 대비)
   useEffect(() => {
-    if (selectedData && (!selectedRowFromStore || selectedRowFromStore.id !== selectedData.id)) {
+    if (
+      selectedData &&
+      (!selectedRowFromStore || selectedRowFromStore.id !== selectedData.id)
+    ) {
       setSelectedRow(selectedData);
     }
   }, [selectedData, selectedRowFromStore, setSelectedRow]);
@@ -188,6 +192,19 @@ export default function BSADetail() {
       flexDirection={'column'}
       gap={1.5}
     >
+      <Box display={'flex'} alignItems={'center'} gap={1}>
+        <Button variant="outlined" size="small" onClick={() => router.back()}>
+          Back
+        </Button>
+        <Typography
+          fontSize={16}
+          fontWeight={500}
+          color="text.primary"
+          lineHeight={1.5}
+        >
+          Basic Slot Allocation ({selectedData?.fileName ?? '-'})
+        </Typography>
+      </Box>
       {!selectedChunk && activeTab === 'edit' ? (
         <Box>
           <DataGrid

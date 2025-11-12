@@ -67,6 +67,21 @@ function getDepthStyles(
   }
 }
 
+// 모든 자식이 있는 항목의 ID를 재귀적으로 수집하는 헬퍼 함수
+function collectAllExpandableIds(nodes: BSAMenuTreeItemProps[]): Set<string> {
+  const ids = new Set<string>();
+  const traverse = (items: BSAMenuTreeItemProps[]) => {
+    items.forEach((item) => {
+      if (Array.isArray(item.children) && item.children.length > 0) {
+        ids.add(item.id);
+        traverse(item.children);
+      }
+    });
+  };
+  traverse(nodes);
+  return ids;
+}
+
 function MenuTree({
   items = [],
   selectedId,
@@ -76,25 +91,15 @@ function MenuTree({
 }: MenuTreeProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => {
     if (enableFolding && items.length > 0) {
-      const topLevelIds = items
-        .filter(
-          (item) => Array.isArray(item.children) && item.children.length > 0,
-        )
-        .map((item) => item.id);
-      return new Set(topLevelIds);
+      return collectAllExpandableIds(items);
     }
     return new Set<string>();
   });
 
-  // items가 변경될 때 최상위 항목들을 펼쳐진 상태로 업데이트
+  // items가 변경될 때 모든 자식이 있는 항목들을 펼쳐진 상태로 업데이트
   useEffect(() => {
     if (enableFolding && items.length > 0) {
-      const topLevelIds = items
-        .filter(
-          (item) => Array.isArray(item.children) && item.children.length > 0,
-        )
-        .map((item) => item.id);
-      setExpandedIds(new Set(topLevelIds));
+      setExpandedIds(collectAllExpandableIds(items));
     }
   }, [enableFolding, items]);
 
