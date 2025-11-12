@@ -3,8 +3,6 @@
 import { Box, Typography } from '@mui/material';
 import { useEffect, useRef, useState, memo } from 'react';
 
-import FloatingChatButton from './FloatingChatButton';
-
 import type { NavigationItem } from '@/lib/types/navigation';
 
 import MainLayer1 from '@/assets/main-layer-1.svg';
@@ -47,7 +45,6 @@ function MainLandingImpl({ items }: MainLandingProps) {
         background: 'linear-gradient(180deg, #FFF 0%, #F7F6FF 100%)',
       }}
     >
-      <FloatingChatButton />
       <Box position="absolute" top={0} right={0} zIndex={1}>
         <MainLayer1 />
       </Box>

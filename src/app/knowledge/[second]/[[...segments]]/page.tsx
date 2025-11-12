@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation';
+import { Box } from '@mui/material';
 
 import BSAList from './views/bsa/List';
 import BSADetail from './views/bsa/Detail';
+import DocViewer from './views/bsa/components/DocViewer';
 
 import { isValidPath } from '@/lib/navigation';
 
@@ -34,17 +36,27 @@ export default async function Page({ params }: PageProps) {
     segments[1] === 'bsa';
 
   return (
-    <div style={{ padding: 0, height: '100%' }}>
-      {isBsaType ? (
-        segments && segments.length >= 3 ? (
-          <BSADetail />
+    <Box
+      display={'flex'}
+      flexDirection={'row'}
+      flex={1}
+      height={'100%'}
+      overflow={'hidden'}
+      minWidth={0}
+    >
+      <Box flex={1} minWidth={0} overflow={'auto'}>
+        {isBsaType ? (
+          segments && segments.length >= 3 ? (
+            <BSADetail />
+          ) : (
+            <BSAList />
+          )
         ) : (
-          <BSAList />
-        )
-      ) : (
-        <CommonPlaceholder path={displayPath} />
-      )}
-    </div>
+          <CommonPlaceholder path={displayPath} />
+        )}
+      </Box>
+      <DocViewer />
+    </Box>
   );
 }
 

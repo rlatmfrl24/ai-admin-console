@@ -26,6 +26,11 @@ type BSAState = {
   removeChunk: (progressId: string) => void;
   cleanupNewEmptyChunks: (excludeProgressId?: string) => void;
   setSelectedChunk: (chunk: ChunkProps | null) => void;
+  // doc viewer
+  docViewerOpen: boolean;
+  docViewerWidth: number;
+  setDocViewerOpen: (open: boolean) => void;
+  setDocViewerWidth: (width: number) => void;
   reset: () => void;
 };
 
@@ -65,5 +70,18 @@ export const useBSAStore = create<BSAState>((set, get) => ({
       }),
     }),
   setSelectedChunk: (chunk) => set({ selectedChunk: chunk }),
-  reset: () => set({ selectedRow: null, selectedChunk: null, chunks: [] }),
+  // doc viewer
+  docViewerOpen: false,
+  docViewerWidth: 514,
+  setDocViewerOpen: (open) => set({ docViewerOpen: open }),
+  setDocViewerWidth: (width) =>
+    set({ docViewerWidth: Math.max(514, width) }),
+  reset: () =>
+    set({
+      selectedRow: null,
+      selectedChunk: null,
+      chunks: [],
+      docViewerOpen: false,
+      docViewerWidth: 514,
+    }),
 }));

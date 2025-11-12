@@ -72,6 +72,8 @@ export const COLORS = {
     200: '#e8ebf4',
     300: '#e0e0e0',
     400: '#bdbdbd',
+    600: '#667085',
+    700: '#5E7599',
   },
   blueGrey: {
     50: '#dde4ea',

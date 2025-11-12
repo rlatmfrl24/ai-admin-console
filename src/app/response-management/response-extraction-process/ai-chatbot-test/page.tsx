@@ -1,8 +1,10 @@
 'use client';
 
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, IconButton, Paper, Typography } from '@mui/material';
 import { useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Close } from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
 
 import ChatSidebar from './sidebar';
 import ChatInput from './input';
@@ -20,6 +22,7 @@ import { useChatStore } from '@/lib/store/chatStore';
 import AIProfileIcon from '@/assets/icon-ai-profile.svg';
 
 export default function Chat() {
+  const router = useRouter();
   const currentThread = useChatStore((s) =>
     s.currentThreadId
       ? (s.threadHistory.find((t) => t.threadId === s.currentThreadId) ?? null)
@@ -65,7 +68,6 @@ export default function Chat() {
         display="flex"
         flexDirection="column"
         height="100%"
-        ml={6}
         flex={1}
         sx={{
           background: COLORS.gradient.primary,
@@ -84,6 +86,13 @@ export default function Chat() {
             AI Chat
           </Typography>
           <SearchField />
+          <IconButton
+            onClick={() => {
+              router.back();
+            }}
+          >
+            <Close sx={{ fontSize: 20 }} />
+          </IconButton>
         </Box>
         <Box
           aria-label="chat-content"

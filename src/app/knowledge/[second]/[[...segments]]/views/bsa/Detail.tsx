@@ -1,9 +1,15 @@
 'use client';
 
-import { Box, Breadcrumbs, Typography } from '@mui/material';
+import {
+  Box,
+  Breadcrumbs,
+  Typography,
+  Button,
+  IconButton,
+} from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { InsertDriveFileOutlined } from '@mui/icons-material';
+import { useParams, useRouter } from 'next/navigation';
+import DescriptionIcon from '@mui/icons-material/Description';
 import { GridColDef, DataGrid, useGridApiRef } from '@mui/x-data-grid';
 
 import { getBsaMenuTree, makeRandomChunk, getBsaRowById } from './bsaUtil';
@@ -32,6 +38,7 @@ function getInitialSelection(items: BSAMenuTreeItemProps[]): {
 export default function BSADetail() {
   const apiRef = useGridApiRef();
   const setHeaderNode = useHeaderStore((s) => s.setHeaderNode);
+  const router = useRouter();
   const params = useParams();
   const segments = (params as { segments?: string[] })?.segments;
   const idParam = useMemo(() => {
@@ -46,6 +53,10 @@ export default function BSADetail() {
   const setChunks = useBSAStore((s) => s.setChunks);
   const selectedChunk = useBSAStore((s) => s.selectedChunk);
   const setSelectedChunk = useBSAStore((s) => s.setSelectedChunk);
+  const selectedRowFromStore = useBSAStore((s) => s.selectedRow);
+  const setSelectedRow = useBSAStore((s) => s.setSelectedRow);
+  const docViewerOpen = useBSAStore((s) => s.docViewerOpen);
+  const setDocViewerOpen = useBSAStore((s) => s.setDocViewerOpen);
   const BSA_MENU_TREE = useMemo(() => getBsaMenuTree(), []);
   const { selected: initialSelectedItem } = useMemo(
     () => getInitialSelection(BSA_MENU_TREE),
@@ -73,8 +84,28 @@ export default function BSADetail() {
 
   const selectedData = useMemo<BSATableProps | null>(() => {
     if (!idParam) return null;
+
+    // Store에 저장된 selectedRow가 있고, ID가 일치하면 그것을 사용
+    if (
+      selectedRowFromStore &&
+      String(selectedRowFromStore.id) === String(idParam)
+    ) {
+      return selectedRowFromStore;
+    }
+
+    // 그렇지 않으면 getBsaRowById로 생성 (fallback)
     return getBsaRowById(idParam);
-  }, [idParam]);
+  }, [idParam, selectedRowFromStore]);
+
+  // selectedData가 변경될 때 store에도 저장 (URL로 직접 접근한 경우 대비)
+  useEffect(() => {
+    if (
+      selectedData &&
+      (!selectedRowFromStore || selectedRowFromStore.id !== selectedData.id)
+    ) {
+      setSelectedRow(selectedData);
+    }
+  }, [selectedData, selectedRowFromStore, setSelectedRow]);
 
   useEffect(() => {
     if (!selectedData) return;
@@ -105,36 +136,38 @@ export default function BSADetail() {
             </Box>
           )}
         </Breadcrumbs>
-        <Box
-          display={'flex'}
-          alignItems={'center'}
-          gap={0.5}
+        <IconButton
+          onClick={() => setDocViewerOpen(!docViewerOpen)}
+          aria-label="Toggle Origin DOC viewer"
+          title="Origin DOC"
+          size="small"
           sx={{
-            cursor: 'pointer',
-            paddingLeft: 1,
-            paddingRight: 1,
-            borderRadius: 2,
-            '&:hover': { backgroundColor: 'action.hover' },
+            color: COLORS.grey[600],
+            border: '1px solid',
+            borderColor: COLORS.blueGrey[100],
+            borderRadius: '9999px',
+            '&:hover': {
+              borderColor: COLORS.blueGrey[200],
+            },
           }}
         >
-          <InsertDriveFileOutlined sx={{ fontSize: 16 }} />
-          <Typography
-            lineHeight={1}
-            fontSize={12}
-            color="text.primary"
-            display={'flex'}
-            alignItems={'center'}
-            gap={0.5}
-          >
-            Origin DOC
-          </Typography>
-        </Box>
+          <DescriptionIcon sx={{ fontSize: 20 }} />
+        </IconButton>
       </Box>
     );
     setHeaderNode(header);
     apiRef.current?.selectRow(selectedData.id, true, true);
     return () => setHeaderNode(null);
-  }, [setHeaderNode, apiRef, selectedData, selectedChunk, chunks, activeTab]);
+  }, [
+    setHeaderNode,
+    apiRef,
+    selectedData,
+    selectedChunk,
+    chunks,
+    activeTab,
+    docViewerOpen,
+    setDocViewerOpen,
+  ]);
 
   useEffect(() => {
     if (!selectedTreeItem) return;
@@ -169,6 +202,19 @@ export default function BSADetail() {
       flexDirection={'column'}
       gap={1.5}
     >
+      <Box display={'flex'} alignItems={'center'} gap={1}>
+        <Button variant="outlined" size="small" onClick={() => router.back()}>
+          Back
+        </Button>
+        <Typography
+          fontSize={16}
+          fontWeight={500}
+          color="text.primary"
+          lineHeight={1.5}
+        >
+          Basic Slot Allocation ({selectedData?.fileName ?? '-'})
+        </Typography>
+      </Box>
       {!selectedChunk && activeTab === 'edit' ? (
         <Box>
           <DataGrid
