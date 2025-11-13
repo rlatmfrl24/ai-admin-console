@@ -110,7 +110,12 @@ export default function BSADetail() {
   useEffect(() => {
     if (!selectedData) return;
     const header = (
-      <Box display={'inline-flex'} flex={1} justifyContent={'space-between'}>
+      <Box
+        display={'inline-flex'}
+        flex={1}
+        justifyContent={'space-between'}
+        alignItems={'center'}
+      >
         <Breadcrumbs>
           <Box />
           <Box display={'flex'} alignItems={'center'} p={0.5} gap={0.5}>
