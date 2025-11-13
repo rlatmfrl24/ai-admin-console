@@ -110,7 +110,12 @@ export default function BSADetail() {
   useEffect(() => {
     if (!selectedData) return;
     const header = (
-      <Box display={'inline-flex'} flex={1} justifyContent={'space-between'}>
+      <Box
+        display={'inline-flex'}
+        flex={1}
+        justifyContent={'space-between'}
+        alignItems={'center'}
+      >
         <Breadcrumbs>
           <Box />
           <Box display={'flex'} alignItems={'center'} p={0.5} gap={0.5}>
@@ -170,9 +175,18 @@ export default function BSADetail() {
   ]);
 
   useEffect(() => {
-    if (!selectedTreeItem) return;
-    setChunks(Array.from({ length: 10 }, () => makeRandomChunk()));
-  }, [selectedTreeItem, setChunks]);
+    if (!selectedTreeItem) {
+      setChunks([]);
+      setSelectedChunk(null);
+      return;
+    }
+    const newChunks = Array.from({ length: 10 }, () => makeRandomChunk());
+    setChunks(newChunks);
+    // chunks 생성 후 첫 번째 항목을 selectedChunk로 설정
+    if (newChunks.length > 0) {
+      setSelectedChunk(newChunks[0]);
+    }
+  }, [selectedTreeItem, setChunks, setSelectedChunk]);
 
   useEffect(() => {
     if (!selectedChunk) return;

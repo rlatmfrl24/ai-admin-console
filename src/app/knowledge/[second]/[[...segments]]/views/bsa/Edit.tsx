@@ -26,7 +26,12 @@ import {
   Switch,
   FormControlLabel,
 } from '@mui/material';
-import { AddCircle, Cached, FileUploadOutlined } from '@mui/icons-material';
+import {
+  AddCircle,
+  Cached,
+  Close,
+  FileUploadOutlined,
+} from '@mui/icons-material';
 import { format } from 'date-fns';
 import {
   useEffect,
@@ -142,6 +147,7 @@ export default function BSAChunkEdit({
   const updateChunk = useBSAStore((s) => s.updateChunk);
   const addChunk = useBSAStore((s) => s.addChunk);
   const removeChunk = useBSAStore((s) => s.removeChunk);
+  const docViewerOpen = useBSAStore((s) => s.docViewerOpen);
   const cleanupNewEmptyChunks = useBSAStore((s) => s.cleanupNewEmptyChunks);
   const BSA_MENU_TREE = useMemo(() => getBsaMenuTree(), []);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -201,6 +207,7 @@ export default function BSAChunkEdit({
       prevObjectUrlsRef.current = [];
     };
   }, [filesSignature]);
+
   useEffect(() => {
     if (!selectedChunk) {
       setSavedPreviewUrls([]);
@@ -213,6 +220,7 @@ export default function BSAChunkEdit({
       urls.forEach((u) => URL.revokeObjectURL(u));
     };
   }, [chunks, selectedChunk, baseChunk]);
+
   useEffect(() => {
     if (flushTimerRef.current) {
       clearTimeout(flushTimerRef.current);
@@ -298,6 +306,13 @@ export default function BSAChunkEdit({
     },
     [chunks, setChunks],
   );
+
+  // if DocViewerOpen, set MenuCollapsed to true
+  useEffect(() => {
+    if (docViewerOpen) {
+      setIsMenuCollapsed(true);
+    }
+  }, [docViewerOpen]);
 
   function SortableChunkItem({ chunk }: { chunk: ChunkProps }) {
     const {
@@ -961,19 +976,27 @@ export default function BSAChunkEdit({
                 <Typography fontSize={14} fontWeight={500} color="text.primary">
                   Current Data
                 </Typography>
-                <Typography
-                  fontSize={12}
-                  fontWeight={400}
-                  color={COLORS.blueGrey[200]}
-                  display={'flex'}
-                  alignItems={'center'}
-                  gap={0.5}
-                >
-                  <Cached sx={{ fontSize: 16 }} />
-                  {selectedChunk.embeddingAt
-                    ? format(selectedChunk.embeddingAt, 'yyyy-MM-dd HH:mm:ss')
-                    : ''}
-                </Typography>
+                <Box display={'flex'} alignItems={'center'} gap={0.5}>
+                  <Typography
+                    fontSize={12}
+                    fontWeight={400}
+                    color={COLORS.blueGrey[200]}
+                    display={'flex'}
+                    alignItems={'center'}
+                    gap={0.5}
+                  >
+                    <Cached sx={{ fontSize: 16 }} />
+                    {selectedChunk.embeddingAt
+                      ? format(selectedChunk.embeddingAt, 'yyyy-MM-dd HH:mm:ss')
+                      : ''}
+                  </Typography>
+                  <IconButton
+                    size="small"
+                    onClick={() => setSelectedChunk(null)}
+                  >
+                    <Close sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </Box>
               </Box>
               <Box
                 flex={1}
