@@ -72,16 +72,15 @@ export const useBSAStore = create<BSAState>((set, get) => ({
   setSelectedChunk: (chunk) => set({ selectedChunk: chunk }),
   // doc viewer
   docViewerOpen: false,
-  docViewerWidth: 514,
+  docViewerWidth: 740,
   setDocViewerOpen: (open) => set({ docViewerOpen: open }),
-  setDocViewerWidth: (width) =>
-    set({ docViewerWidth: Math.max(514, width) }),
+  setDocViewerWidth: (width) => set({ docViewerWidth: Math.max(514, width) }),
   reset: () =>
     set({
       selectedRow: null,
       selectedChunk: null,
       chunks: [],
       docViewerOpen: false,
-      docViewerWidth: 514,
+      docViewerWidth: 740,
     }),
 }));
