@@ -2,7 +2,7 @@
 
 import { Box, IconButton, Typography } from '@mui/material';
 import { useRef, useEffect, useCallback, useState } from 'react';
-import { Close } from '@mui/icons-material';
+import { Close, OpenInNew } from '@mui/icons-material';
 
 import { useBSAStore } from '@/lib/store/bsaStore';
 import { COLORS } from '@/lib/theme';
@@ -111,13 +111,18 @@ export default function DocViewer() {
               <Typography fontSize={14} fontWeight={500}>
                 Original DOC
               </Typography>
-              <IconButton
-                size="small"
-                onClick={() => setDocViewerOpen(false)}
-                sx={{ p: '4px' }}
-              >
-                <Close sx={{ fontSize: 20 }} />
-              </IconButton>
+              <Box display={'flex'} alignItems={'center'} gap={0.5}>
+                <IconButton size="small" onClick={() => {}}>
+                  <OpenInNew sx={{ fontSize: 20 }} />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  onClick={() => setDocViewerOpen(false)}
+                  sx={{ p: '4px' }}
+                >
+                  <Close sx={{ fontSize: 20 }} />
+                </IconButton>
+              </Box>
             </Box>
             <div
               aria-label="Doc Viewer Content"
