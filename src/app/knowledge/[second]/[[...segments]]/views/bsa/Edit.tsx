@@ -241,7 +241,7 @@ export default function BSAChunkEdit({
   ]);
   const [searchQuery, setSearchQuery] = useState('');
   const normalizedQuery = searchQuery.trim().toLowerCase();
-  const [isMenuCollapsed, setIsMenuCollapsed] = useState(false);
+  const [isMenuCollapsed, setIsMenuCollapsed] = useState(docViewerOpen);
   const [isDragMode, setIsDragMode] = useState(false);
   const [promptAnchorEl, setPromptAnchorEl] = useState<HTMLElement | null>(
     null,
@@ -273,27 +273,8 @@ export default function BSAChunkEdit({
     }),
   );
 
-  // Keep selected grid to max 2 cols, collapse to 1 if too narrow
   const selectedGridRef = useRef<HTMLDivElement | null>(null);
-  const [selectedGridCols, setSelectedGridCols] = useState<number>(2);
-  useEffect(() => {
-    if (!selectedChunk) return;
-    const el = selectedGridRef.current;
-    if (!el) return;
-    const gapPx = 12; // gap={1.5} → theme.spacing(1.5)=12px
-    const minPerTrackPx = 140; // 2컬럼일 때 각 트랙 최소 허용 폭
-    const observer = new ResizeObserver(() => {
-      const width = el.clientWidth;
-      const perTrackIfTwo = (width - gapPx) / 2;
-      setSelectedGridCols(perTrackIfTwo >= minPerTrackPx ? 2 : 1);
-    });
-    observer.observe(el);
-    // Initial measure
-    const width = el.clientWidth;
-    const perTrackIfTwo = (width - gapPx) / 2;
-    setSelectedGridCols(perTrackIfTwo >= minPerTrackPx ? 2 : 1);
-    return () => observer.disconnect();
-  }, [selectedChunk]);
+  const isSingleColumnChunks = Boolean(selectedChunk);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -421,15 +402,14 @@ export default function BSAChunkEdit({
         </Box>
       </Box>
       <Box
-        flexGrow={selectedChunk ? 3 : 1}
-        flexBasis={selectedChunk ? 0 : 'auto'}
+        flex={selectedChunk ? '0 0 auto' : '1 1 0'}
         p={2}
         borderRight={selectedChunk ? 1 : 0}
         borderColor={COLORS.blueGrey[100]}
         sx={{
           overflow: 'auto',
           minHeight: 0,
-          minWidth: '184px',
+          minWidth: selectedChunk ? '230px' : '184px',
         }}
       >
         <Box
@@ -486,9 +466,10 @@ export default function BSAChunkEdit({
           aria-label="Chunks"
           ref={selectedGridRef}
           sx={{
-            gridTemplateColumns: selectedChunk
-              ? `repeat(${selectedGridCols}, minmax(0, 1fr))`
+            gridTemplateColumns: isSingleColumnChunks
+              ? 'repeat(1, 230px)'
               : 'repeat(auto-fit, minmax(252px, 1fr))',
+            justifyContent: isSingleColumnChunks ? 'flex-start' : undefined,
           }}
         >
           <Box
@@ -559,13 +540,12 @@ export default function BSAChunkEdit({
       </Box>
       {selectedChunk && (
         <Box
-          /* 편집 화면: 청크 리스트 대비 비율(예: 70%)로 공간 차지 */
-          flexGrow={7}
-          flexBasis={0}
+          /* 편집 화면: 인접 영역(청크/DocViewer) 이후 남는 공간 사용 */
+          flex={'1 1 0'}
           display={'flex'}
           p={2}
           gap={2}
-          sx={{ minHeight: 0 }}
+          sx={{ minHeight: 0, minWidth: 0 }}
         >
           <Box flex={1} display={'flex'} flexDirection={'column'} gap={1}>
             <Box
