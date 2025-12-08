@@ -415,7 +415,7 @@ export default function BSAChunkEdit({
         <Box
           display={'flex'}
           alignItems={'center'}
-          gap={0.5}
+          gap={2}
           justifyContent={'space-between'}
         >
           <Typography fontSize={14} fontWeight={500} color="text.primary">
@@ -467,7 +467,7 @@ export default function BSAChunkEdit({
           ref={selectedGridRef}
           sx={{
             gridTemplateColumns: isSingleColumnChunks
-              ? 'repeat(1, 230px)'
+              ? 'repeat(1, 1fr)'
               : 'repeat(auto-fit, minmax(252px, 1fr))',
             justifyContent: isSingleColumnChunks ? 'flex-start' : undefined,
           }}
