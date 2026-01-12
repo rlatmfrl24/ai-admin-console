@@ -11,7 +11,8 @@ export interface SelectWithLabelOption {
   label: string;
   value: string;
 }
-export interface SelectWithLabelProps extends Omit<SelectProps, 'size'> {
+export interface SelectWithLabelProps
+  extends Omit<SelectProps, 'size' | 'label' | 'sx'> {
   label: string;
   size?: 'small' | 'medium';
   options: SelectWithLabelOption[];
@@ -40,17 +41,19 @@ const SelectWithLabel = forwardRef<HTMLDivElement, SelectWithLabelProps>(
           ref={ref}
           labelId={props.id ? `${props.id}-label` : undefined}
           aria-labelledby={props.id ? `${props.id}-label` : undefined}
-          sx={{
-            height: size === 'small' ? 24 : 36,
-            '.MuiOutlinedInput-input': {
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              padding: size === 'small' ? '0 8px' : '0 12px',
-              fontSize: size === 'small' ? '12px' : '13px',
+          sx={[
+            {
+              height: size === 'small' ? 24 : 36,
+              '.MuiOutlinedInput-input': {
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                padding: size === 'small' ? '0 8px' : '0 12px',
+                fontSize: size === 'small' ? '12px' : '13px',
+              },
             },
-            ...(sx as SxProps),
-          }}
+            ...(Array.isArray(sx) ? sx : [sx]),
+          ]}
         >
           {options.map((option) => (
             <MenuItem

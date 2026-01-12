@@ -110,6 +110,11 @@ const NAV_ITEMS: NavigationItem[] = [
             id: 'ai-chatbot-test',
             description: 'Views and manages all registered AI Chatbot Test',
           },
+          {
+            label: 'Form Builder Test',
+            id: 'form-builder-test',
+            description: 'Views and manages all registered Form Builder Test',
+          },
         ],
       },
       {
