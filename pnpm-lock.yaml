@@ -44,6 +44,9 @@ importers:
       '@mui/material-nextjs':
         specifier: ^7.3.0
         version: 7.3.7(@emotion/cache@11.14.0)(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.1.0))(@types/react@19.2.8)(next@15.5.7(@babel/core@7.28.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
+      '@mui/system':
+        specifier: ^7.3.1
+        version: 7.3.7(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.1.0))(@types/react@19.2.8)(react@19.1.0))(@types/react@19.2.8)(react@19.1.0)
       '@mui/x-data-grid':
         specifier: ^8.10.2
         version: 8.24.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.1.0))(@types/react@19.2.8)(react@19.1.0))(@mui/material@7.3.7(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.1.0))(@types/react@19.2.8)(react@19.1.0))(@types/react@19.2.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@mui/system@7.3.7(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@19.1.0))(@types/react@19.2.8)(react@19.1.0))(@types/react@19.2.8)(react@19.1.0))(@types/react@19.2.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
