@@ -1,8 +1,16 @@
 'use client';
 
 import { Box, Typography } from '@mui/material';
-import { FormBuilder, Form } from '@formio/react';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
+
+const FormBuilder = dynamic(
+  () => import('@formio/react').then((mod) => mod.FormBuilder),
+  { ssr: false },
+);
+const Form = dynamic(() => import('@formio/react').then((mod) => mod.Form), {
+  ssr: false,
+});
 
 export default function FormBuilderTestPage() {
   const [formJson, setFormJson] = useState<any>(null);
