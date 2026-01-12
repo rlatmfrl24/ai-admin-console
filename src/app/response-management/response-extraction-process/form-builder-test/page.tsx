@@ -12,6 +12,13 @@ const Form = dynamic(() => import('@formio/react').then((mod) => mod.Form), {
   ssr: false,
 });
 
+const builderOptions = {
+  builder: {
+    data: false,
+    premium: false,
+  },
+};
+
 export default function FormBuilderTestPage() {
   const [formJson, setFormJson] = useState<any>(null);
 
@@ -21,15 +28,10 @@ export default function FormBuilderTestPage() {
         Form Builder Packing Test
       </Typography>
       <FormBuilder
-        options={{
-          builder: {
-            data: false,
-            premium: false,
-          },
-        }}
+        options={builderOptions}
         onChange={(form) => setFormJson(form)}
       />
-      <Form src={formJson} />
+      <Form form={formJson} src={'#'} />
     </Box>
   );
 }
